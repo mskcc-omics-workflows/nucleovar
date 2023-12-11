@@ -1,7 +1,7 @@
-name: MultiQC
+name: bcftools_concat
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
-  - bioconda::multiqc=1.17
+  - bioconda::bcftools=1.18
