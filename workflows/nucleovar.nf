@@ -43,8 +43,8 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */ 
 // VARIANT CALLING SUBWORKFLOWS
-include { CALL_VARIANTS } from '../subworkflows/variant_calling/call_variants'
-include { FILTERING } from '../subworkflows/variant_calling/filtering'
+include { VARDICT } from '../subworkflows/variant_calling/vardict'
+include { MUTECT } from '../subworkflows/variant_calling/mutect'
 include { CONCATENATE } from '../subworkflows/variant_calling/concatenate'
 
 
@@ -53,11 +53,11 @@ include { CONCATENATE } from '../subworkflows/variant_calling/concatenate'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-/*
-include { FASTQC                      } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
+
+include { VARDICTJAVA                      } from '../modules/nf-core/vardictjava/main'
+include { VARDICT_FILTER                     } from '../modules/local/vardictfilter/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-*/
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,17 +78,28 @@ workflow NUCLEOVAR {
     // INPUT_CHECK (
     //     file(params.input)
     // )
+    inputsheet = Channel.fromPath(params.input_sample_sheet)
+
+    inputsheet
+        .splitCsv(header: true)
+        .map{   row-> tuple(row.normal_sample_name,row.tumor_sample_name, row.bam, row.bed, row.fasta)  }
+        .set{   for_variant_calling_ch  }
+
     // SUBWORKFLOW: Run VARIANT CALLING
-    CALL VARIANTS (
-        //insert beginning params
+    VARDICT(
+        for_variant_calling_ch
     )
-    FILTERING (
+    vardict_output = VARDICT.out.vardictjava_output
+    vardict_output.view()
+
+    /*
+    MUTECT (
         //insert beginning params 
     )
     CONCATENATE (
         
     )
-    
+    */
 
 
 
@@ -96,11 +107,11 @@ workflow NUCLEOVAR {
 
 
     //////////////////////////////////////////////////////////////////////////////////////
-    workflow_summary    = WorkflowNucleovar.paramsSummaryMultiqc(workflow, summary_params)
-    ch_workflow_summary = Channel.value(workflow_summary)
+    // workflow_summary    = WorkflowNucleovar.paramsSummaryMultiqc(workflow, summary_params)
+    // ch_workflow_summary = Channel.value(workflow_summary)
 
-    methods_description    = WorkflowNucleovar.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description, params)
-    ch_methods_description = Channel.value(methods_description)
+    // methods_description    = WorkflowNucleovar.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description, params)
+    // ch_methods_description = Channel.value(methods_description)
 
 }
 

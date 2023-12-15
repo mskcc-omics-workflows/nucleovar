@@ -8,8 +8,9 @@ workflow VARDICT   {
 
     main:
     VARDICTJAVA()
-    VARDICT_FILTER()
+    //VARDICT_FILTER()
 
     emit:
-    vardict_filter_output // channel: [ layout ]
+    //vardictjava_output
+    //vardict_filter_output // channel: [ layout ]
 }

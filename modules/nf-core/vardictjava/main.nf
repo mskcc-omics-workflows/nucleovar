@@ -9,12 +9,10 @@ process VARDICTJAVA {
         'biocontainers/vardict-java:1.8.3--hdfd78af_0' }"
 
     input:
-    tuple val(tumor_sample_name), path(bams), path(bed), path(fasta)
-    tuple val(normal_sample_name), path(bams), path(bed), path(fasta)
+    tuple val(tumor_sample_name), val(normal_sample_name), path(bams), path(bed), path(fasta)
 
     output:
-    tuple val(tumor_sample_name), path("*.vcf"), emit: tumor_vardict_vcf
-    tuple val(normal_sample_name), path("*.vcf"), emit: normal_vardict_vcf
+    tuple val(sample_name), path("*.vcf"), emit: vardict_vcf
     //path "versions.yml"           , emit: versions
 
     when:
