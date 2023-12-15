@@ -1,13 +1,12 @@
-workflow CALL_VARIANTS   {
+workflow MUTECT   {
     take:
     // initial inputs
 
     main:
     // differentiate if the vardict or mutect subworkflow will be called (??)
-    VARDICTJAVA()
     MUTECT()
+    MUTECT_FILTER()
 
     emit:
-    vardict_output // channel: [ layout ]
-    mutect_output // channel: [ layout ]
+    mutect_filter_output // channel: [ layout ]
 }

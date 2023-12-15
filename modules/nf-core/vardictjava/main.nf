@@ -1,6 +1,6 @@
 process VARDICTJAVA {
     //tag "$meta.id"
-    label 'call_variants'
+    label 'vardictjava'
 
     // NOTE: may not need this because we have a docker image 
     conda "${moduleDir}/environment.yml"
