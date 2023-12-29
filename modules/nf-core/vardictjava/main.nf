@@ -1,5 +1,5 @@
 process VARDICTJAVA {
-    tag "$meta.id"
+    //tag "$meta.id"
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -22,7 +22,7 @@ process VARDICTJAVA {
     script:
     def args = task.ext.args ?: '-S 2 -E 3 -c 1'
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta}"
 
     def somatic = bams instanceof ArrayList && bams.size() == 2 ? true : false
     def input = somatic ? "-b \"${bams[0]}|${bams[1]}\"" : "-b ${bams}"
@@ -51,7 +51,7 @@ process VARDICTJAVA {
     stub:
     def args = task.ext.args ?: '-S 2 -E 3 -c 1'
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta}"
 
     """
     touch ${prefix}.vcf

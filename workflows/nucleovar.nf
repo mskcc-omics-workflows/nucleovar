@@ -61,15 +61,47 @@ def multiqc_report = []
 
 workflow NUCLEOVAR {
 
-    ch_versions = Channel.empty()
-
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    CALL_VARIANTS (
-        file(params.input)
-    )
-    //CALL_VARIANTS.out.reads.view()
+    params.input_dir="/Users/naidur/ACCESS/access_pipeline/test_data/test_data/final_test/"
+        
+    def allFiles = new File(params.input_dir).listFiles()
+    def bam_exists = allFiles.any { it.name.endsWith('.bam') }
+    def bai_exists = allFiles.any { it.name.endsWith('.bai') }  
+    def bed_exists = allFiles.any { it.name.endsWith('.bed') }  
+    def fasta_exists = allFiles.any { it.name.endsWith('.fasta') }  
+    def fai_exists = allFiles.any { it.name.endsWith('.fai') } 
+
+    if (bam_exists && bai_exists && bed_exists && fasta_exists && fai_exists) {
+
+        Channel
+            .fromFilePairs("${params.input_dir}/*.{bam,bai}", size: 2)
+            .set { bam_bai_files }
+        
+        Channel
+            .fromPath("${params.input_dir}/*.bed")
+            .set{ bed }
+        Channel
+            .fromPath("${params.input_dir}/*.fasta")
+            .set{ fasta }
+        Channel
+            .fromPath("${params.input_dir}/*.fasta.fai")
+            .set{ fai }
+        
+        sample_names = bam_bai_files.map { tuple -> tuple[0] }.collect()
+        bams = bam_bai_files.map { tuple -> tuple[1][1] }.collect()
+        bais = bam_bai_files.map { tuple -> tuple[1][0] }.collect()
+
+        
+
+    }
+    else {
+        error "Error: Mandatory Input files not found in ${params.input_dir}. Please make sure you are providing sample name(s), bam(s), bai(s), fasta, and BED file."
+    }
+
+    CALL_VARIANTS ( sample_names,bams,bais,bed,fasta,fai )
+
 
 }
     //ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)

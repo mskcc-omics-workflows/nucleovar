@@ -6,47 +6,47 @@ include { VARDICTJAVA } from '../../modules/nf-core/vardictjava/main'
 
 workflow CALL_VARIANTS {
     take:
-    samplesheet // file: /path/to/samplesheet.csv
+    sample_names
+    bams 
+    bais
+    bed
+    fasta
+    fai 
 
     main:
-    input_sample_sheet = Channel.fromPath(samplesheet)
-        .splitCsv ( header:true, sep:',' )
-        .set{ reads }
+    meta = sample_names.map { [it] }
+    bamslist = bams.map { [it] }
+    baislist = bais.map { [it] }
 
-    reads
-        .map { create_meta_channel(it) }
-        .view()
-        .set { meta }
-
-    reads
-        .map { create_meta2_channel(it) }
-        .view()
-        .set { meta2 }
-
-    reads
-        .map { create_meta3_channel(it) }
-        .view()
-        .set { meta3 }
+    meta1 = meta.combine(bamslist).combine(baislist).combine(bed)
+    meta2 = meta.combine(fasta)
+    meta3 = meta.combine(fai)
 
     
-    VARDICTJAVA(meta,meta2,meta3)
+    
+
+    VARDICTJAVA(meta1,meta2,meta3)
 
     vcf = VARDICTJAVA.out.vcf
-    
+
     emit:
     vcf
-    //fasta                                     // channel: [ val(meta), [ reads ] ]
-     // channel: [ versions.yml ]
+
+
+    
 }
 
-// Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
-def create_meta_channel(LinkedHashMap row) {
+
+// // Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
+def create_meta_and_bams_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
-    meta.id         = row.sample_name
-    bams = [ meta,row.bam1,'/Users/naidur/ACCESS/access_pipeline/test_data/placeholder.txt', row.bed   ]
+    meta.id         = sample_names
+    result = [meta.id,bams]
 }
 
+
+/*
 def create_meta2_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
@@ -60,3 +60,4 @@ def create_meta3_channel(LinkedHashMap row) {
     meta.id         = row.sample_name
     fasta = [ meta, '/Users/naidur/ACCESS/access_pipeline/test_data/placeholder2.txt']
 }
+*/
