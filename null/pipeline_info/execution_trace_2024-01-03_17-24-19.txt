@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	22/6d43aa	25001	MSK_NUCLEOVAR:NUCLEOVAR:CALL_VARIANTS:VARDICTJAVA (1)	FAILED	127	2024-01-03 17:24:21.865	43ms	13ms	-	-	-	-	-

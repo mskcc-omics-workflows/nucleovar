@@ -1,6 +1,6 @@
 process VARDICTJAVA {
-    //tag "$meta.id"
-    label 'process_high'
+    tag "$meta.id"
+    label 'process_single'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -22,7 +22,7 @@ process VARDICTJAVA {
     script:
     def args = task.ext.args ?: '-S 2 -E 3 -c 1'
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def somatic = bams instanceof ArrayList && bams.size() == 2 ? true : false
     def input = somatic ? "-b \"${bams[0]}|${bams[1]}\"" : "-b ${bams}"
@@ -40,6 +40,7 @@ process VARDICTJAVA {
     | ${convert_to_vcf} \\
         ${args2} \\
     > ${prefix}.vcf
+    
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
