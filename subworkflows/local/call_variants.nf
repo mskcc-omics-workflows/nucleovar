@@ -45,7 +45,7 @@ workflow CALL_VARIANTS {
 
     // MUTECT(mutectinputs,bed_fasta_fai)
     // mutect_vcf = MUTECT.out.vcf
-
+    //
     emit:
     vardict_vcf
 
