@@ -24,6 +24,22 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "input": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Filepath to input samplesheet containing sample names, BAM files, and BAM index files."
+                    
+                },
+                "bed": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Filepath to the standard BED file."
+                },
+                "fai": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Filepath to the standard genome fasta index file."
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
