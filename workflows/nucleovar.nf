@@ -61,9 +61,9 @@ workflow NUCLEOVAR {
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    
+    params.test = 'test'
     CALL_VARIANTS (
-        params.inputdir,params.input
+        params.input,params.bed,params.fasta,params.fai
     )
 
 }

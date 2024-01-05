@@ -2,131 +2,97 @@
 // Check input samplesheet and get read channels
 //
 
-//include { VARDICTJAVA } from '../../modules/nf-core/vardictjava/main'
+include { VARDICTJAVA } from '../../modules/nf-core/vardictjava/main'
 
 workflow CALL_VARIANTS {
     take:
-    input_dir
     samplesheet
+    bed
+    fasta
+    fai
 
     main:
-    
-    // taking in input directory where files are located and creating input channels for vardictjava
-    def allFiles = new File(input_dir).listFiles()
-    def bam_exists = allFiles.any { it.name.endsWith('.bam') }
-    def bai_exists = allFiles.any { it.name.endsWith('.bai') }  
-    def bed_exists = allFiles.any { it.name.endsWith('.bed') }  
-    def fasta_exists = allFiles.any { it.name.endsWith('.fasta') }  
-    def fai_exists = allFiles.any { it.name.endsWith('.fai') } 
 
-    if (bam_exists && bai_exists && bed_exists && fasta_exists && fai_exists) {
+    // taking in input samplesheet and splitting to create channels for vardictjava and mutect 
+    standard_bed_file = Channel.fromPath(bed)
+    genome_fasta_file = Channel.fromPath(fasta)
+    genome_fasta_index_file = Channel.fromPath(fai)
 
-        Channel
-            .fromFilePairs("${input_dir}/*.{bam,bai}", size: 2)
-            .set { bam_bai_files }
-        
-        Channel
-            .fromPath("${input_dir}/*.bed")
-            .set{ bed }
-        Channel
-            .fromPath("${input_dir}/*.fasta")
-            .set{ fasta }
-        Channel
-            .fromPath("${input_dir}/*.fasta.fai")
-            .set{ fai }
-
-        sample_names = bam_bai_files.map { tuple -> tuple[0] }.collect()
-        bams = bam_bai_files.map { tuple -> tuple[1][1] }.collect()
-        bais = bam_bai_files.map { tuple -> tuple[1][0] }.collect()
-
-    
-    }
-    else {
-        error "Error: Mandatory Input files not found in ${input_dir}. Please make sure you are providing sample name(s), bam(s), bai(s), fasta, and BED file."
-    }
-
-
-    meta = sample_names.map { [it] }
-    bamslist = bams.map { [it] }
-    baislist = bais.map { [it] }
-
-    meta1 = meta.combine(bamslist).combine(baislist).combine(bed)
-    meta2 = meta.combine(fasta)
-    meta3 = meta.combine(fai)
-
-    // taking in input samplesheet and splitting to create channels for mutect 
     input_sample_sheet = Channel.fromPath(samplesheet)
         .splitCsv ( header:true, sep:',' )
-        .set{ reads }
-
-    reads
-        .map { create_mutect_channel(it) }
-        .view()
-        .set { mutectinputs }
+        .set{ inputs }
 
 
-    // VARDICTJAVA(meta1,meta2,meta3)
-    // vcf = VARDICTJAVA.out.vcf
+    inputs
+        .map { create_bams_and_bais_channel(it) }
+        .combine(standard_bed_file)
+        .set { vardict_input_set1 }    
+
+    inputs
+        .map { create_samplenames_channel(it) }
+        .combine(genome_fasta_file)
+        .set { vardict_input_set2 }
+    
+    inputs
+        .map { create_samplenames_channel(it) }
+        .combine(genome_fasta_index_file)
+        .set { vardict_input_set3 }
+
+
+    
+    VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)
+    vardict_vcf = VARDICTJAVA.out.vcf
 
     // MUTECT(mutectinputs,bed_fasta_fai)
     // mutect_vcf = MUTECT.out.vcf
 
+    emit:
+    vardict_vcf
 
 
 }
 
-def create_mutect_channel(LinkedHashMap row) {
+
+def create_bams_and_bais_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
-    def bams = [:]
-    def bais = [:]
-    def bed_fasta_fai = [:]
-    
-
-    //samplenames
-    if (row.control_sample_name.isEmpty() || row.case_sample_name.isEmpty()) {
-        // Check if either column1 or column2 is empty
-        if (row.control_sample_name.isEmpty()) {
-            meta = [row.case_sample_name]
-        } else if (row.case_sample_name.isEmpty()) {
-            meta = [row.control_sample_name]
-        }
+    def bams = [row.control_bam,row.case_bam]
+    def bais = [row.control_bai,row.case_bai]
+    if (row.control_sample_name && row.case_sample_name) {
+        // Both sample name columns are non-empty
+        meta.id = "${row.control_sample_name}|${row.case_sample_name}"
+        inputs = [meta,bams,bais]
+    } else if (row.control_sample_name) {
+        // Only control_sample_name is non-empty
+        meta.id = "${row.control_sample_name}"
+        inputs = [meta,bams,bais]
+    } else if (row.case_sample_name) {
+        // Only case_sample_name is non-empty
+        meta.id = "${row.case_sample_name}"
+        inputs = [meta,bams,bais]
     } else {
-        if (!row.control_sample_name.isEmpty() && !row.case_sample_name.isEmpty()) {
-            meta = [row.control_sample_name,row.case_sample_name]
-        }
+        // Both are empty, handle this scenario as needed
+       error "Sample Name columns are both empty. Please re-check your input samplesheet."
     }
-    //bams
-    if (row.control_bam.isEmpty() || row.case_bam.isEmpty()) {
-        
-        if (row.control_bam.isEmpty()) {
-            bams = [row.case_bam]
-        } else if (row.case_bam.isEmpty()) {
-            bams = [row.control_bam]
-        }
-    } else {
-        if (!row.control_bam.isEmpty() && !row.case_bam.isEmpty()) {
-            bams = [row.control_bam,row.case_bam]
-        }
-    }
-    // bais
-    if (row.control_bai.isEmpty() || row.case_bai.isEmpty()) {
-        
-        if (row.control_bai.isEmpty()) {
-            bais = [row.case_bai]
-        } else if (row.case_bai.isEmpty()) {
-            bais = [row.control_bai]
-        }
-    } else {
-        if (!row.control_bai.isEmpty() && !row.case_bai.isEmpty()) {
-            bais = [row.control_bai,row.case_bai]
-        }
-    }
-
-    mutectinputs = [meta,bams,bais]
-    bed_fasta_fai = [row.bed,row.fasta,row.fai]
-    
 }
 
-    
-    
+def create_samplenames_channel(LinkedHashMap row) {
+    // create meta map
+    def meta = [:]
+    if (row.control_sample_name && row.case_sample_name) {
+        // Both sample name columns are non-empty
+        meta.id = "${row.control_sample_name}|${row.case_sample_name}"
+        inputs = [meta]
+    } else if (row.control_sample_name) {
+        // Only control_sample_name is non-empty
+        meta.id = "${row.control_sample_name}"
+        inputs = [meta]
+    } else if (row.case_sample_name) {
+        // Only case_sample_name is non-empty
+        meta.id = "${row.case_sample_name}"
+        inputs = [meta]
+    } else {
+        // Both are empty, handle this scenario as needed
+       error "Sample Name columns are both empty. Please re-check your input samplesheet."
+    }
+}

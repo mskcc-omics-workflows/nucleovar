@@ -16,7 +16,17 @@ class WorkflowNucleovar {
         if (!params.fasta) {
             Nextflow.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
         }
+        if (!params.input) {
+            Nextflow.error "Input sample sheet not specified with e.g. '--input samplesheet.csv' or via a detectable config file."
+        }
+        if (!params.bed) {
+            Nextflow.error "BED file not specified with e.g. '--bed standard.bed' or via a detectable config file."
+        }
+        if (!params.fai) {
+            Nextflow.error "Genome fasta index file not specified with e.g. '--fai genome.fai' or via a detectable config file."
+        }
     }
+    //ADD CHECKS FOR SAMPLESHEET AND OTHER ARGS
 
     //
     // Get workflow summary for MultiQC
