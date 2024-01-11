@@ -3,6 +3,7 @@
 //
 
 include { VARDICTJAVA } from '../../modules/nf-core/vardictjava/main'
+include { VARDICT_FILTER } from '../../modules/local/vardict_filter/main'
 
 workflow CALL_VARIANTS {
     take:
@@ -61,15 +62,19 @@ workflow CALL_VARIANTS {
 
 
 VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)
-vardict_vcf = VARDICTJAVA.out.vcf
+vardict_sample_and_vcf = VARDICTJAVA.out.vcf
 
 // MUTECT1(mutect1_input_set1,mutect1_input_set2)
 // mutect_vcf = MUTECT1.out.vcf
+
+VARDICT_FILTER(vardict_sample_and_vcf)
+vardict_sample_and_filtered_vcf = VARDICT_FILTER.out.filtered_vcf
 
 
 emit:
 vardict_vcf
 //mutect_vcf
+vardict_sample_and_filtered_vcf
 
 
 }
