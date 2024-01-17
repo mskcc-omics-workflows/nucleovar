@@ -1,16 +1,16 @@
-process SAMPLESHEET_CHECK {
+process VARDICT_FILTER {
     tag "$meta.id"
     label 'process_single'
 
     container "ghcr.io/msk-access/postprocessing_variant_calls:0.2.3"
 
     input:
-    tuple val(meta), path(vardict_vcf_file), emit: vcf
+    tuple val(meta), path(vardict_vcf_file)
 
     output:
-    tuple path("*.vcf"),                     emit: filtered_vcf
-        path("*.complex.vcf"), 
-        path("*.txt")
+    path("*.vcf"),                     emit: filtered_vcf
+    path("*.complex.vcf"),             emit: complex_variants_vcf
+    path("*.txt"),                     emit: std_vardict_filter_output
     //path "versions.yml", emit: versions
 
     when:
