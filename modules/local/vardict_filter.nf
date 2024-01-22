@@ -6,10 +6,11 @@ process VARDICT_FILTER {
 
     input:
     tuple val(meta), path(vardict_vcf_file)
+    path(bams)
 
     output:
     path("*.vcf"),                     emit: filtered_vcf
-    path("*.complex.vcf"),             emit: complex_variants_vcf
+    //path("*.complex.vcf"),             emit: complex_variants_vcf
     path("*.txt"),                     emit: std_vardict_filter_output
     //path "versions.yml", emit: versions
 
@@ -17,36 +18,47 @@ process VARDICT_FILTER {
     task.ext.when == null || task.ext.when
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     def vardict_vcf_file = vardict_vcf_file ? "--inputVcf ${vardict_vcf_file}" : ''
 
     script: 
     """
     pv vardict single filter \
-    --inputVcf ${vardict_vcf_file}  \
-    --tsampleName ${prefix}  \
-    ${args} \
-    -o vardict_filtered_output/${prefix} 
+    --inputVcf ${vardict_vcf_file} \
+    --tsampleName ${bams.baseName} \
+    --alleledepth 1 \
+    --minQual 0 \
+    --totalDepth 20 \
+    --tnRatio 1 \
+    --variantFraction 5e-05
     """
+
+
+
+
+
+
+
+
+
 
     // cat <<-END_VERSIONS > versions.yml
     // "${task.process}":
     //     python: \$(python --version | sed 's/Python //g')
     // END_VERSIONS
 
-    stub:
-    task.ext.when == null || task.ext.when
-    def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def vardict_vcf_file = vardict_vcf_file ? "--inputVcf ${vardict_vcf_file}" : ''
+    // stub:
+    // task.ext.when == null || task.ext.when
+    // def args = task.ext.args ?: ''
+    // def args2 = task.ext.args2 ?: ''
+    // def prefix = task.ext.prefix ?: "${meta.id}"
+    // def vardict_vcf_file = vardict_vcf_file ? "--inputVcf ${vardict_vcf_file}" : ''
 
-    """
-    mkdir vardict_filtered_output/${prefix} 
-    touch vardict_filtered_output/${prefix}/${prefix}.vcf
-    touch vardict_filtered_output/${prefix}/${prefix}.complex.vcf
-    touch vardict_filtered_output/${prefix}/${prefix}.txt
-    """
+    // """
+    // mkdir vardict_filtered_output/${prefix} 
+    // touch vardict_filtered_output/${prefix}/${prefix}.vcf
+    // touch vardict_filtered_output/${prefix}/${prefix}.complex.vcf
+    // touch vardict_filtered_output/${prefix}/${prefix}.txt
+    // """
     // cat <<-END_VERSIONS > versions.yml
     // "${task.process}":
     //     python: \$(python --version | sed 's/Python //g')

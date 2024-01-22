@@ -64,19 +64,21 @@ workflow CALL_VARIANTS {
 
     
 VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)
-vardict_sample_and_vcf = VARDICTJAVA.out.vcf
+vardict_vcf = VARDICTJAVA.out.vcf
+
+
 
 // MUTECT1(mutect1_input_set1,mutect1_input_set2)
 // mutect_vcf = MUTECT1.out.vcf
 
-VARDICT_FILTER(vardict_sample_and_vcf)
-vardict_filtered_vcf = VARDICT_FILTER.out.filtered_vcf
+VARDICT_FILTER(vardict_vcf,bam_ch)
+//vardict_filtered_vcf = VARDICT_FILTER.out.filtered_vcf
 
 
-emit:
+//emit:
 //vardict_sample_and_vcf
 //mutect_vcf
-vardict_filtered_vcf
+//vardict_filtered_vcf
 
 
 }
@@ -89,7 +91,7 @@ def create_samplenames_channel(LinkedHashMap row) {
     def meta = [:]
     if (row.control_sample_name && row.case_sample_name) {
         // Both sample name columns are non-empty
-        meta.id = "${row.control_sample_name}.${row.case_sample_name}"
+        meta.id = "${row.control_sample_name}-${row.case_sample_name}"
         inputs = [meta]
     } else if (row.control_sample_name) {
         // Only control_sample_name is non-empty
