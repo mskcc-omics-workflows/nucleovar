@@ -65,13 +65,21 @@ workflow CALL_VARIANTS {
     
 VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)
 vardict_vcf = VARDICTJAVA.out.vcf
+vardict_vcf.combine(bam_ch).set{ for_vardictfilter_ch }
 
 
 
 // MUTECT1(mutect1_input_set1,mutect1_input_set2)
 // mutect_vcf = MUTECT1.out.vcf
 
-VARDICT_FILTER(vardict_vcf,bam_ch)
+
+
+inputs
+    .map { create_vardictfilter_names_channel(it)  }
+    .set{ vardictfilter_samplenames_ch }
+
+
+VARDICT_FILTER(for_vardictfilter_ch,vardictfilter_samplenames_ch)
 //vardict_filtered_vcf = VARDICT_FILTER.out.filtered_vcf
 
 
@@ -141,6 +149,28 @@ def create_bais_channel(LinkedHashMap row) {
         if (!row.control_bai.isEmpty() && !row.case_bai.isEmpty()) {
             bais = [file(row.control_bai), file(row.case_bai)]
             baisinput = [bais]
+        }
+    }
+}
+
+def create_vardictfilter_names_channel(LinkedHashMap row) {
+    // create meta map
+
+    // set bams variable
+    if (row.control_bam.isEmpty() || row.case_bam.isEmpty()) {
+        
+        if (row.control_bam.isEmpty()) {
+            bams = file(row.case_bam).getBaseName()
+        } else if (row.case_bam.isEmpty()) {
+            bams = file(row.control_bam).getBaseName()
+        }
+    } else {
+        if (!row.control_bam.isEmpty() && !row.case_bam.isEmpty()) {
+            control_bam = file(row.control_bam).getName()
+            case_bam = file(row.case_bam).getBaseName()
+            samplename = "${control_bam}|${case_bam}"
+            baminput = samplename
+
         }
     }
 }

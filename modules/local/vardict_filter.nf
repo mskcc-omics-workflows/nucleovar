@@ -5,33 +5,39 @@ process VARDICT_FILTER {
     container "ghcr.io/msk-access/postprocessing_variant_calls:0.2.3"
 
     input:
-    tuple val(meta), path(vardict_vcf_file)
-    path(bams)
+    tuple val(meta), path(vardict_vcf_file), path(bams)
+    val(bam_filenames)
+    
 
     output:
     path("*.vcf"),                     emit: filtered_vcf
-    //path("*.complex.vcf"),             emit: complex_variants_vcf
+    path("*_complex.vcf"),             emit: complex_variants_vcf
     path("*.txt"),                     emit: std_vardict_filter_output
     //path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
+
+    script:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    def vardict_vcf_file = vardict_vcf_file ? "--inputVcf ${vardict_vcf_file}" : ''
+    def paired_mode = bams instanceof List && bams.size() == 2 ? true : false
+    
 
-    script: 
     """
-    pv vardict single filter \
-    --inputVcf ${vardict_vcf_file} \
-    --tsampleName ${bams.baseName} \
-    --alleledepth 1 \
-    --minQual 0 \
-    --totalDepth 20 \
-    --tnRatio 1 \
-    --variantFraction 5e-05
+    if [ "${paired_mode}" = true ]; then
+        pv vardict case-control filter \
+        --inputVcf ${vardict_vcf_file} \
+        --tsampleName "${bam_filenames}" \
+        ${args}
+    else
+        pv vardict single filter \
+        --inputVcf ${vardict_vcf_file} \
+        --tsampleName "${bam_filenames}" \
+        ${args}
+    fi
+    
     """
-
 
 
 
