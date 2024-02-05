@@ -4,6 +4,7 @@
 
 include { VARDICTJAVA } from '../../modules/nf-core/vardictjava/main'
 include { VARDICT_FILTER } from '../../modules/local/vardict_filter'
+include { MUTECT_FILTER } from '../../modules/local/mutect_filter'
 
 workflow CALL_VARIANTS {
     take:
@@ -68,26 +69,38 @@ vardict_vcf = VARDICTJAVA.out.vcf
 vardict_vcf.combine(bam_ch).set{ for_vardictfilter_ch }
 
 
+// ADD CRITERIA TO ONLY RUN MUTECT IF BOTH TUMOR AND NORMAL SAMPLES ARE PRESENT
 
 // MUTECT1(mutect1_input_set1,mutect1_input_set2)
-// mutect_vcf = MUTECT1.out.vcf
+//mutect_vcf = Channel.fromPath("")
+//mutect_vcf.view()
 
 
 
-inputs
-    .map { create_vardictfilter_names_channel(it)  }
-    .set{ vardictfilter_samplenames_ch }
+// inputs
+//     .map { create_vardictfilter_names_channel(it)  }
+//     .set{ vardictfilter_samplenames_ch }
 
 
-VARDICT_FILTER(for_vardictfilter_ch,vardictfilter_samplenames_ch)
-//vardict_filtered_vcf = VARDICT_FILTER.out.filtered_vcf
+// VARDICT_FILTER(for_vardictfilter_ch,vardictfilter_samplenames_ch)
+// vardict_filtered_vcf = VARDICT_FILTER.out.filtered_vardict_vcf
+// complex_variants_vardict_filtered_vcf = VARDICT_FILTER.out.complex_variants_vardict_vcf
+// std_vardict_filter_output_txt = VARDICT_FILTER.out.std_vardict_filter_output
+
+ 
+
+//MUTECT_FILTER(for_vardictfilter_ch)
+//mutect_filtered_vcf = MUTECT_FILTER.out.filtered_mutect_vcf
+//std_vardict_filter_output_txt = MUTECT_FILTER.out.std_mutect_filter_output
 
 
-//emit:
-//vardict_sample_and_vcf
-//mutect_vcf
-//vardict_filtered_vcf
+//mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
 
+
+// emit:
+// vardict_filtered_vcf
+// complex_variants_vardict_filtered_vcf
+//mutect_filtered_vcf
 
 }
 

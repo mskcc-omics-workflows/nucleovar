@@ -10,8 +10,8 @@ process VARDICT_FILTER {
     
 
     output:
-    path("*.vcf"),                     emit: filtered_vcf
-    path("*_complex.vcf"),             emit: complex_variants_vcf
+    path("*.vcf"),                     emit: filtered_vardict_vcf
+    path("*_complex.vcf"),             emit: complex_variants_vardict_vcf
     path("*.txt"),                     emit: std_vardict_filter_output
     //path "versions.yml", emit: versions
 
@@ -25,6 +25,7 @@ process VARDICT_FILTER {
     
 
     """
+    
     if [ "${paired_mode}" = true ]; then
         pv vardict case-control filter \
         --inputVcf ${vardict_vcf_file} \
