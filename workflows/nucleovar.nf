@@ -36,11 +36,17 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
+//include { CALL_VARIANTS     } from '../subworkflows/local/call_variants'
 include { BCFTOOLS_ALL_VARDICT     } from '../subworkflows/local/bcftools_all_vardict'
 include { BCFTOOLS_ALL_VARDICT_COMPLEXVAR     } from '../subworkflows/local/bcftools_all_vardict_complexvar'
 include { BCFTOOLS_ALL_MUTECT     } from '../subworkflows/local/bcftools_all_mutect'
+include { CALL_VARIANTS_CASECONTROL     } from '../subworkflows/local/call_variants_casecontrol'
+include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_concat_vardicts'
+include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
+include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
 
-include { BCFTOOLS_ALL_LOCAL_VARDICT     } from '../subworkflows/local/bcftools_all_local_vardict'
+
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,53 +74,154 @@ workflow NUCLEOVAR {
     //
     
     // read in input samplesheet and if single sample, run single sample workflow (just vardict). if double sample, run vardict and mutect
-    
-    // CALL_VARIANTS (
-    //     params.input,params.bed,params.fasta,params.fai
-    // )
-
-    //vardict_filtered_vcf = CALL_VARIANTS.out.vardict_filtered_vcf
-    //complex_variants_vardict_filtered_vcf = CALL_VARIANTS.out.complex_variants_vardict_filtered_vcf
-    //mutect_filtered_vcf = CALL_VARIANTS.out.mutect_filtered_vcf
-
-    // temporary testing purposes, reading in sample vardict and mutect filtered VCFs
-    vardict_filtered_vcf = Channel.fromPath('/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.vardict.filtered.vcf')
-    vardict_complexvar_filtered_vcf = Channel.fromPath('/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex_STDfilter_complex.vcf')
-    mutect_filtered_vcf = Channel.fromPath('/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf')
-    ref_fasta = Channel.fromPath('/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/Homo_sapiens_assembly19.fasta')
-    ref_fasta_index = Channel.fromPath('/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/Homo_sapiens_assembly19.fasta.fai')
-
-    
-    
-    BCFTOOLS_ALL_VARDICT( vardict_filtered_vcf,ref_fasta )
-    meta_plus_vardict_norm_and_sorted_vcf = BCFTOOLS_ALL_VARDICT.out.meta_plus_vardict_norm_and_sorted_vcf
-    vardict_index = BCFTOOLS_ALL_VARDICT.out.vardict_filtered_vcf_and_index
-
-    BCFTOOLS_ALL_VARDICT_COMPLEXVAR( vardict_complexvar_filtered_vcf,ref_fasta )
-    meta_plus_vardict_complexvar_norm_and_sorted_vcf = BCFTOOLS_ALL_VARDICT_COMPLEXVAR.out.meta_plus_vardict_complexvar_norm_and_sorted_vcf
-    vardict_complexvar_index = BCFTOOLS_ALL_VARDICT_COMPLEXVAR.out.vardict_complexvar_filtered_vcf_and_index
-    
-    BCFTOOLS_ALL_MUTECT( mutect_filtered_vcf,ref_fasta )
-    meta_plus_vardict_complexvar_norm_and_sorted_vcf = BCFTOOLS_ALL_MUTECT.out.meta_plus_vardict_complexvar_norm_and_sorted_vcf 
-    mutect_index = BCFTOOLS_ALL_MUTECT.out.mutcet_filtered_vcf_and_index
-
-    
-
-    // BCF CONCATENATE WORKFLOW FOR VARDICTS
-    meta_plus_vardict_norm_and_sorted_vcf
-        .map{ sample,vcf -> vcf}
-        .set{ vardict_regular_vcf }
-
-    meta_plus_vardict_complexvar_norm_and_sorted_vcf
-        .map{ sample,vcf -> vcf}
-        .set{ vardict_complexvar_vcf }
-    
-
-    // BCF CONCATENATE WORKFLOW FOR COMBINED VARDICTS + MUTECT 
-
-    
+    def sampleSheet = file(params.input).readLines().collect { it.split(",") }
+    def allColumnsHaveValue = sampleSheet.every { row ->
+    row.every { cell -> cell.trim() }
 }
 
+    if (allColumnsHaveValue) {
+        println "Running the SNPs/indels workflow in case-control mode."
+        CALL_VARIANTS_CASECONTROL (params.input,params.bed,params.fasta,params.fai)
+        vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
+
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> standard_vcf}
+            .set{ vardict_filtered_vcf_standard }
+
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
+            .set{ vardict_filtered_vcf_complexvar }
+
+        mutect_filtered_vcf = CALL_VARIANTS_CASECONTROL.out.mutect_filtered_vcf
+        ref_fasta = CALL_VARIANTS_CASECONTROL.out.genome_fasta_file
+        ref_fasta_index = CALL_VARIANTS_CASECONTROL.out.genome_fasta_index_file
+
+        BCFTOOLS_ALL_VARDICT( vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard = BCFTOOLS_ALL_VARDICT.out.meta_plus_vardict_norm_and_sorted_vcf
+        vardict_filtered_index_isolated_standard = BCFTOOLS_ALL_VARDICT.out.vardict_filtered_index_final
+
+        
+
+        BCFTOOLS_ALL_MUTECT( mutect_filtered_vcf,ref_fasta,ref_fasta_index )
+        meta_plus_mutect_norm_and_sorted_vcf = BCFTOOLS_ALL_MUTECT.out.meta_plus_mutect_norm_and_sorted_vcf
+        mutect_filtered_index_isolated = BCFTOOLS_ALL_MUTECT.out.mutect_filtered_index_final
+
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> sample}
+            .set{ vardict_samplename_ch }
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> vcf}
+            .set{ vardict_norm_and_sorted_vcf_standard }
+
+        meta_plus_mutect_norm_and_sorted_vcf
+            .map{ sample,vcf -> vcf}
+            .set{ mutect_norm_and_sorted_vcf }
+
+
+        vardict_norm_and_sorted_vcf_standard
+            .map{ create_std_filename(it) }
+            .set{ vcf_std_for_bcftools_concat }
+
+
+        mutect_norm_and_sorted_vcf
+            .map{ create_mutect_filename(it) }
+            .set{ vcf_mutect_for_bcftools_concat }
+
+
+        BCFTOOLS_CONCAT_WITH_MUTECT( vardict_samplename_ch,vcf_std_for_bcftools_concat,vcf_mutect_for_bcftools_concat,vardict_filtered_index_isolated_standard,mutect_filtered_index_isolated )
+        
+
+
+
+
+
+    } else {
+        println "Running the SNPs/indels workflow in single sample mode."
+        CALL_VARIANTS_SINGLE (params.input,params.bed,params.fasta,params.fai)
+
+        vardict_filtered_vcfs = CALL_VARIANTS_SINGLE.out.vardict_filtered_vcf
+
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> standard_vcf}
+            .set{ vardict_filtered_vcf_standard }
+
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
+            .set{ vardict_filtered_vcf_complexvar }
+
+        ref_fasta = CALL_VARIANTS_SINGLE.out.genome_fasta_file
+        ref_fasta_index = CALL_VARIANTS_SINGLE.out.genome_fasta_index_file
+
+        BCFTOOLS_ALL_VARDICT( vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard = BCFTOOLS_ALL_VARDICT.out.meta_plus_vardict_norm_and_sorted_vcf
+        vardict_filtered_index_isolated_standard = BCFTOOLS_ALL_VARDICT.out.vardict_filtered_index_final
+
+
+        BCFTOOLS_ALL_VARDICT_COMPLEXVAR( vardict_filtered_vcf_complexvar,ref_fasta,ref_fasta_index )
+
+        meta_plus_vardict_norm_and_sorted_vcf_complexvar = BCFTOOLS_ALL_VARDICT_COMPLEXVAR.out.meta_plus_vardict_norm_and_sorted_vcf
+        vardict_filtered_index_isolated_complexvar = BCFTOOLS_ALL_VARDICT_COMPLEXVAR.out.vardict_filtered_index_final
+
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> sample}
+            .set{ vardict_samplename_ch }
+
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> vcf}
+            .set{ vardict_norm_and_sorted_vcf_standard }
+
+        meta_plus_vardict_norm_and_sorted_vcf_complexvar
+            .map{ sample,vcf -> vcf}
+            .set{ vardict_norm_and_sorted_vcf_complexvar }
+
+        vardict_norm_and_sorted_vcf_standard
+            .map{ create_std_filename(it) }
+            .set{ vcf_std_for_bcftools_concat }
+
+        vardict_norm_and_sorted_vcf_complexvar
+            .map{ create_complexvar_filename(it) }
+            .set{ vcf_complexvar_for_bcftools_concat }
+
+        
+        BCFTOOLS_CONCAT_VARDICTS( vardict_samplename_ch,vardict_regular_norm_and_sorted_vcf,vardict_complexvar_norm_and_sorted_vcf,vardict_index,vardict_complexvar_index )
+        
+        vardict_concatenated_vcf = BCFTOOLS_CONCAT_VARDICTS.out.sample_plus_vardict_concat_vcf
+
+    }
+
+
+
+}
+
+def create_std_filename( it ) {
+
+    def finalFileName = "vcf_standard.vcf.gz"
+
+    file(it).moveTo(file(finalFileName))
+}
+
+def create_mutect_filename( it ) {
+
+    def finalFileName = "vcf_mutect.vcf.gz"
+
+    file(it).moveTo(file(finalFileName))
+}
+
+def create_complexvar_filename( it ) {
+
+    def finalFileName = "vcf_complexvar.vcf.gz"
+
+    file(it).moveTo(file(finalFileName))
+}
+
+
+    
+  
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COMPLETION EMAIL AND SUMMARY
