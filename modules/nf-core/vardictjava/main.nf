@@ -2,10 +2,7 @@ process VARDICTJAVA {
     tag "$meta.id"
     label 'process_high'
 
-    conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/vardict-java:1.8.3--hdfd78af_0':
-        'biocontainers/vardict-java:1.8.3--hdfd78af_0' }"
+    conda "${moduleDir}/vardict-java.yml"
 
     input:
     tuple val(meta), path(bams), path(bais), path(bed)
@@ -16,8 +13,10 @@ process VARDICTJAVA {
     tuple val(meta), path("*.vcf"), emit: vcf
     path "versions.yml"           , emit: versions
 
+
     when:
     task.ext.when == null || task.ext.when
+
 
     script:
     def args = task.ext.args ?: '-c 1 -S 2 -E 3'
@@ -28,6 +27,7 @@ process VARDICTJAVA {
     def input = somatic ? "-b \"${bams[0]}|${bams[1]}\"" : "-b ${bams}"
     def filter = somatic ? "testsomatic.R" : "teststrandbias.R"
     def convert_to_vcf = somatic ? "var2vcf_paired.pl" : "var2vcf_valid.pl"
+    
     """
     export JAVA_OPTS='"-Xms${task.memory.toMega()/4}m" "-Xmx${task.memory.toGiga()}g" "-Dsamjdk.reference_fasta=${fasta}"'
     vardict-java \\
@@ -39,6 +39,7 @@ process VARDICTJAVA {
     | ${filter} \\
     | ${convert_to_vcf} \\
         ${args2} \\
+        "C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex|DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex" \\
     > ${prefix}.vcf
 
     cat <<-END_VERSIONS > versions.yml
@@ -63,3 +64,23 @@ process VARDICTJAVA {
     END_VERSIONS
     """
 }
+
+
+// export JAVA_OPTS='"-Xms${task.memory.toMega()/4}m" "-Xmx${task.memory.toGiga()}g" "-Dsamjdk.reference_fasta=${fasta}"'
+//     vardict-java \\
+//         ${args} \\
+//         ${input} \\
+//         -th ${task.cpus} \\
+//         -G ${fasta} \\
+//         ${bed} \\
+//     | ${filter} \\
+//     | ${convert_to_vcf} \\
+//         ${args2} \\
+//         "C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex|DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex" \\
+//     > ${prefix}.vcf
+
+//     cat <<-END_VERSIONS > versions.yml
+//     "${task.process}":
+//         vardict-java: \$( realpath \$( command -v vardict-java ) | sed 's/.*java-//;s/-.*//' )
+//         var2vcf_valid.pl: \$( var2vcf_valid.pl -h | sed '2!d;s/.* //' )
+//     END_VERSIONS

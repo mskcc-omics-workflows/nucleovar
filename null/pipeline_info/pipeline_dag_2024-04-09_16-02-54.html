@@ -1,0 +1,94 @@
+<!--
+  ~ Copyright 2013-2023, Seqera Labs
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromPath"]
+    v8["Channel.fromPath"]
+    v10["Channel.fromPath"]
+    v15["Channel.fromPath"]
+    v17["Channel.fromPath"]
+    v19["Channel.from"]
+    v20["Channel.from"]
+    v25[" "]
+    v26["header"]
+    v33["fasta"]
+    v34["fai"]
+    v47["header"]
+    v51["type"]
+    end
+    subgraph " "
+    v1["ch_multiqc_config"]
+    v9["input_maf"]
+    v16["fasta"]
+    v18["fasta_fai"]
+    v46["individual_genotyped_mafs"]
+    v53["genotyped_maf"]
+    v56["versions"]
+    end
+    subgraph MSK_NUCLEOVAR
+    subgraph NUCLEOVAR
+    subgraph MODULE4
+    subgraph TRACEBACK
+    v27([PVMAFCONCAT_INITIAL])
+    v35([GENOTYPEVARIANTS_ALL])
+    v48([PVMAFCONCAT_GENOTYPE])
+    v52([PVMAF_TAG])
+    v11(( ))
+    v28(( ))
+    v38(( ))
+    end
+    end
+    end
+    end
+    v0 --> v1
+    v8 --> v9
+    v10 --> v11
+    v15 --> v16
+    v17 --> v18
+    v19 --> v11
+    v20 --> v11
+    v25 --> v27
+    v26 --> v27
+    v27 --> v11
+    v27 --> v28
+    v33 --> v35
+    v34 --> v35
+    v11 --> v35
+    v35 --> v28
+    v35 --> v38
+    v38 --> v46
+    v47 --> v48
+    v38 --> v48
+    v48 --> v52
+    v48 --> v28
+    v51 --> v52
+    v52 --> v53
+    v52 --> v28
+    v28 --> v56
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>

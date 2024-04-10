@@ -2,7 +2,7 @@
 
 //import bcftools subworkflow for vardict filtered regular
 //include { TABIX_BGZIPTABIX } from '../../modules/nf-core/tabix/bgziptabix/main'
-include { TABIX_BGZIP } from '../../modules/nf-core/tabix/bgzip/main' 
+include { BGZIP } from '../../modules/nf-core/tabix/bgzip/main' 
 include { BCFTOOLS_INDEX } from '../../modules/nf-core/bcftools/index/main'
 include { BCFTOOLS_NORM } from '../../modules/nf-core/bcftools/norm/main' 
 include { BCFTOOLS_SORT } from '../../modules/nf-core/bcftools/sort/main' 
@@ -30,27 +30,38 @@ workflow BCFTOOLS_ALL_VARDICT {
         .combine( ref_fasta )
         .set{ meta_plus_fasta_ch }
 
-    TABIX_BGZIP( vardict_filtered_vcf_for_bcftools_ch )
+    //BGZIP( vardict_filtered_vcf_for_bcftools_ch )
 
-    compressed_vardict_filtered_vcf = TABIX_BGZIP.out.output
+    //compressed_vardict_filtered_vcf = BGZIP.out.output
     
+    //compressed_vardict_filtered_vcf.view()
 
-    BCFTOOLS_INDEX( compressed_vardict_filtered_vcf )
+    BCFTOOLS_INDEX( vardict_filtered_vcf_for_bcftools_ch )
     vardict_filtered_index = BCFTOOLS_INDEX.out.tbi
+    
     
 
     vardict_filtered_index
-        .map{ sample,index -> index}
+        .map{ sample,vcf,index -> index}
         .set{ vardict_filtered_index_isolated }
+
+    vardict_filtered_index
+        .map{ sample,vcf,index -> sample}
+        .set{ vardict_sample }
+
+    vardict_filtered_index
+        .map{ sample,vcf,index -> vcf}
+        .set{ compressed_vardict_filtered_vcf }
     
-    compressed_vardict_filtered_vcf
+    vardict_sample
+        .combine(compressed_vardict_filtered_vcf)
         .combine( vardict_filtered_index_isolated )
         .set{ vardict_filtered_vcf_and_index_for_bcftools }
 
+    
 
     BCFTOOLS_NORM( vardict_filtered_vcf_and_index_for_bcftools, meta_plus_fasta_ch )
     vardict_normalized_vcf = BCFTOOLS_NORM.out.vcf 
-    
 
     sample_metamap
         .combine(vardict_normalized_vcf)

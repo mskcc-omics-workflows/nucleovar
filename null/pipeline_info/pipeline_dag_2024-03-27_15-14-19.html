@@ -1,0 +1,131 @@
+<!--
+  ~ Copyright 2013-2023, Seqera Labs
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromPath"]
+    v8["Channel.fromPath"]
+    v9["Channel.fromPath"]
+    v10["Channel.fromPath"]
+    v11["Channel.fromPath"]
+    v30["Channel.fromPath"]
+    v36["Channel.fromPath"]
+    end
+    subgraph " "
+    v1["ch_multiqc_config"]
+    v22[" "]
+    v26["std_vardict_filter_output_txt"]
+    v27["complex_variants_vardict_filtered_vcf"]
+    v29["mutect1_input_set1_ch"]
+    v35["mutect1_input_set2_ch"]
+    v37["mutect_filtered_vcf"]
+    v43["meta_plus_fasta_ch"]
+    v45[" "]
+    v46[" "]
+    v49["isolated_index"]
+    v54["meta_plus_fasta_ch"]
+    v56[" "]
+    v57[" "]
+    v60["isolated_index"]
+    v62["complexvar_meta_plus_fasta"]
+    v64[" "]
+    v66[" "]
+    v68[" "]
+    v69[" "]
+    end
+    subgraph MSK_NUCLEOVAR
+    subgraph NUCLEOVAR
+    subgraph CALL_VARIANTS_CASECONTROL
+    v21([VARDICTJAVA])
+    v25([VARDICT_FILTER])
+    v12(( ))
+    v38(( ))
+    v39(( ))
+    end
+    subgraph BCFTOOLS
+    subgraph BCFTOOLS_STANDARD_
+    v44([BCFTOOLS_INDEX])
+    v47(( ))
+    v48(( ))
+    v63(( ))
+    end
+    subgraph BCFTOOLS_COMPLEXVAR_
+    v55([BCFTOOLS_INDEX])
+    v58(( ))
+    v59(( ))
+    end
+    subgraph TEST_NORM_STANDARD_
+    v67([BCFTOOLS_NORM])
+    end
+    end
+    end
+    end
+    v0 --> v1
+    v8 --> v12
+    v9 --> v12
+    v9 --> v38
+    v9 --> v39
+    v9 --> v47
+    v9 --> v58
+    v10 --> v12
+    v11 --> v12
+    v12 --> v21
+    v21 --> v22
+    v21 --> v12
+    v12 --> v25
+    v25 --> v27
+    v25 --> v26
+    v25 --> v38
+    v25 --> v39
+    v12 --> v29
+    v30 --> v12
+    v12 --> v35
+    v36 --> v37
+    v38 --> v43
+    v38 --> v44
+    v44 --> v46
+    v44 --> v45
+    v44 --> v67
+    v44 --> v47
+    v44 --> v48
+    v44 --> v63
+    v48 --> v49
+    v39 --> v54
+    v39 --> v55
+    v55 --> v57
+    v55 --> v56
+    v55 --> v58
+    v55 --> v59
+    v59 --> v60
+    v58 --> v62
+    v63 --> v64
+    v47 --> v66
+    v47 --> v67
+    v67 --> v69
+    v67 --> v68
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>

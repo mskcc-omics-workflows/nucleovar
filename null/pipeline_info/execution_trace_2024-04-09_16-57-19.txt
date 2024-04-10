@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	a0/0f5385	23258	MSK_NUCLEOVAR:NUCLEOVAR:MODULE4:TRACEBACK:PVMAFCONCAT_INITIAL (null)	COMPLETED	0	2024-04-09 16:57:21.700	2.8s	2s	308.3%	32.4 MB	309 MB	22.9 MB	167.8 KB

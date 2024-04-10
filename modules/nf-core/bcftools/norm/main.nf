@@ -12,7 +12,7 @@ process BCFTOOLS_NORM {
     tuple val(meta2), path(fasta)
 
     output:
-    path("${meta.id}.vcf.gz")  , emit: vcf
+    path("${meta.id}_norm_sorted.vcf.gz")  , emit: vcf
     path "versions.yml"                 , emit: versions
 
     when:
@@ -30,10 +30,17 @@ process BCFTOOLS_NORM {
     """
     bcftools norm \\
         --fasta-ref ${fasta} \\
-        --output ${prefix}.vcf.gz \\
+        --output ${prefix}_norm.vcf.gz \\
         $args \\
         --threads $task.cpus \\
         ${vcf}
+
+    bcftools sort \\
+        --output ${prefix}_norm_sorted.vcf.gz \\
+        --temp-dir . \\
+        $args \\
+        ${prefix}_norm.vcf.gz
+    
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

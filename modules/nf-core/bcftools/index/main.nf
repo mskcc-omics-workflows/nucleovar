@@ -4,15 +4,15 @@ process BCFTOOLS_INDEX {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bcftools:1.18--h8b25389_0':
-        'biocontainers/bcftools:1.18--h8b25389_0' }"
+        'ghcr.io/msk-access/bcftools_1.15:latest':
+        'ghcr.io/msk-access/bcftools_1.15:latest' }"
 
     input:
     tuple val(meta), path(vcf)
 
     output:
     tuple val(meta), path("*.csi"), optional:true, emit: csi
-    tuple val(meta), path("*.tbi"), optional:true, emit: tbi
+    tuple val(meta), path("*.vcf.gz"), path("*.tbi"), optional:true, emit: tbi
     path "versions.yml"           , emit: versions
 
     when:
@@ -23,11 +23,14 @@ process BCFTOOLS_INDEX {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
+    bgzip ${vcf}
     bcftools \\
         index \\
         $args \\
         --threads $task.cpus \\
-        $vcf
+        ${vcf}.gz
+    
+    sleep 2
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

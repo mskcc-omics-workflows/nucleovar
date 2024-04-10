@@ -2,7 +2,11 @@ process VARDICT_FILTER {
     tag "$meta.id"
     label 'process_single'
 
-    container "ghcr.io/msk-access/postprocessing_variant_calls:0.2.3"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3':
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3' }"
+    
 
     input:
     tuple val(meta), path(vardict_vcf_file), path(bams)
