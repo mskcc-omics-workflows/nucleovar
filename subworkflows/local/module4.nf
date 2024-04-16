@@ -2,7 +2,6 @@
 
 //import bcftools subworkflow for vardict filtered regular
 //include { TABIX_BGZIPTABIX } from '../../modules/nf-core/tabix/bgziptabix/main'
-include { GUNZIP } from '../../modules/nf-core/gunzip/main' 
 include { VCF2MAF } from '../../modules/nf-core/vcf2maf/main'
 include { TRACEBACK } from '../../subworkflows/msk/traceback/main'
 
@@ -12,25 +11,23 @@ include { TRACEBACK } from '../../subworkflows/msk/traceback/main'
 workflow MODULE4 {
     take:
     input_maf
-    case_bam
-    case_bai
+    case_bam_and_index
     fasta
     fasta_fai  
     
 
     main:
-    //def meta = [:]
-    //meta.patient = 'null'
-    
-    
-    //bams --> tumor: [[patient:null, id:'sample'], standard.bam, standard.bam.bai, [], [], [], []], normal: [[patient:null, id:'sample'], standard.bam, standard.bam.bai, [], [], [], []]
-    //bams =  [[patient:null, id:'sample'], case_bam, case_bai, [], [], [], []]
+    //run vcf2maf perl module (placeholder at the moment while temporarily testing out traceback)
+    //VCF2MAF(vcf,reference_fasta,reference_fasta_index)
 
     emptyLists = Channel.from([], [], [], [])
     def bamnames = [patient:'test',id:'sample']
     names = Channel.create(bamnames)
     
-    bams = Channel.from(bamnames).merge(case_bam).merge(case_bai).merge(emptyLists)
+    //bams = Channel.from(bamnames).merge(case_bam).merge(case_bai).concat(emptyLists)
+    case_bam_and_index
+        .map{ it -> tuple([patient:'test',id:'sample'],file(it[0]),file(it[1]),[],[],[],[])}
+        .set{ bams }
     
     
     mafs = Channel.from([patient:'test',id:"sample"]).merge(input_maf)

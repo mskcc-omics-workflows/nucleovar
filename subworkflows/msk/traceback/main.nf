@@ -22,12 +22,17 @@ workflow TRACEBACK {
     ch_versions = ch_versions.mix(PVMAFCONCAT_INITIAL.out.versions.first())
     
     // get bams and mafs, grouping by patient if provided
-    bams
-    .map { tuple( 'patient': it[0]['patient'], *it ) }
-    .combine(Channel.from([], [], [], []))
-    .combine( PVMAFCONCAT_INITIAL.out.maf, by: 0 )
-    .map { it[1..-1] }
-    .set{bam_list_maf}
+    
+    // bams
+    // //.map { tuple( 'patient': it[0]['patient'], *it ) }
+    // .combine( PVMAFCONCAT_INITIAL.out.maf)
+    // //.map { it[1..-1] }
+    // .view()
+    // //.set{bam_list_maf}
+
+
+    bams.combine( PVMAFCONCAT_INITIAL.out.maf,by:0).set{ bam_list_maf }
+    //map { it -> tuple(it[0],it[1],it[2],it[3],it[4],it[5],it[6])}
 
     // genotype each bam combined maf, per patient if provided
     GENOTYPEVARIANTS_ALL(bam_list_maf, reference, reference_fai)

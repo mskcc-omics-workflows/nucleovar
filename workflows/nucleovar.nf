@@ -83,66 +83,66 @@ workflow NUCLEOVAR {
 
     if (allColumnsHaveValue) {
         println "Running the SNPs/indels workflow in case-control mode."
-        // CALL_VARIANTS_CASECONTROL (params.input,params.bed,params.fasta,params.fai)
-        // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
+        CALL_VARIANTS_CASECONTROL (params.input,params.bed,params.fasta,params.fai)
+        vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
         
 
-        // vardict_filtered_vcfs
-        //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
-        //     .set{ vardict_filtered_vcf_standard }
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> standard_vcf}
+            .set{ vardict_filtered_vcf_standard }
 
-        // vardict_filtered_vcfs
-        //     .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
-        //     .set{ vardict_filtered_vcf_complexvar }
+        vardict_filtered_vcfs
+            .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
+            .set{ vardict_filtered_vcf_complexvar }
 
 
 
-        // mutect_filtered_vcf = CALL_VARIANTS_CASECONTROL.out.mutect_filtered_vcf
-        // ref_fasta = CALL_VARIANTS_CASECONTROL.out.genome_fasta_file
-        // ref_fasta_index = CALL_VARIANTS_CASECONTROL.out.genome_fasta_index_file
+        mutect_filtered_vcf = CALL_VARIANTS_CASECONTROL.out.mutect_filtered_vcf
+        ref_fasta = CALL_VARIANTS_CASECONTROL.out.genome_fasta_file
+        ref_fasta_index = CALL_VARIANTS_CASECONTROL.out.genome_fasta_index_file
 
-        // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
+        BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
     
-        // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+        vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
         
         // MUTECT1 MODULE
-        // MUTECT1(input_bams,ref_fasta,ref_fasta_index)
-        // //MUTECT FILTER MODULE
-        // MUTECT_FILTERED(mutect_vcf,ref_fasta,ref_fasta_index)
+        MUTECT1(input_bams,ref_fasta,ref_fasta_index)
+        //MUTECT FILTER MODULE
+        MUTECT_FILTERED(mutect_vcf,ref_fasta,ref_fasta_index)
 
         // // for temporary testing purposes
         // //mutect_filtered_vcf = Channel.fromPath("DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
     
-        // BCFTOOLS_MUTECT( mutect_filtered_vcf,ref_fasta,ref_fasta_index )
-        // meta_plus_mutect_norm_and_sorted_vcf = BCFTOOLS_ALL_MUTECT.out.meta_plus_mutect_norm_and_sorted_vcf
-        // mutect_filtered_index_isolated = BCFTOOLS_ALL_MUTECT.out.mutect_filtered_index_final
+        BCFTOOLS_MUTECT( mutect_filtered_vcf,ref_fasta,ref_fasta_index )
+        meta_plus_mutect_norm_and_sorted_vcf = BCFTOOLS_ALL_MUTECT.out.meta_plus_mutect_norm_and_sorted_vcf
+        mutect_filtered_index_isolated = BCFTOOLS_ALL_MUTECT.out.mutect_filtered_index_final
 
         // // will incorporate this code into the mutect bcftools subworkflow to free up space in nucleovar.nf
-        // meta_plus_vardict_norm_and_sorted_vcf_standard
-        //     .map{ sample,vcf -> sample}
-        //     .set{ vardict_samplename_ch }
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> sample}
+            .set{ vardict_samplename_ch }
 
-        // meta_plus_vardict_norm_and_sorted_vcf_standard
-        //     .map{ sample,vcf -> vcf}
-        //     .set{ vardict_norm_and_sorted_vcf_standard }
+        meta_plus_vardict_norm_and_sorted_vcf_standard
+            .map{ sample,vcf -> vcf}
+            .set{ vardict_norm_and_sorted_vcf_standard }
 
-        // meta_plus_mutect_norm_and_sorted_vcf
-        //     .map{ sample,vcf -> vcf}
-        //     .set{ mutect_norm_and_sorted_vcf }
+        meta_plus_mutect_norm_and_sorted_vcf
+            .map{ sample,vcf -> vcf}
+            .set{ mutect_norm_and_sorted_vcf }
 
 
-        // mutect_norm_and_sorted_vcf
-        //     .map{ create_mutect_filename(it) }
-        //     .set{ vcf_mutect_for_bcftools_concat }
+        mutect_norm_and_sorted_vcf
+            .map{ create_mutect_filename(it) }
+            .set{ vcf_mutect_for_bcftools_concat }
 
     
-        // BCFTOOLS_CONCAT_WITH_MUTECT( vardict_samplename_ch,vcf_std_for_bcftools_concat,vcf_mutect_for_bcftools_concat,vardict_filtered_index_isolated_standard,mutect_filtered_index_isolated )
+        BCFTOOLS_CONCAT_WITH_MUTECT( vardict_samplename_ch,vcf_std_for_bcftools_concat,vcf_mutect_for_bcftools_concat,vardict_filtered_index_isolated_standard,mutect_filtered_index_isolated )
 
-        // mutect_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_mutect_concat_vcf
+        mutect_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_mutect_concat_vcf
 
-        // BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
+        BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
 
-        // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+        annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
         // testing inputs for traceback
         input_maf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/dev/postprocessing/test_data/tagged_by_hotspots.maf")
@@ -150,20 +150,15 @@ workflow NUCLEOVAR {
 
         input_samplesheet
             .splitCsv(header: true)
-            .map { row -> row.case_bam }
-            .set{ case_bam }
+            .map { row -> [row.case_bam,row.case_bai] }
+            .set{ case_bam_and_index }
 
-        input_samplesheet
-            .splitCsv(header: true)
-            .map { row -> row.case_bai }
-            .set{ case_bai }
+        
+
         fasta = Channel.fromPath(params.fasta)
         fasta_fai = Channel.fromPath(params.fai)
-        // input_samplesheet
-        //     .splitCsv(header: true)
-        //     .map { row -> [row.control_sample_name,row.control_bam,row.control_bai] }
-        //     .set{ control_bams }
-        MODULE4( input_maf,case_bam,case_bai,fasta,fasta_fai  )
+        
+        MODULE4( input_maf,case_bam_and_index,fasta,fasta_fai  )
         
         
 
