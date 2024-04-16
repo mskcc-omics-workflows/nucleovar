@@ -1,3 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	d7/9d908b	19645	MSK_NUCLEOVAR:NUCLEOVAR:CALL_VARIANTS_CASECONTROL:VARDICTJAVA (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex)	FAILED	139	2024-03-05 12:40:14.156	429ms	326ms	-	-	-	-	-
-2	82/56755f	19698	MSK_NUCLEOVAR:NUCLEOVAR:CALL_VARIANTS_CASECONTROL:VARDICTJAVA (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex)	FAILED	139	2024-03-05 12:40:14.599	383ms	291ms	-	-	-	-	-

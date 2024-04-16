@@ -1,4 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	47/cad35e	65631	MSK_NUCLEOVAR:NUCLEOVAR:CALL_VARIANTS_CASECONTROL:VARDICTJAVA (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex)	COMPLETED	0	2024-03-25 20:26:26.096	3m 51s	3m 51s	-	-	-	-	-
-2	ef/70c022	66813	MSK_NUCLEOVAR:NUCLEOVAR:CALL_VARIANTS_CASECONTROL:VARDICT_FILTER (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex)	COMPLETED	0	2024-03-25 20:30:17.374	1.7s	958ms	308.8%	34.2 MB	309.2 MB	11.4 MB	317.8 KB
-3	bd/888618	66858	MSK_NUCLEOVAR:NUCLEOVAR:BCFTOOLS_ALL_VARDICT:BCFTOOLS_INDEX (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex)	FAILED	1	2024-03-25 20:30:19.077	402ms	311ms	-	-	-	-	-
