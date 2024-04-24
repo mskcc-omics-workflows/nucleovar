@@ -10,6 +10,11 @@
                         "git_sha": "5abcf40301834adb05cbc826f8f3e582bea2e769",
                         "installed_by": ["traceback"]
                     },
+                    "mutect1": {
+                        "branch": "main",
+                        "git_sha": "6a33ae0aca3f66dd743d982563be6d5d0875908c",
+                        "installed_by": ["modules"]
+                    },
                     "pvmaf/concat": {
                         "branch": "Subworkflow-traceback",
                         "git_sha": "5abcf40301834adb05cbc826f8f3e582bea2e769",

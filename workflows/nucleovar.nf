@@ -42,7 +42,7 @@ include { CALL_VARIANTS_CASECONTROL     } from '../subworkflows/local/call_varia
 include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_concat_vardicts'
 include { MODULE4     } from '../subworkflows/local/module4'
 include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
-include { MUTECT1        } from '../modules/modules/modules/msk/mutect1'
+include { MUTECT1        } from '../modules/msk/mutect1'
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
 
@@ -85,10 +85,10 @@ workflow NUCLEOVAR {
         println "Running the SNPs/indels workflow in case-control mode."
 
 
-        bed = Channel.fromPath(params.bed)
-        fasta_ref = Channel.fromPath(params.fasta)
-        fasta_index = Channel.fromPath(params.fai)
-        fasta_dict = Channel.fromPath(params.dict)
+        bed = Channel.from(params.bed)
+        fasta_ref = Channel.from(params.fasta)
+        fasta_index = Channel.from(params.fai)
+        fasta_dict = Channel.from(params.dict)
             
 
 
@@ -115,8 +115,8 @@ workflow NUCLEOVAR {
         vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
         vardict_index = BCFTOOLS_VARDICT.out.vardict_index
         
-        // // MUTECT1 MODULE
-        // temporary code for putting together inputs for mutect1 module (will be deprececated when moving to new samplesheet)
+        // // // MUTECT1 MODULE
+        // // temporary code for putting together inputs for mutect1 module (will be deprececated when moving to new samplesheet)
         Channel
             .fromPath(params.input)
             .splitCsv(header: true)
@@ -166,9 +166,9 @@ workflow NUCLEOVAR {
         BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names_ch,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
         sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
-        BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
+        //BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
 
-        annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+        //annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
         // testing inputs for traceback temporarily 
         
@@ -177,11 +177,9 @@ workflow NUCLEOVAR {
 
         // // code to prepare duplex inputs as a channel
 
-        rules_json = Channel.fromPath(params.rules_json)
-        MODULE4( annotated_vcf,bams_ch,fasta_ref,fasta_index,rules_json  )
+        //rules_json = Channel.fromPath(params.rules_json)
+        //MODULE4( annotated_vcf,bams_ch,fasta_ref,fasta_index,rules_json  )
         
-        
-
     } 
 
 
