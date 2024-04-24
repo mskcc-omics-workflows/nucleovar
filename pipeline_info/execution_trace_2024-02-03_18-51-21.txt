@@ -1,2 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	a5/e5de83	9135	MSK_NUCLEOVAR:NUCLEOVAR:BCFTOOLS_ALL_CASECONTROL:TABIX_BGZIPTABIX (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex_STDfilter)	CACHED	0	2024-02-03 18:51:03.221	4.5s	0ms	119.7%	10.2 MB	158 MB	478.8 KB	64.6 KB

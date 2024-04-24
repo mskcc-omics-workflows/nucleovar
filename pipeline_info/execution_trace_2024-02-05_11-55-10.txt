@@ -1,2 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	3a/64cb6f	61213	MSK_NUCLEOVAR:NUCLEOVAR:BCFTOOLS_ALL_LOCAL_VARDICT:BCFTOOLS_ALL_LOCAL (1)	FAILED	255	2024-02-05 11:55:11.353	8.1s	8s	-	-	-	-	-

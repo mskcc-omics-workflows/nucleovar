@@ -15,7 +15,9 @@
                 "outdir",
                 "fasta",
                 "bed",
-                "fai"
+                "fai",
+                "dict",
+                "rules_json"
             ],
             "properties": {
                 "outdir": {
@@ -39,6 +41,11 @@
                     "type": "string",
                     "format": "directory-path",
                     "description": "Filepath to the standard genome fasta index file."
+                },
+                "dict": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Filepath to the standard genome fasta dictionary file."
                 },
                 "email": {
                     "type": "string",

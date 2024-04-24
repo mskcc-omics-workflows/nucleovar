@@ -5,13 +5,11 @@ process MUTECT_FILTER {
     container "ghcr.io/msk-access/postprocessing_variant_calls:postprocessing_test"
 
     input:
-    tuple val(meta), path(mutect_vcf_file), path(mutect_txt_file)
-    path(reference_fasta)
+    tuple val(meta), path(maf), path(rules_json_file)
     
 
     output:
-    path("*.mutect.vcf"),                     emit: mutect_filtered_vcf
-    path("*.mutect.txt"),                     emit: std_mutect_filter_output
+    path("*.maf"),                     emit: tagged_maf
     //path "versions.yml", emit: versions
 
     when:
@@ -24,7 +22,7 @@ process MUTECT_FILTER {
 
     """
     
-    pv mutect1 case-control filter --inputVcf ${mutect_vcf_file} --inputTxt ${mutect_txt_file} --refFasta ${reference_fasta} --tsampleName ${meta.case_id}
+    pv maf tag by_rules --maf ${maf} --rules ${rules_json_file}
     
     """
 }

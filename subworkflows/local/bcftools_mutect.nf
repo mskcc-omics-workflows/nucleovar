@@ -31,21 +31,21 @@ workflow BGZIP_INDEX {
         .combine( ref_fasta )
         .set{ meta_plus_fasta_ch }
 
-    mutect_filtered_vcf.view()
+    
     BCFTOOLS_INDEX( mutect_filtered_vcf_for_bcftools_ch )
     sample_vcf_and_index = BCFTOOLS_INDEX.out.tbi
 
-    // sample_vcf_and_index
-    //     .map{ sample,vcf,index -> sample}
-    //     .set{ sample_metamap }
+    sample_vcf_and_index
+        .map{ sample,vcf,index -> sample}
+        .set{ sample_metamap }
 
-    // sample_metamap
-    //     .combine(ref_fasta)
-    //     .set{ meta_plus_fasta_ch }
+    sample_metamap
+        .combine(ref_fasta)
+        .set{ meta_plus_fasta_ch }
 
-    // emit:
-    // sample_vcf_and_index
-    // meta_plus_fasta_ch
+    emit:
+    sample_vcf_and_index
+    meta_plus_fasta_ch
 
 }
 
@@ -65,44 +65,23 @@ workflow BCFTOOLS_MUTECT {
     
     BGZIP_INDEX( mutect_filtered_vcf,ref_fasta,ref_fasta_index )
 
-    // standard_sample_vcf_and_index = BGZIP_INDEX_STANDARD_.out.sample_vcf_and_index
-    // standard_meta_plus_fasta = BGZIP_INDEX_STANDARD_.out.meta_plus_fasta_ch
-
-    // complexvar_sample_vcf_and_index = BGZIP_INDEX_COMPLEXVAR_.out.sample_vcf_and_index
-    // complexvar_meta_plus_fasta = BGZIP_INDEX_COMPLEXVAR_.out.meta_plus_fasta_ch
+    standard_sample_vcf_and_index = BGZIP_INDEX.out.sample_vcf_and_index
+    standard_meta_plus_fasta = BGZIP_INDEX.out.meta_plus_fasta_ch
     
     
-    // NORM_STANDARD_( standard_sample_vcf_and_index,standard_meta_plus_fasta )
-    // NORM_COMPLEXVAR_( complexvar_sample_vcf_and_index,standard_meta_plus_fasta )
+    BCFTOOLS_NORM( standard_sample_vcf_and_index,standard_meta_plus_fasta )
 
-    // standard_norm_sorted_vcf = NORM_STANDARD_.out.meta_plus_vardict_normalized_vcf_ch
+    standard_norm_sorted_vcf = BCFTOOLS_NORM.out.vcf
     
-    // complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.meta_plus_vardict_normalized_vcf_ch
 
-    // standard_sample_vcf_and_index.map{sample,vcf,index -> sample}.set{sample_metamap_standard}
-    // complexvar_sample_vcf_and_index.map{sample,vcf,index -> sample}.set{sample_metamap_complexvar}
-
-
-
-    // standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_standard}
-    // complexvar_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_complexvar}
-
-    // standard_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_standard}
-    // complexvar_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_complexvar}
-
+    standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{mutect_index}
     
     
-    // sample_metamap_standard
-    //     .combine(vcf_standard)
-    //     .combine(vcf_complexvar)
-    //     .set{ inputs_for_bcftools_concat_ch }
-    
-    
-    // BCFTOOLS_CONCAT( inputs_for_bcftools_concat_ch )
-    // vardict_concat_vcf = BCFTOOLS_CONCAT.out.concat_vcf
 
-    // emit:
-    // vardict_concat_vcf
+    
+    emit:
+    standard_norm_sorted_vcf
+    mutect_index
     
 
 }

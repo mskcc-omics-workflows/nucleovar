@@ -2,7 +2,9 @@ process VARDICTJAVA {
     tag "$meta.id"
     label 'process_high'
 
-    conda "${moduleDir}/vardict-java.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/vardict-java:1.8.3--hdfd78af_0':
+        'biocontainers/vardict-java:1.8.3--hdfd78af_0' }"
 
     input:
     tuple val(meta), path(bams), path(bais), path(bed)
@@ -64,23 +66,3 @@ process VARDICTJAVA {
     END_VERSIONS
     """
 }
-
-
-// export JAVA_OPTS='"-Xms${task.memory.toMega()/4}m" "-Xmx${task.memory.toGiga()}g" "-Dsamjdk.reference_fasta=${fasta}"'
-//     vardict-java \\
-//         ${args} \\
-//         ${input} \\
-//         -th ${task.cpus} \\
-//         -G ${fasta} \\
-//         ${bed} \\
-//     | ${filter} \\
-//     | ${convert_to_vcf} \\
-//         ${args2} \\
-//         "C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex|DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex" \\
-//     > ${prefix}.vcf
-
-//     cat <<-END_VERSIONS > versions.yml
-//     "${task.process}":
-//         vardict-java: \$( realpath \$( command -v vardict-java ) | sed 's/.*java-//;s/-.*//' )
-//         var2vcf_valid.pl: \$( var2vcf_valid.pl -h | sed '2!d;s/.* //' )
-//     END_VERSIONS

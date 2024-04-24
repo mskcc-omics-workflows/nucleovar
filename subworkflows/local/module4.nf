@@ -10,33 +10,46 @@ include { TRACEBACK } from '../../subworkflows/msk/traceback/main'
 
 workflow MODULE4 {
     take:
-    input_maf
-    case_bam_and_index
+    vcf
+    bams
     fasta
-    fasta_fai  
+    fasta_fai 
+    rules_json 
     
 
     main:
+    // temporary input maf for testing purposes 
+    input_maf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/dev/postprocessing/test_data/tagged_by_hotspots.maf")
+
     //run vcf2maf perl module (placeholder at the moment while temporarily testing out traceback)
-    //VCF2MAF(vcf,reference_fasta,reference_fasta_index)
+    vcf.combine(fasta).set{ input_for_vcf2maf }
+    VCF2MAF( input_for_vcf2maf )
+    maf = VCF2MAF.out.maf
+
+    TAG_BY_ACCESS( maf,rules_json )
+
+
+
+
 
     emptyLists = Channel.from([], [], [], [])
     def bamnames = [patient:'test',id:'sample']
     names = Channel.create(bamnames)
+
     
-    //bams = Channel.from(bamnames).merge(case_bam).merge(case_bai).concat(emptyLists)
-    case_bam_and_index
+    // standard channel input
+    bams
         .map{ it -> tuple([patient:'test',id:'sample'],file(it[0]),file(it[1]),[],[],[],[])}
         .set{ bams }
     
+    // simplex/duplex channel input 
+    mafs = Channel.from([patient:'test',id:"sample"]).merge(tagged_maf)
     
-    mafs = Channel.from([patient:'test',id:"sample"]).merge(input_maf)
-    //header = Channel.from([initial: file('/Users/naidur/Desktop/header.txt'), genotype: file('/Users/naidur/Desktop/genotype.txt')])
     headerfile = Channel.from(file('/Users/naidur/Desktop/header.txt'))
     genotypefile = Channel.from(file('/Users/naidur/Desktop/genotype.txt'))
     headerfile.combine(genotypefile).map{ [initial:headerfile,genotype:genotypefile]}.set{ header }
     
-    //bams.map { tuple( 'patient': it[0]['patient'], *it ) }.view()
+    
     
 
     TRACEBACK( bams,mafs,[initial:file('/Users/naidur/Desktop/maf_header.txt'),genotype:file('/Users/naidur/Desktop/maf_header_genotype.txt')],fasta,fasta_fai )

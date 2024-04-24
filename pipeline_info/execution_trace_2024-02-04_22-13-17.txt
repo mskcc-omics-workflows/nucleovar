@@ -1,2 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	69/45f107	51677	MSK_NUCLEOVAR:NUCLEOVAR:TEST_MODULE (1)	FAILED	0	2024-02-04 22:13:18.541	385ms	7ms	90.9%	2.2 MB	3.5 MB	111.4 KB	2 KB

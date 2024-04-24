@@ -189,8 +189,11 @@ workflow BCFTOOLS_VARDICT {
     BCFTOOLS_CONCAT( inputs_for_bcftools_concat_ch )
     vardict_concat_vcf = BCFTOOLS_CONCAT.out.concat_vcf
 
+    standard_sample_vcf_and_index.map{ id,vcf,index -> index}.set{ vardict_index }
+
     emit:
     vardict_concat_vcf
+    vardict_index
     
 
 }

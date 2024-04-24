@@ -1,3 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	19/ea228d	83582	MSK_NUCLEOVAR:NUCLEOVAR:BCFTOOLS_ALL_VARDICT:TABIX_BGZIPTABIX (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.vardict.filtered)	CACHED	0	2024-02-05 13:06:03.890	1s	0ms	116.1%	9.5 MB	158 MB	478.9 KB	64.6 KB
-2	1f/0bb8af	84697	MSK_NUCLEOVAR:NUCLEOVAR:BCFTOOLS_ALL_VARDICT:BCFTOOLS_NORM (DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.vardict.filtered)	FAILED	0	2024-02-05 13:08:31.359	8.1s	7.7s	99.9%	12.1 MB	403.9 MB	2.9 GB	57.6 KB
