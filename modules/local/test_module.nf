@@ -1,6 +1,6 @@
 process TEST_MODULE {
 
-    container "ghcr.io/msk-access/bcftools_1.15:latest"
+    container "ghcr.io/msk-access/bcftools:1.15.1"
 
     input:
     val(samplename)

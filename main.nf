@@ -34,7 +34,6 @@ workflow MSK_NUCLEOVAR {
     samplesheet // channel: samplesheet read in from --input
 
     main:
-
     //
     // WORKFLOW: Run pipeline
     //
@@ -43,7 +42,7 @@ workflow MSK_NUCLEOVAR {
     )
 
     emit:
-    multiqc_report = NUCLEOVAR.out.multiqc_report // channel: /path/to/multiqc_report.html
+    versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
 
 }
 /*
@@ -86,7 +85,7 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        MSK_NUCLEOVAR.out.multiqc_report
+        MSK_NUCLEOVAR.out.versions
     )
 }
 

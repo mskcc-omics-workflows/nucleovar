@@ -75,7 +75,7 @@ inputs
     .map { create_msk_mutect1_inputs_channel(it)  }
     .set{ mutect1_input_set1_ch }
 
-genome_fasta_dict_file = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/Homo_sapiens_assembly19.dict")
+genome_fasta_dict_file = Channel.fromPath("/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.dict")
 
 name_ch
     .combine( standard_bed_file )
@@ -92,7 +92,7 @@ name_ch
 //std_vardict_filter_output_txt = MUTECT_FILTER.out.std_mutect_filter_output
 
 
-mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
+mutect_filtered_vcf = Channel.fromPath("/home/buehlere/snp_indels_conversion/test_nucleo_var/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
 
 
 emit:

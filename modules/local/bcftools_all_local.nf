@@ -1,6 +1,6 @@
 process BCFTOOLS_ALL_LOCAL {
 
-    container "ghcr.io/msk-access/bcftools_1.15:latest"
+    container "ghcr.io/msk-access/bcftools:1.15.1"
 
     input:
     tuple val(meta), path(vcf), path(index)
