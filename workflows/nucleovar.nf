@@ -1,6 +1,6 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    PRINT PARAMS SUMMARY
+    IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
@@ -65,17 +65,14 @@ include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// Info required for completion email and summary
-def multiqc_report = []
-
 workflow NUCLEOVAR {
 
     ch_versions = Channel.empty()
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    
-    // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline 
+
+    // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline
     def sampleSheet = file(params.input).readLines().collect { it.split(",") }
     def allColumnsHaveValue = sampleSheet.every { row ->
     row.every { cell -> cell.trim() }
@@ -89,12 +86,12 @@ workflow NUCLEOVAR {
         fasta_ref = Channel.from(params.fasta)
         fasta_index = Channel.from(params.fai)
         fasta_dict = Channel.from(params.dict)
-            
+
 
 
         CALL_VARIANTS_CASECONTROL (params.input,params.bed,params.fasta,params.fai)
         vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
-        
+
 
         vardict_filtered_vcfs
             .map{ standard_vcf,complexvar_vcf -> standard_vcf}
@@ -111,10 +108,10 @@ workflow NUCLEOVAR {
         ref_fasta_index = CALL_VARIANTS_CASECONTROL.out.genome_fasta_index_file
 
         BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
-    
+
         vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
         vardict_index = BCFTOOLS_VARDICT.out.vardict_index
-        
+
         // // // MUTECT1 MODULE
         // // temporary code for putting together inputs for mutect1 module (will be deprececated when moving to new samplesheet)
         Channel
@@ -133,15 +130,15 @@ workflow NUCLEOVAR {
         sample_id_names_ch
             .combine(bams_ch)
             .set{ input1_for_mutect }
-        
+
         bed
             .combine(fasta_ref)
             .combine(fasta_index)
             .combine(fasta_dict)
             .set{ input2_for_mutect }
-        
 
-        
+
+
         MUTECT1(input1_for_mutect,input2_for_mutect)
         mutect_vcf = MUTECT1.out.mutect_vcf
         mutect_txt = MUTECT1.out.standard_mutect_output
@@ -149,14 +146,14 @@ workflow NUCLEOVAR {
         mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
 
         sample_id_names_ch.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
-        
+
 
         //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
 
-        
+
         // temp testing mutect filtered vcf (permission error in mutect filter)
         mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
-    
+
         BCFTOOLS_MUTECT( mutect_filtered_vcf,fasta_ref,fasta_index )
         mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
         mutect_index = BCFTOOLS_MUTECT.out.mutect_index
@@ -170,8 +167,8 @@ workflow NUCLEOVAR {
 
         //annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-        // testing inputs for traceback temporarily 
-        
+        // testing inputs for traceback temporarily
+
 
         // // code to prepare simplex inputs as a channel
 
@@ -179,8 +176,8 @@ workflow NUCLEOVAR {
 
         //rules_json = Channel.fromPath(params.rules_json)
         //MODULE4( annotated_vcf,bams_ch,fasta_ref,fasta_index,rules_json  )
-        
-    } 
+
+    }
 
 
 
@@ -243,6 +240,55 @@ workflow.onComplete {
     }
     }
 
+    take:
+    ch_samplesheet // channel: samplesheet read in from --input
+
+    main:
+
+    ch_versions = Channel.empty()
+    ch_multiqc_files = Channel.empty()
+
+    //
+    // MODULE: Run FastQC
+    //
+    FASTQC (
+        ch_samplesheet
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+
+    //
+    // Collate and save software versions
+    //
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
+        .set { ch_collated_versions }
+
+    //
+    // MODULE: MultiQC
+    //
+    ch_multiqc_config                     = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_custom_config              = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+    ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
+    summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
+    ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_collated_versions)
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
+
+    MULTIQC (
+        ch_multiqc_files.collect(),
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList()
+    )
+
+    emit:
+    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
