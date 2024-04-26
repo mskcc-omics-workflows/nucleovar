@@ -4,8 +4,8 @@ process BCFTOOLS_ANNOTATE {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/bcftools_1.15:latest':
-        'ghcr.io/msk-access/bcftools_1.15:latest' }"
+        'ghcr.io/msk-access/bcftools:1.15.1':
+        'ghcr.io/msk-access/bcftools:1.15.1' }"
 
     input:
     tuple val(meta), path(input), path(index), path(annotations), path(annotations_index), path(header_lines)
