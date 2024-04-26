@@ -135,28 +135,28 @@ workflow NUCLEOVAR {
         
 
         MUTECT1(input1_for_mutect,input2_for_mutect)
-        // mutect_vcf = MUTECT1.out.mutect_vcf
-        // mutect_txt = MUTECT1.out.standard_mutect_output
+        mutect_vcf = MUTECT1.out.mutect_vcf
+        mutect_txt = MUTECT1.out.standard_mutect_output
 
-        // mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
+        mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
 
-        // sample_id_names_ch.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
+        sample_ids.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
         
 
-        // //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
+        //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
 
         
         // // temp testing mutect filtered vcf (permission error in mutect filter)
-        // mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
+        mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
     
-        // BCFTOOLS_MUTECT( mutect_filtered_vcf,fasta_ref,fasta_index )
-        // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-        // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
+        BCFTOOLS_MUTECT( mutect_filtered_vcf,fasta_ref,fasta_index )
+        mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+        mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
 
-        // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-        // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names_ch,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
-        // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+        vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
+        BCFTOOLS_CONCAT_WITH_MUTECT( sample_ids,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
+        sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
         //BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
 
