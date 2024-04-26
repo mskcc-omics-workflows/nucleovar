@@ -9,8 +9,9 @@ process VARDICT_FILTER {
     
 
     input:
-    tuple val(meta), path(vardict_vcf_file), path(bams)
-    val(bam_filenames)
+    val(meta)
+    path(vardict_vcf_file)
+    path(bams)
     
 
     output:
@@ -29,18 +30,11 @@ process VARDICT_FILTER {
     
 
     """
-    
-    if [ "${paired_mode}" = true ]; then
-        pv vardict case-control filter \
-        --inputVcf ${vardict_vcf_file} \
-        --tsampleName C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex \
-        ${args}
-    else
-        pv vardict single filter \
-        --inputVcf ${vardict_vcf_file} \
-        --tsampleName C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex \
-        ${args}
-    fi
+
+    pv vardict case-control filter \
+    --inputVcf ${vardict_vcf_file} \
+    --tsampleName ${meta.case_id} \
+    ${args}
     
     """
 
