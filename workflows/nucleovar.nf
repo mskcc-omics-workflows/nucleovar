@@ -99,7 +99,8 @@ workflow NUCLEOVAR {
         
         
 
-        
+        sample_ids.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+        sample_ids.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
         BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
     
         vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
