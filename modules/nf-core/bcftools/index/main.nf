@@ -30,7 +30,7 @@ process BCFTOOLS_INDEX {
         --threads $task.cpus \\
         ${vcf}.gz
     
-    sleep 2
+    
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

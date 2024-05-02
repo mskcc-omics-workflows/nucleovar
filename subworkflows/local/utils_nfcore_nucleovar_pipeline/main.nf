@@ -77,26 +77,43 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
     Channel
-        .fromSamplesheet("input")
-        // .map {
-        //     meta, fastq_1, fastq_2 ->
-        //         if (!fastq_2) {
-        //             return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-        //         } else {
-        //             return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-        //         }
-        // }
-        // .groupTuple()
-        // .map {
-        //     validateInputSamplesheet(it)
-        // }
-        // .map {
-        //     meta, fastqs ->
-        //         return [ meta, fastqs.flatten() ]
-        // }
+        .fromPath(input)
+        .splitCsv(header: true)
         .set { ch_samplesheet }
+
+    ch_samplesheet
+        .map {row -> row.sample_id }
+        .collect()
+        .map{ [id:"${it[1]}_${it[0]}",case_id:it[0],control_id:it[1]]}
+        .set{ sample_id_names_ch }
+    
+    ch_samplesheet
+        .branch{ row -> standard: row.type == "standard"
+            return tuple([patient_id: row.patient_id,sample_id: row.sample_id],row.standard_bam,row.standard_bai) }
+        .set{ standard_bams_ch }
+    
+    ch_samplesheet
+        .branch{ row -> tumor: row.type == "case"
+            return tuple(row.duplex_bam,row.duplex_bai) }
+        .set{ case_bams_ch }
+
+    ch_samplesheet
+        .branch{ row -> tumor: row.type == "control"
+            return tuple(row.duplex_bam,row.duplex_bai) }
+        .set{ control_bams_ch }
+
+    sample_id_names_ch
+        .combine(control_bams_ch)
+        .combine(case_bams_ch)
+        .set{ duplex_bams_ch }
+
     emit:
     samplesheet = ch_samplesheet
+    sample_id_names = sample_id_names_ch
+    standard_bams = standard_bams_ch
+    case_bams = case_bams_ch
+    control_bams = control_bams_ch
+    duplex_bams = duplex_bams_ch
     versions    = ch_versions
 }
 

@@ -31,14 +31,24 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_nucl
 workflow MSK_NUCLEOVAR {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    samplesheet
+    sample_id_names
+    standard_bams
+    case_bams
+    control_bams
+    duplex_bams
 
     main:
     //
     // WORKFLOW: Run pipeline
     //
     NUCLEOVAR (
-        samplesheet
+        samplesheet,
+        sample_id_names,
+        standard_bams,
+        case_bams,
+        control_bams,
+        duplex_bams
     )
 
     emit:
@@ -72,7 +82,12 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     MSK_NUCLEOVAR (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.sample_id_names,
+        PIPELINE_INITIALISATION.out.standard_bams,
+        PIPELINE_INITIALISATION.out.case_bams,
+        PIPELINE_INITIALISATION.out.control_bams,
+        PIPELINE_INITIALISATION.out.duplex_bams
     )
 
     //

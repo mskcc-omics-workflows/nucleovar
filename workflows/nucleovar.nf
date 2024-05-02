@@ -50,12 +50,13 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 workflow NUCLEOVAR {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
-    // TODO: remove hard coded paths
-    // TODO: samplesheet needs to use new template format. 
-    // Sample sheet should be process in nucleo var 
-    // aka it' the controller for the samplesheet 
-    // TODO: we should be using regular MSK-ACCESS images, not internals
+    samplesheet // channel: samplesheet read in from --input
+    sample_id_names
+    standard_bams
+    case_bams
+    control_bams
+    duplex_bams
+    
     main:
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -80,9 +81,7 @@ workflow NUCLEOVAR {
         fasta_index = Channel.from(params.fai)
         fasta_dict = Channel.from(params.dict)
 
-
-
-        CALL_VARIANTS_CASECONTROL (params.input,params.bed,params.fasta,params.fai)
+        CALL_VARIANTS_CASECONTROL (fasta_ref,fasta_index,fasta_dict,bed)
         vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
 
 
@@ -95,46 +94,20 @@ workflow NUCLEOVAR {
             .set{ vardict_filtered_vcf_complexvar }
 
 
-
-        mutect_filtered_vcf = CALL_VARIANTS_CASECONTROL.out.mutect_filtered_vcf
-        ref_fasta = CALL_VARIANTS_CASECONTROL.out.genome_fasta_file
-        ref_fasta_index = CALL_VARIANTS_CASECONTROL.out.genome_fasta_index_file
-
-        BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,ref_fasta,ref_fasta_index )
-
-        CALL_VARIANTS_CASECONTROL (params.input,fasta_ref,fasta_index,fasta_dict,bed)
-        vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.standard_vcf
-        vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complexvar_vcf
-        duplex_bams = CALL_VARIANTS_CASECONTROL.out.duplex_bams
-        sample_ids = CALL_VARIANTS_CASECONTROL.out.sample_id_names_ch
-        
+        BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
         
 
-        sample_ids.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-        sample_ids.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+        sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+        sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
         BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
     
         vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
         vardict_index = BCFTOOLS_VARDICT.out.vardict_index
         
-        // // // // MUTECT1 MODULE
-        // // // temporary code for putting together inputs for mutect1 module (will be deprececated when moving to new samplesheet)
-        // Channel
-        //     .fromPath(params.input)
-        //     .splitCsv(header: true)
-        //     .set{ input_samplesheet }
-
-        // input_samplesheet
-        //     .map{ row -> tuple(row.case_bam, row.control_bam, row.case_bai, row.control_bai) }
-        //     .set{ bams_ch }
-
-        // input_samplesheet
-        //     .map{ row -> [case_id:row.case_sample_name,control_id:row.control_sample_name,id:"${row.case_sample_name}_${row.control_sample_name}"]}
-        //     .set{ sample_id_names_ch }
 
         duplex_bams.map{ meta,control_bam,control_bai,case_bam,case_bai -> tuple(case_bam,control_bam,case_bai,control_bai)}.set{ bams_for_mutect }
         
-        sample_ids
+        sample_id_names
             .combine(bams_for_mutect)
             .set{ input1_for_mutect }
 
@@ -152,7 +125,7 @@ workflow NUCLEOVAR {
 
         mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
 
-        sample_ids.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
+        sample_id_names.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
         
 
         //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
@@ -167,22 +140,16 @@ workflow NUCLEOVAR {
 
 
         vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-        BCFTOOLS_CONCAT_WITH_MUTECT( sample_ids,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
+        BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
         sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
-        //BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
+        BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
 
-        //annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+        annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-        // testing inputs for traceback temporarily
+        //testing inputs for traceback temporarily
 
-
-        // // code to prepare simplex inputs as a channel
-
-        // // code to prepare duplex inputs as a channel
-
-        //rules_json = Channel.fromPath(params.rules_json)
-        //MODULE4( annotated_vcf,bams_ch,fasta_ref,fasta_index,rules_json  )
+        MODULE4( annotated_vcf,bams_ch,fasta_ref,fasta_index,rules_json  )
 
     }
     //
