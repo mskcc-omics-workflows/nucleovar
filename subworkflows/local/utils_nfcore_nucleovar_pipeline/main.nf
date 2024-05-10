@@ -107,6 +107,13 @@ workflow PIPELINE_INITIALISATION {
         .combine(case_bams_ch)
         .set{ duplex_bams_ch }
 
+    ch_samplesheet
+        .branch{ row -> tumor: row.type == "case"
+            return tuple([patient: row.patient_id,id: row.sample_id],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+        .set{ case_bams_for_traceback_ch }
+
+    
+
     emit:
     samplesheet = ch_samplesheet
     sample_id_names = sample_id_names_ch
@@ -115,6 +122,7 @@ workflow PIPELINE_INITIALISATION {
     control_bams = control_bams_ch
     duplex_bams = duplex_bams_ch
     versions    = ch_versions
+    case_bams_for_traceback = case_bams_for_traceback_ch
 }
 
 /*

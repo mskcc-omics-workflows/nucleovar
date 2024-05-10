@@ -22,18 +22,26 @@ workflow TRACEBACK {
     ch_versions = ch_versions.mix(PVMAFCONCAT_INITIAL.out.versions.first())
     
     // get bams and mafs, grouping by patient if provided
-    
     // bams
-    // //.map { tuple( 'patient': it[0]['patient'], *it ) }
-    // .combine( PVMAFCONCAT_INITIAL.out.maf)
-    // //.map { it[1..-1] }
-    // .view()
-    // //.set{bam_list_maf}
+    //     .map { tuple( 'patient': it[0]['patient'], *it ) }
+    //     .combine( PVMAFCONCAT_INITIAL.out.maf)
+    //     .map { it[1..-1] }
+    //     .set{bam_list_maf}
 
+    // lines 33-39 does the same thing as the original code (lines 26-30)
+    // but removes the meta map attached to the PVMAFCONCAT_INITIAL.out.maf file
+    // so that only the maf file is being combined with bams. otherwise a cardinality error
+    // is thrown in genotypevariants_all module
 
-    bams.combine( PVMAFCONCAT_INITIAL.out.maf,by:0).set{ bam_list_maf }
-    //map { it -> tuple(it[0],it[1],it[2],it[3],it[4],it[5],it[6])}
-
+    meta_plus_maf = PVMAFCONCAT_INITIAL.out.maf
+    meta_plus_maf.map{ meta,maf -> maf}.set{just_maf}
+    bams
+        .map { tuple( 'patient': it[0]['patient'], *it ) }
+        .combine(just_maf)
+        .map { it[1..-1] }
+        .set{ bam_list_maf }
+    
+    
     // genotype each bam combined maf, per patient if provided
     GENOTYPEVARIANTS_ALL(bam_list_maf, reference, reference_fai)
     ch_versions = ch_versions.mix(GENOTYPEVARIANTS_ALL.out.versions.first())
@@ -62,6 +70,7 @@ workflow TRACEBACK {
     .set{all_genotype}
     individual_genotype = all_genotype.collect()
     // concat gentoyped mafs, per patient if provided
+    
     PVMAFCONCAT_GENOTYPE(all_genotype, header.genotype)
     ch_versions = ch_versions.mix(PVMAFCONCAT_GENOTYPE.out.versions.first())
 

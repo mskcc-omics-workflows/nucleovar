@@ -56,6 +56,7 @@ workflow NUCLEOVAR {
     case_bams
     control_bams
     duplex_bams
+    case_bams_for_traceback
     
     main:
     ch_versions = Channel.empty()
@@ -81,9 +82,8 @@ workflow NUCLEOVAR {
         fasta_index = Channel.from(params.fai)
         fasta_dict = Channel.from(params.dict)
 
-        // CALL_VARIANTS_CASECONTROL (fasta_ref,fasta_index,fasta_dict,bed)
-        // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcf
-
+        // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,bed)
+        // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
 
         // vardict_filtered_vcfs
         //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
@@ -92,18 +92,6 @@ workflow NUCLEOVAR {
         // vardict_filtered_vcfs
         //     .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
         //     .set{ vardict_filtered_vcf_complexvar }
-
-
-        // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
-        
-
-        // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-        // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
-        // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
-    
-        // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
-        // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
-        
 
         // duplex_bams.map{ meta,control_bam,control_bai,case_bam,case_bai -> tuple(case_bam,control_bam,case_bai,control_bai)}.set{ bams_for_mutect }
         
@@ -128,11 +116,21 @@ workflow NUCLEOVAR {
         // sample_id_names.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
         
 
-        // //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
+        // MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
+        // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
+
+        // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+        // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+        // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
+    
+        // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+        // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
+    
+        
 
         
-        // // temp testing mutect filtered vcf (permission error in mutect filter)
-        // mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
+        // // // // temp testing mutect filtered vcf (permission error in mutect filter)
+        // // // mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
     
         // BCFTOOLS_MUTECT( mutect_filtered_vcf,fasta_ref,fasta_index )
         // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
@@ -149,7 +147,7 @@ workflow NUCLEOVAR {
 
         //testing inputs for traceback temporarily
 
-        MODULE4( duplex_bams,fasta_ref,fasta_index  )
+        MODULE4( case_bams_for_traceback,fasta_ref,fasta_index  )
 
     }
     //

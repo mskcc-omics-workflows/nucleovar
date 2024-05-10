@@ -11,7 +11,7 @@ include { TRACEBACK } from '../../subworkflows/msk/traceback/main'
 workflow MODULE4 {
     take:
     //vcf
-    duplex_bams
+    case_bams_for_traceback
     fasta
     fasta_fai 
     //rules_json 
@@ -19,9 +19,22 @@ workflow MODULE4 {
 
     main:
     // temporary input maf for testing purposes 
-    input_maf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/C-2HXC96-P001-d01.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
-    simplex_bam1 = "/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam"
-    simplex_bai1 = "/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai"
+    input_maf = Channel.fromPath("/home/naidur/access_pipeline/inputs/C-2HXC96-P001-d01.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+
+
+    
+
+    donor10_simplex_bam = "/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam"
+    donor10_simplex_bai = "/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai"
+
+    donor38_duplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam")
+    donor38_duplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bai")
+
+    donor38_simplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam")
+    donor38_simplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai")
+
+
+
 
     //simplex_bam1.combine(simplex_bai1).set{test_simplex_bams}
 
@@ -38,35 +51,40 @@ workflow MODULE4 {
     names = Channel.create(bamnames)
 
     
-    // standard channel input
-    // duplex_bams
+    // standard channel input (alternative version if using matched bams)
+    // matched_bams
     //     .map{ meta,bam1,bai1,bam2,bai2 -> tuple([patient:'test',id:'C-2HXC96-P001-d01.DONOR22-TP.combined-variants'],bam1,bai1,[],[],[],[])}
     //     .view()
-    //     .set{ duplex_bams_for_traceback }
+    //     .set{ standard_bams_for_traceback }
 
     
-    duplex_bams
-        .map{ meta,bam1,bai1,bam2,bai2 -> tuple([patient:'test',id:'C-2HXC96-P001-d01.DONOR22-TP.combined-variants'],[],[],bam1,bai1,simplex_bam1,simplex_bai1)}
-        .set{ duplex_simplex_bams_for_traceback }
 
-    // code to extract the aux bams
-    //map to match structure above and combine
-
+    aux_bams = Channel.from(tuple([patient:'test',id:'DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex'],
+                    [],
+                    [],
+                    donor38_duplex_bam,
+                    donor38_duplex_bai,
+                    donor38_simplex_bam,
+                    donor38_simplex_bai))
     
+    case_bams_for_traceback.mix(aux_bams.toList()).set{ test }
+    
+    // duplex_bams
+    //     .map{ meta,bam1,bai1,bam2,bai2 -> tuple([patient:'test',id:'C-2HXC96-P001-d01.DONOR22-TP.combined-variants'],
+    //         [],
+    //         [],
+    //         bam1,
+    //         bai1,
+    //         normal_sample_simplex_bam,
+    //         normal_sample_simplex_bai)}
+    //     .set{ duplex_simplex_bams_for_traceback }
+
     
     // simplex/duplex channel input 
     mafs = Channel.from([patient:'test',id:"C-2HXC96-P001-d01.DONOR22-TP.combined-variants"]).merge(input_maf)
     
-    headerfile = Channel.from(file('/Users/naidur/Desktop/header.txt'))
-    genotypefile = Channel.from(file('/Users/naidur/Desktop/genotype.txt'))
-    headerfile.combine(genotypefile).map{ [initial:headerfile,genotype:genotypefile]}.set{ header }
 
-
-    
-    
-    
-
-    TRACEBACK( duplex_simplex_bams_for_traceback,mafs,[initial:file('/Users/naidur/Desktop/maf_header.txt'),genotype:file('/Users/naidur/Desktop/maf_header_genotype.txt')],fasta,fasta_fai )
+    TRACEBACK( test,mafs,[initial:file('/home/naidur/access_pipeline/inputs/maf_header.txt'),genotype:file('/home/naidur/access_pipeline/inputs/maf_header_genotype.txt')],fasta,fasta_fai )
 
 
     
