@@ -78,9 +78,9 @@ workflow NUCLEOVAR {
 
 
         bed = Channel.from(params.bed)
-        fasta_ref = Channel.from(params.fasta)
-        fasta_index = Channel.from(params.fai)
-        fasta_dict = Channel.from(params.dict)
+        fasta_ref = params.fasta
+        fasta_index = params.fai
+        fasta_dict = params.dict
 
         // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,bed)
         // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs

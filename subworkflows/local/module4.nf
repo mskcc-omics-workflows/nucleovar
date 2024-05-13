@@ -59,7 +59,7 @@ workflow MODULE4 {
 
     
 
-    aux_bams = Channel.from(tuple([patient:'test',id:'DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex'],
+    aux_bams = Channel.from(tuple([patient:'null',id:'DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex'],
                     [],
                     [],
                     donor38_duplex_bam,
@@ -68,7 +68,6 @@ workflow MODULE4 {
                     donor38_simplex_bai))
     
     case_bams_for_traceback.mix(aux_bams.toList()).set{ test }
-    
     // duplex_bams
     //     .map{ meta,bam1,bai1,bam2,bai2 -> tuple([patient:'test',id:'C-2HXC96-P001-d01.DONOR22-TP.combined-variants'],
     //         [],
@@ -83,9 +82,11 @@ workflow MODULE4 {
     // simplex/duplex channel input 
     mafs = Channel.from([patient:'test',id:"C-2HXC96-P001-d01.DONOR22-TP.combined-variants"]).merge(input_maf)
     
-
+    // fasta = file("/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta")
+    // fasta_fai = file("/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fai")
     TRACEBACK( test,mafs,[initial:file('/home/naidur/access_pipeline/inputs/maf_header.txt'),genotype:file('/home/naidur/access_pipeline/inputs/maf_header_genotype.txt')],fasta,fasta_fai )
-
+    TRACEBACK.out.individual_genotyped_mafs.view()
+    TRACEBACK.out.genotyped_maf.view()
 
     
     
