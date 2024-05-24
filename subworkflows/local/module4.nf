@@ -12,6 +12,7 @@ workflow MODULE4 {
     take:
     //vcf
     case_bams_for_traceback
+    aux_bams
     fasta
     fasta_fai 
     //rules_json 
@@ -19,13 +20,16 @@ workflow MODULE4 {
 
     main:
     // temporary input maf for testing purposes 
-    input_maf = Channel.fromPath("/home/naidur/access_pipeline/inputs/C-2HXC96-P001-d01.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+    input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
 
 
     
 
-    donor10_simplex_bam = "/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam"
-    donor10_simplex_bai = "/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai"
+    donor10_simplex_bam = file("/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam")
+    donor10_simplex_bai = file("/home/naidur/access_pipeline/inputs/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai")
+
+    donor10_duplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam")
+    donor10_duplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR10-T_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bai")
 
     donor38_duplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam")
     donor38_duplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bai")
@@ -57,17 +61,11 @@ workflow MODULE4 {
     //     .view()
     //     .set{ standard_bams_for_traceback }
 
-    
 
-    aux_bams = Channel.from(tuple([patient:'null',id:'DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex'],
-                    [],
-                    [],
-                    donor38_duplex_bam,
-                    donor38_duplex_bai,
-                    donor38_simplex_bam,
-                    donor38_simplex_bai))
+
     
-    case_bams_for_traceback.mix(aux_bams.toList()).set{ test }
+    
+    case_bams_for_traceback.mix(aux_bams).set{ test }
     // duplex_bams
     //     .map{ meta,bam1,bai1,bam2,bai2 -> tuple([patient:'test',id:'C-2HXC96-P001-d01.DONOR22-TP.combined-variants'],
     //         [],

@@ -36,6 +36,7 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    aux_bams          // string: Filepath to file containing curated simplex/duplex bams for traceback
 
     main:
 
@@ -114,6 +115,41 @@ workflow PIPELINE_INITIALISATION {
 
     
 
+
+    // donor38_duplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam")
+    // donor38_duplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bai")
+
+    // donor38_simplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam")
+    // donor38_simplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai")
+
+    // aux_bams_ch = Channel.from(tuple([patient:'null',id:'DONOR38-TP'],
+    //                 [],
+    //                 [],
+    //                 donor38_duplex_bam,
+    //                 donor38_duplex_bai,
+    //                 donor38_simplex_bam,
+    //                 donor38_simplex_bai))
+
+    Channel
+        .fromPath(aux_bams)
+        .splitCsv(header: true)
+        .map{ row -> tuple(row.sample_id,row.simplex_path,row.duplex_path)}
+        .set{ temp_ch }
+
+    temp_ch
+        .map{ sample_id,simplex_path,duplex_path -> tuple([patient:'null',id:sample_id],
+                    [],
+                    [],
+                    duplex_path.toString(),
+                    (file(duplex_path).parent/file(duplex_path).baseName +'.bai').toString(),
+                    simplex_path.toString(),
+                    (file(simplex_path).parent/file(simplex_path).baseName +'.bai').toString()) }
+        .set{ aux_bams_ch }
+
+    
+
+    
+
     emit:
     samplesheet = ch_samplesheet
     sample_id_names = sample_id_names_ch
@@ -123,6 +159,8 @@ workflow PIPELINE_INITIALISATION {
     duplex_bams = duplex_bams_ch
     versions    = ch_versions
     case_bams_for_traceback = case_bams_for_traceback_ch
+    aux_bams = aux_bams_ch
+    
 }
 
 /*

@@ -57,6 +57,7 @@ workflow NUCLEOVAR {
     control_bams
     duplex_bams
     case_bams_for_traceback
+    aux_bams
     
     main:
     ch_versions = Channel.empty()
@@ -147,7 +148,7 @@ workflow NUCLEOVAR {
 
         //testing inputs for traceback temporarily
 
-        MODULE4( case_bams_for_traceback,fasta_ref,fasta_index  )
+        MODULE4( case_bams_for_traceback,aux_bams,fasta_ref,fasta_index  )
 
     }
     //

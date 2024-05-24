@@ -17,7 +17,8 @@
                 "bed",
                 "fai",
                 "dict",
-                "rules_json"
+                "rules_json",
+                "aux_bams"
             ],
             "properties": {
                 "input": {
@@ -63,6 +64,11 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to rules."
+                },
+                "aux_bams": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing curated simplex/duplex bams for traceback"
                 }
             }
         },
