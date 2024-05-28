@@ -59,6 +59,7 @@ workflow NUCLEOVAR {
     case_bams_for_traceback
     aux_bams
     
+    
     main:
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -82,6 +83,11 @@ workflow NUCLEOVAR {
         fasta_ref = params.fasta
         fasta_index = params.fai
         fasta_dict = params.dict
+
+        
+
+
+        
 
         // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,bed)
         // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
@@ -148,7 +154,7 @@ workflow NUCLEOVAR {
 
         //testing inputs for traceback temporarily
 
-        MODULE4( case_bams_for_traceback,aux_bams,fasta_ref,fasta_index  )
+        MODULE4( case_bams_for_traceback,aux_bams,fasta_ref,fasta_index,params.maf_header,params.maf_header_genotype  )
 
     }
     //
