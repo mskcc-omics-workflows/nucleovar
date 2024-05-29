@@ -31,7 +31,7 @@ process GENOTYPEVARIANTS_ALL {
     genotype_variants small_variants all \\
     -i ${maf} \\
     -r ${fasta} \\
-    -g GetBaseCountsMultiSample \\
+    -g /usr/local/bin/GetBaseCountsMultiSample \\
     $patient \\
     $bams_standard \\
     $bam_liquid \\
