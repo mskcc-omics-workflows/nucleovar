@@ -7,7 +7,7 @@
                 "msk": {
                     "genotypevariants/all": {
                         "branch": "Subworkflow-traceback",
-                        "git_sha": "9c7d984b6a397406aa1c0e323b1a2872abffd111",
+                        "git_sha": "dc79368a8bfc425cd25ecc8611b506262acd9cb1",
                         "installed_by": ["traceback"]
                     },
                     "mutect1": {
