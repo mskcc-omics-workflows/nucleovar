@@ -23,7 +23,7 @@ workflow MODULE4 {
     main:
     // temporary input maf for testing purposes 
     input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
-    mafs = Channel.from([patient:'test',id:"C-2HXC96-P001-d01.DONOR22-TP.combined-variants"]).merge(input_maf)
+    mafs = Channel.from([patient:null,id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(input_maf)
 
 
     //run vcf2maf perl module (placeholder at the moment while temporarily testing out traceback)
@@ -46,9 +46,9 @@ workflow MODULE4 {
     // simplex/duplex channel input 
     
     
-    TRACEBACK( test,mafs,[initial:file(maf_header),genotype:file(maf_header_genotype)],fasta,fasta_fai )
-    TRACEBACK.out.individual_genotyped_mafs.view()
-    TRACEBACK.out.genotyped_maf.view()
+    TRACEBACK( test,mafs,fasta,fasta_fai )
+    // TRACEBACK.out.individual_genotyped_mafs.view()
+    // TRACEBACK.out.genotyped_maf.view()
 
     
     
