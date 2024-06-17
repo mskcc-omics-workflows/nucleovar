@@ -22,9 +22,13 @@ workflow TRACEBACK {
     ch_versions = ch_versions.mix(PVMAFCONCAT_INITIAL.out.versions.first())
 
     // get bams and mafs, grouping by patient if provided
+    PVMAFCONCAT_INITIAL.out.maf
+    .map {it -> [it[0].subMap('patient')[0], *it[1..-1]] }
+    .set{concat_maf}
+
     bams
-    .map { tuple( 'patient': it[0]['patient'], *it ) }
-    .combine( PVMAFCONCAT_INITIAL.out.maf, by: 0 )
+    .map { it -> [it[0].subMap('patient')[0], it[0], *it[1..-1]] }
+    .combine(concat_maf, by:0)
     .map { it[1..-1] }
     .set{bam_list_maf}
 
