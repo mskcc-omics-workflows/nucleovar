@@ -6,42 +6,32 @@ include { GENOTYPEVARIANTS_ALL as GENOTYPEVARIANTS_ALL} from '../../../modules/m
 workflow TRACEBACK {
 
     take:
-    bams     // channel: [[patient:null, id:'sample'], standard.bam, standard.bam.bai, [], [], [], []] 
-    // or 
+    bams
+    // channel: [[patient:null, id:'sample'], standard.bam, standard.bam.bai, [], [], [], []]
+    // or
     // channel: [[patient:null, id:'sample'], [], [], duplex.bam, duplex.bam.bai, simplex.bam, simplex.bam.bai]
     mafs // channel: [[patient:null], [maf1,...,maf2] ]
-    header // channel [initial: 'header.txt', genotype: 'header2.txt']
-    reference // channel: [ file(reference) ]
-    reference_fai // channel: [ file(reference.fai) ]
+    reference // file(reference)
+    reference_fai // file(reference.fai)
 
     main:
-    
+
     ch_versions = Channel.empty()
     // Concat Input Mafs
-    PVMAFCONCAT_INITIAL(mafs, header.initial)
+    PVMAFCONCAT_INITIAL(mafs)
     ch_versions = ch_versions.mix(PVMAFCONCAT_INITIAL.out.versions.first())
-    
+
     // get bams and mafs, grouping by patient if provided
-    // bams
-    //     .map { tuple( 'patient': it[0]['patient'], *it ) }
-    //     .combine( PVMAFCONCAT_INITIAL.out.maf)
-    //     .map { it[1..-1] }
-    //     .set{bam_list_maf}
+    PVMAFCONCAT_INITIAL.out.maf
+    .map {it -> [it[0].subMap('patient')[0], *it[1..-1]] }
+    .set{concat_maf}
 
-    // lines 33-39 does the same thing as the original code (lines 26-30)
-    // but removes the meta map attached to the PVMAFCONCAT_INITIAL.out.maf file
-    // so that only the maf file is being combined with bams. otherwise a cardinality error
-    // is thrown in genotypevariants_all module
-
-    meta_plus_maf = PVMAFCONCAT_INITIAL.out.maf
-    meta_plus_maf.map{ meta,maf -> maf}.set{just_maf}
     bams
-        .map { tuple( 'patient': it[0]['patient'], *it ) }
-        .combine(just_maf)
-        .map { it[1..-1] }
-        .set{ bam_list_maf }
-    
-    
+    .map { it -> [it[0].subMap('patient')[0], it[0], *it[1..-1]] }
+    .combine(concat_maf, by:0)
+    .map { it[1..-1] }
+    .set{bam_list_maf}
+
     // genotype each bam combined maf, per patient if provided
     GENOTYPEVARIANTS_ALL(bam_list_maf, reference, reference_fai)
     ch_versions = ch_versions.mix(GENOTYPEVARIANTS_ALL.out.versions.first())
@@ -70,8 +60,7 @@ workflow TRACEBACK {
     .set{all_genotype}
     individual_genotype = all_genotype.collect()
     // concat gentoyped mafs, per patient if provided
-    
-    PVMAFCONCAT_GENOTYPE(all_genotype, header.genotype)
+    PVMAFCONCAT_GENOTYPE(all_genotype)
     ch_versions = ch_versions.mix(PVMAFCONCAT_GENOTYPE.out.versions.first())
 
     // Tag with traceback columns aka combine ref stats from access and impact

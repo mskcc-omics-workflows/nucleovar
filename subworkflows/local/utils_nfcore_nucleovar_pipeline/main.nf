@@ -114,37 +114,44 @@ workflow PIPELINE_INITIALISATION {
         .set{ case_bams_for_traceback_ch }
 
     
-
-
-    // donor38_duplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam")
-    // donor38_duplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bai")
-
-    // donor38_simplex_bam = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam")
-    // donor38_simplex_bai = file("/juno/cmo/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bai")
-
-    // aux_bams_ch = Channel.from(tuple([patient:'null',id:'DONOR38-TP'],
+    // aux_bams_ch = Channel.from(tuple([patient:'null',id:'sample'],
+    //                 standard.bam,
+    //                 standard.bai,
     //                 [],
     //                 [],
-    //                 donor38_duplex_bam,
-    //                 donor38_duplex_bai,
-    //                 donor38_simplex_bam,
-    //                 donor38_simplex_bai))
+    //                 [],
+    //                 []))
+
 
     Channel
         .fromPath(aux_bams)
         .splitCsv(header: true)
-        .map{ row -> tuple(row.sample_id,row.simplex_path,row.duplex_path)}
+        .map{ row -> tuple(row.sample_id,row.normal_path,row.duplex_path,row.simplex_path,row.type)}
         .set{ temp_ch }
 
     temp_ch
-        .map{ sample_id,simplex_path,duplex_path -> tuple([patient:'null',id:sample_id],
+        .map{ sample_id,normal_path,duplex_path,simplex_path,type -> tuple([patient:'null',id:sample_id,type:type],
                     [],
                     [],
                     duplex_path.toString(),
                     (file(duplex_path).parent/file(duplex_path).baseName +'.bai').toString(),
                     simplex_path.toString(),
                     (file(simplex_path).parent/file(simplex_path).baseName +'.bai').toString()) }
+        .filter { item -> item[3] != 'null' }
         .set{ aux_bams_ch }
+
+
+    temp_ch
+        .map{ sample_id,normal_path,duplex_path,simplex_path,type -> tuple([patient:'null',id:sample_id,type:type],
+            normal_path.toString(),
+            (file(normal_path).parent/file(normal_path).baseName +'.bai').toString(),
+            [],
+            [],
+            [],
+            [] )}
+        .filter { item -> item[1] != 'null' }
+        .set{ normal_bams_ch }
+        
 
     
 
@@ -160,6 +167,7 @@ workflow PIPELINE_INITIALISATION {
     versions    = ch_versions
     case_bams_for_traceback = case_bams_for_traceback_ch
     aux_bams = aux_bams_ch
+    normal_bams = normal_bams_ch
     
 }
 

@@ -39,6 +39,7 @@ workflow MSK_NUCLEOVAR {
     duplex_bams
     case_bams_for_traceback
     aux_bams
+    normal_bams
 
     main:
     //
@@ -52,7 +53,8 @@ workflow MSK_NUCLEOVAR {
         control_bams,
         duplex_bams,
         case_bams_for_traceback,
-        aux_bams    )
+        aux_bams,
+        normal_bams    )
 
     emit:
     versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
@@ -93,7 +95,9 @@ workflow {
         PIPELINE_INITIALISATION.out.control_bams,
         PIPELINE_INITIALISATION.out.duplex_bams,
         PIPELINE_INITIALISATION.out.case_bams_for_traceback,
-        PIPELINE_INITIALISATION.out.aux_bams
+        PIPELINE_INITIALISATION.out.aux_bams,
+        PIPELINE_INITIALISATION.out.normal_bams
+
     )
 
     //

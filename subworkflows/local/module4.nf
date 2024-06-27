@@ -13,17 +13,16 @@ workflow MODULE4 {
     //vcf
     case_bams_for_traceback
     aux_bams
+    normal_bams
     fasta
     fasta_fai 
-    maf_header
-    maf_header_genotype
     //rules_json 
     
 
     main:
     // temporary input maf for testing purposes 
     input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
-    mafs = Channel.from([patient:'test',id:"C-2HXC96-P001-d01.DONOR22-TP.combined-variants"]).merge(input_maf)
+    mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(input_maf)
 
 
     //run vcf2maf perl module (placeholder at the moment while temporarily testing out traceback)
@@ -40,14 +39,14 @@ workflow MODULE4 {
     //     .view()
     //     .set{ standard_bams_for_traceback }
 
-
-    case_bams_for_traceback.mix(aux_bams).set{ test }
+    
+    case_bams_for_traceback.mix(aux_bams).mix(normal_bams).set{ bams }
     
     // simplex/duplex channel input 
     
     
-    TRACEBACK( test,mafs,[initial:file(maf_header),genotype:file(maf_header_genotype)],fasta,fasta_fai )
-    TRACEBACK.out.individual_genotyped_mafs.view()
+    TRACEBACK( bams,mafs,fasta,fasta_fai )
+    //TRACEBACK.out.individual_genotyped_mafs.view()
     TRACEBACK.out.genotyped_maf.view()
 
     

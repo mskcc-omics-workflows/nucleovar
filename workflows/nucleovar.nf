@@ -58,6 +58,7 @@ workflow NUCLEOVAR {
     duplex_bams
     case_bams_for_traceback
     aux_bams
+    normal_bams
     
     
     main:
@@ -83,8 +84,6 @@ workflow NUCLEOVAR {
         fasta_ref = params.fasta
         fasta_index = params.fai
         fasta_dict = params.dict
-
-        
 
 
         
@@ -154,7 +153,7 @@ workflow NUCLEOVAR {
 
         //testing inputs for traceback temporarily
 
-        MODULE4( case_bams_for_traceback,aux_bams,fasta_ref,fasta_index,params.maf_header,params.maf_header_genotype  )
+        MODULE4( case_bams_for_traceback,aux_bams,normal_bams,fasta_ref,fasta_index  )
 
     }
     //
