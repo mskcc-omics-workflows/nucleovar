@@ -10,13 +10,26 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [VarDict](https://github.com/AstraZeneca-NGS/VarDict)
 
-  > Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+  > Lai Z, Markovets A, Ahdesmaki M, Chapman B, Hofmann O, McEwen R, Johnson J, Dougherty B, Barrett JC, and Dry JR. VarDict: a novel and versatile variant caller for next-generation sequencing in cancer research. Nucleic Acids Res. 2016, pii: gkw227.
 
-- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+- [Mutect v.1.1.5](https://github.com/broadinstitute/mutect)
 
-  > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+  > https://software.broadinstitute.org/cancer/cga/mutect
+
+
+- [BCFTools Suite](https://samtools.github.io/bcftools/bcftools.html)
+
+  > Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li, GigaScience, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
+
+
+- [Genome Nexus](https://github.com/genome-nexus)
+
+  > Ino de Bruijn et al., Genome Nexus: A Comprehensive Resource for the Annotation and Interpretation of Genomic Variants in Cancer. JCO Clin Cancer Inform 6, e2100144(2022). 
+  DOI:10.1200/CCI.21.00144
+
+
 
 ## Software packaging/containerisation tools
 
