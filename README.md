@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [![GitHub Actions CI Status](https://github.com/msk/nucleovar/workflows/nf-core%20CI/badge.svg)](https://github.com/msk/nucleovar/actions?query=workflow%3A%22nf-core+CI%22)
 [![GitHub Actions Linting Status](https://github.com/msk/nucleovar/workflows/nf-core%20linting/badge.svg)](https://github.com/msk/nucleovar/actions?query=workflow%3A%22nf-core+linting%22)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
 
@@ -93,3 +94,7 @@ This pipeline uses code and infrastructure developed and maintained by the [nf-c
 > Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
 >
 > _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
+=======
+# Page
+
+>>>>>>> f6a79bd4e499537d0fc1cb38cd4dad353afaeb2b
