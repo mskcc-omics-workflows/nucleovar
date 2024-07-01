@@ -11,13 +11,10 @@
 
 **msk/nucleovar** is a bioinformatics pipeline that ...
 
-<!-- TODO nf-core:
-   Processes a variety of sample BAM files through three variant callers (Mutect (v.1.1.5), VarDict, and GATK Mutect2). Output VCF Files are normalized, sorted, and concatenated, proceeding to be annotated and converted into a MAF format file. The following MAF file is tagged with the presence/absence of specific variant criteria, resulting in a final output MAF file containing variants filtered by criteria set forth by the ACCESS pipeline. 
--->
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+   Processes a variety of sample BAM files through three variant callers (Mutect (v.1.1.5), VarDict, and GATK Mutect2). Output VCF Files are normalized, sorted, and concatenated, proceeding to be annotated and converted into a MAF format file. The following MAF file is tagged with the presence/absence of specific variant criteria, resulting in a final output MAF file containing variants filtered by criteria set forth by the ACCESS pipeline. 
+
+
 
 1. Read in core samplesheet (containing case and control samples) and auxillary bams samplesheet
 2. Run case and control samples through variant callers (Mutect v.1.1.5, VarDict, and GATK Mutect2)
@@ -36,8 +33,6 @@ to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/i
 with `-profile test` before running the workflow on actual data.
 :::
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
 
 First, prepare a samplesheet with your input data that looks as follows:
 
@@ -58,11 +53,9 @@ SAMPLE1,/path/to/normal.bam,path/to/duplex.bam,path/to/simplex.bam,curated
 
 Each row represents an individual sample which may contain a standard bam (if an unmatched or matched normal sample), or an individual sample which contains a simplex and duplex bam (if a curated or plasma sample)
 
--->
+
 
 Now, you can run the pipeline using:
-
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
 
 ```bash
 nextflow run msk/nucleovar/main.nf \
@@ -85,7 +78,6 @@ msk/nucleovar was originally written by @rnaidu and @buehlere.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
 
@@ -93,10 +85,6 @@ If you would like to contribute to this pipeline, please see the [contributing g
 
 ## Citations
 
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use msk/nucleovar for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
