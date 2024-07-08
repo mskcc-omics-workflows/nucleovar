@@ -7,12 +7,13 @@ process PVMAF_TAG {
     //               For Conda, the build (i.e. "h9402c20_2") must be EXCLUDED to support installation on different operating systems.
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:remove_variant_by_annot_0.0.05':
-        'ghcr.io/msk-access/postprocessing_variant_calls:remove_variant_by_annot_0.0.05' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.4':
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.4' }"
 
     input:
     tuple val(meta), path(maf)
     val(type)
+    val(sample_group_cols)
 
     output:
     tuple val(meta), path("*.maf"), emit: maf
@@ -29,6 +30,7 @@ process PVMAF_TAG {
     pv maf tag \\
     $type \\
     -m $maf \\
+    --sample_group_cols ${sample_group_cols} \\
     --output $output \\
     $args
 
