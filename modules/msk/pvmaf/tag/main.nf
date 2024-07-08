@@ -7,13 +7,13 @@ process PVMAF_TAG {
     //               For Conda, the build (i.e. "h9402c20_2") must be EXCLUDED to support installation on different operating systems.
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.4':
-        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.4' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.5':
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.5' }"
 
     input:
     tuple val(meta), path(maf)
     val(type)
-    val(sample_group_cols)
+    path(sample_sheets)
 
     output:
     tuple val(meta), path("*.maf"), emit: maf
@@ -24,13 +24,14 @@ process PVMAF_TAG {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix != null ? "${task.ext.prefix}" : (meta.patient != null ? "${meta.patient}" : "")
+    def sampleFiles = sample_sheets.collect { file -> "-sheet $file" }.join(' ')
     def output = prefix ? "${prefix}_${type}.maf": "multi_sample_${type}.maf"
 
     """
     pv maf tag \\
     $type \\
     -m $maf \\
-    --sample_group_cols ${sample_group_cols} \\
+    $sampleFiles \\
     --output $output \\
     $args
 
