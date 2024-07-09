@@ -1,6 +1,5 @@
 include { PVMAF_CONCAT as PVMAFCONCAT_INITIAL} from '../../../modules/msk/pvmaf/concat'
 include { PVMAF_CONCAT as PVMAFCONCAT_GENOTYPE} from '../../../modules/msk/pvmaf/concat'
-include { PVMAF_TAG                      } from '../../../modules/msk/pvmaf/tag'
 include { GENOTYPEVARIANTS_ALL as GENOTYPEVARIANTS_ALL} from '../../../modules/msk/genotypevariants/all'
 
 workflow TRACEBACK {
@@ -13,11 +12,12 @@ workflow TRACEBACK {
     mafs // channel: [[patient:null], [maf1,...,maf2] ]
     reference // file(reference)
     reference_fai // file(reference.fai)
-    
 
     main:
 
+    // declare versions channel
     ch_versions = Channel.empty()
+
     // Concat Input Mafs
     PVMAFCONCAT_INITIAL(mafs)
     ch_versions = ch_versions.mix(PVMAFCONCAT_INITIAL.out.versions.first())
@@ -64,10 +64,7 @@ workflow TRACEBACK {
     PVMAFCONCAT_GENOTYPE(all_genotype)
     ch_versions = ch_versions.mix(PVMAFCONCAT_GENOTYPE.out.versions.first())
 
-    // Tag with traceback columns aka combine ref stats from access and impact
-    PVMAF_TAG(PVMAFCONCAT_GENOTYPE.out.maf, 'traceback', [params.input, params.aux_bams])
-    ch_versions = ch_versions.mix(PVMAF_TAG.out.versions.first())
-    genotyped_maf = PVMAF_TAG.out.maf
+    genotyped_maf = PVMAFCONCAT_GENOTYPE.out.maf
 
     emit:
     individual_genotyped_mafs = individual_genotype

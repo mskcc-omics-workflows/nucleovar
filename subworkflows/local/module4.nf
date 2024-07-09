@@ -4,6 +4,7 @@
 //include { TABIX_BGZIPTABIX } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { VCF2MAF } from '../../modules/nf-core/vcf2maf/main'
 include { TRACEBACK } from '../../subworkflows/msk/traceback/main'
+include { PVMAF_TAGTRACEBACK } from '../../modules/msk/pvmaf/tagtraceback'
 
 
 
@@ -43,9 +44,10 @@ workflow MODULE4 {
     case_bams_for_traceback.mix(aux_bams).mix(normal_bams).set{ bams }
     
     // simplex/duplex channel input 
-    
-    
-    TRACEBACK( bams,mafs,fasta,fasta_fai )
+    TRACEBACK( bams, mafs, fasta, fasta_fai)
+    // Tag with traceback columns aka combine ref stats from access and impact
+    PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
+
     //TRACEBACK.out.individual_genotyped_mafs.view()
     TRACEBACK.out.genotyped_maf.view()
 
