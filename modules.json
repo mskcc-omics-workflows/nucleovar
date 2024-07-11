@@ -7,7 +7,7 @@
                 "msk": {
                     "genotypevariants/all": {
                         "branch": "Subworkflow-traceback",
-                        "git_sha": "5abcf40301834adb05cbc826f8f3e582bea2e769",
+                        "git_sha": "64aa65cb2dc476607b93a3d5f161528891ba5e34",
                         "installed_by": [
                             "traceback"
                         ]
@@ -21,16 +21,16 @@
                     },
                     "pvmaf/concat": {
                         "branch": "Subworkflow-traceback",
-                        "git_sha": "5abcf40301834adb05cbc826f8f3e582bea2e769",
+                        "git_sha": "82bc8976b36a187ddcd48be1f516e5f8a5faa09b",
                         "installed_by": [
                             "traceback"
                         ]
                     },
-                    "pvmaf/tag": {
+                    "pvmaf/tagtraceback": {
                         "branch": "Subworkflow-traceback",
-                        "git_sha": "5abcf40301834adb05cbc826f8f3e582bea2e769",
+                        "git_sha": "a9e056a4bd1c7d5974013972ed26414d867d28a3",
                         "installed_by": [
-                            "traceback"
+                            "modules"
                         ]
                     }
                 }
@@ -39,7 +39,7 @@
                 "msk": {
                     "traceback": {
                         "branch": "Subworkflow-traceback",
-                        "git_sha": "601f6f4d95162f922ae7df87d96a361a420d5cf3",
+                        "git_sha": "a0d608c00b9421ac35ae6f12699588115b741ed4",
                         "installed_by": [
                             "subworkflows"
                         ]

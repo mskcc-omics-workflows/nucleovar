@@ -1,11 +1,11 @@
 process PVMAF_CONCAT {
     tag "$meta.id"
     label 'process_single'
-    //ghcr.io/msk-access/postprocessing_variant_calls:0.3.0
+
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:remove_variant_by_annot_0.0.05':
-        'ghcr.io/msk-access/postprocessing_variant_calls:remove_variant_by_annot_0.0.05' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.0':
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.0' }"
 
     input:
     tuple val(meta), path(maf_files)
