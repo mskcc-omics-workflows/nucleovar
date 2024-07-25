@@ -94,12 +94,12 @@ workflow PIPELINE_INITIALISATION {
         .set{ standard_bams_ch }
     
     ch_samplesheet
-        .branch{ row -> tumor: row.type == "case"
+        .branch{ row -> tumor: row.type == "CASE"
             return tuple(row.duplex_bam,row.duplex_bai) }
         .set{ case_bams_ch }
 
     ch_samplesheet
-        .branch{ row -> tumor: row.type == "control"
+        .branch{ row -> tumor: row.type == "CONTROL"
             return tuple(row.duplex_bam,row.duplex_bai) }
         .set{ control_bams_ch }
 
@@ -109,18 +109,15 @@ workflow PIPELINE_INITIALISATION {
         .set{ duplex_bams_ch }
 
     ch_samplesheet
-        .branch{ row -> tumor: row.type == "case"
+        .branch{ row -> tumor: row.type == "CASE"
             return tuple([patient: row.patient_id,id: row.sample_id],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
         .set{ case_bams_for_traceback_ch }
 
-    
-    // aux_bams_ch = Channel.from(tuple([patient:'null',id:'sample'],
-    //                 standard.bam,
-    //                 standard.bai,
-    //                 [],
-    //                 [],
-    //                 [],
-    //                 []))
+    ch_samplesheet
+        .branch{ row -> tumor: row.type == "CONTROL"
+            return tuple([patient: row.patient_id,id: row.sample_id],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+        .set{ control_bams_for_traceback_ch }
+
 
 
     Channel
@@ -166,6 +163,7 @@ workflow PIPELINE_INITIALISATION {
     duplex_bams = duplex_bams_ch
     versions    = ch_versions
     case_bams_for_traceback = case_bams_for_traceback_ch
+    control_bams_for_traceback = control_bams_for_traceback_ch
     aux_bams = aux_bams_ch
     normal_bams = normal_bams_ch
     

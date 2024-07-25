@@ -13,6 +13,7 @@ workflow MODULE4 {
     take:
     //vcf
     case_bams_for_traceback
+    control_bams_for_traceback
     aux_bams
     normal_bams
     fasta
@@ -41,7 +42,7 @@ workflow MODULE4 {
     //     .set{ standard_bams_for_traceback }
 
     
-    case_bams_for_traceback.mix(aux_bams).mix(normal_bams).set{ bams }
+    case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
     
     // simplex/duplex channel input 
     TRACEBACK( bams, mafs, fasta, fasta_fai)

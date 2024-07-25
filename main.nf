@@ -38,6 +38,7 @@ workflow MSK_NUCLEOVAR {
     control_bams
     duplex_bams
     case_bams_for_traceback
+    control_bams_for_traceback
     aux_bams
     normal_bams
 
@@ -53,6 +54,7 @@ workflow MSK_NUCLEOVAR {
         control_bams,
         duplex_bams,
         case_bams_for_traceback,
+        control_bams_for_traceback,
         aux_bams,
         normal_bams    )
 
@@ -95,6 +97,7 @@ workflow {
         PIPELINE_INITIALISATION.out.control_bams,
         PIPELINE_INITIALISATION.out.duplex_bams,
         PIPELINE_INITIALISATION.out.case_bams_for_traceback,
+        PIPELINE_INITIALISATION.out.control_bams_for_traceback,
         PIPELINE_INITIALISATION.out.aux_bams,
         PIPELINE_INITIALISATION.out.normal_bams
 
