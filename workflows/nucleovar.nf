@@ -25,6 +25,8 @@ include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_co
 include { MODULE4     } from '../subworkflows/local/module4'
 include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
 include { MUTECT1        } from '../modules/msk/mutect1'
+include { BEDTOOLS_GENOMECOV } from '../modules/nf-core/bedtools/genomecov/main'
+include { BEDTOOLS_MERGE } from '../modules/nf-core/bedtools/merge/main' 
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -57,6 +59,7 @@ workflow NUCLEOVAR {
     control_bams
     duplex_bams
     case_bams_for_traceback
+    control_bams_for_traceback
     aux_bams
     normal_bams
     
@@ -84,7 +87,6 @@ workflow NUCLEOVAR {
         fasta_ref = params.fasta
         fasta_index = params.fai
         fasta_dict = params.dict
-
 
         
 
@@ -153,7 +155,7 @@ workflow NUCLEOVAR {
 
         //testing inputs for traceback temporarily
 
-        MODULE4( case_bams_for_traceback,aux_bams,normal_bams,fasta_ref,fasta_index)
+        MODULE4( case_bams_for_traceback,control_bams_for_traceback,aux_bams,normal_bams,fasta_ref,fasta_index)
 
     }
     //
