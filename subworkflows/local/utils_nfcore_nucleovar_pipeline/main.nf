@@ -77,20 +77,22 @@ workflow PIPELINE_INITIALISATION {
     //
     // Create channel from input file provided through params.input
     //
-    Channel
-        .fromPath(input)
+    input1 = Channel.fromPath(input)
+    input2 = Channel.fromPath(input)
+    
+    input1
         .splitCsv(header: true)
         .set { ch_samplesheet }
 
     ch_samplesheet
         .map {row -> row.sample_id }
         .collect()
-        .map{ [id:"${it[1]}_${it[0]}",case_id:it[0],control_id:it[1]]}
+        .map{ [id:"${it[1]}_${it[0]}",case_id:it[0],control_id:it[1]] }
         .set{ sample_id_names_ch }
     
     ch_samplesheet
         .branch{ row -> standard: row.type == "standard"
-            return tuple([patient_id: row.patient_id,sample_id: row.sample_id],row.standard_bam,row.standard_bai) }
+            return tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,row.standard_bai) }
         .set{ standard_bams_ch }
     
     ch_samplesheet
@@ -110,15 +112,19 @@ workflow PIPELINE_INITIALISATION {
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
-            return tuple([patient: row.patient_id,id: row.sample_id],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
         .set{ case_bams_for_traceback_ch }
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
-            return tuple([patient: row.patient_id,id: row.sample_id],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
         .set{ control_bams_for_traceback_ch }
 
 
+    aux_bams1 = Channel.fromPath(aux_bams)
+    aux_bams2 = Channel.fromPath(aux_bams)
+
+    input1.combine(aux_bams2).set{ samplesheets_for_traceback_ch }
 
     Channel
         .fromPath(aux_bams)
@@ -152,8 +158,6 @@ workflow PIPELINE_INITIALISATION {
 
     
 
-    
-
     emit:
     samplesheet = ch_samplesheet
     sample_id_names = sample_id_names_ch
@@ -164,6 +168,7 @@ workflow PIPELINE_INITIALISATION {
     versions    = ch_versions
     case_bams_for_traceback = case_bams_for_traceback_ch
     control_bams_for_traceback = control_bams_for_traceback_ch
+    samplesheets_for_traceback = samplesheets_for_traceback_ch
     aux_bams = aux_bams_ch
     normal_bams = normal_bams_ch
     

@@ -60,6 +60,7 @@ workflow NUCLEOVAR {
     duplex_bams
     case_bams_for_traceback
     control_bams_for_traceback
+    samplesheets_for_traceback
     aux_bams
     normal_bams
     
@@ -88,8 +89,6 @@ workflow NUCLEOVAR {
         fasta_index = params.fai
         fasta_dict = params.dict
 
-
-        case_bams.view()
 
         // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,bed)
         // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs

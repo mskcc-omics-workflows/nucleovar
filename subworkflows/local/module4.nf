@@ -45,12 +45,13 @@ workflow MODULE4 {
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
     
     // simplex/duplex channel input 
-    TRACEBACK( bams, mafs, fasta, fasta_fai)
+    TRACEBACK( bams, mafs, fasta, fasta_fai )
     // Tag with traceback columns aka combine ref stats from access and impact
     PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
 
     //TRACEBACK.out.individual_genotyped_mafs.view()
     TRACEBACK.out.genotyped_maf.view()
+    PVMAF_TAGTRACEBACK.out.maf.view()
 
     
     
