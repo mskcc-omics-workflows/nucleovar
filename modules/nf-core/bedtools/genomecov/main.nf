@@ -1,74 +1,26 @@
 process BEDTOOLS_GENOMECOV {
-    tag "$meta.id"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_0' :
-        'biocontainers/bedtools:2.31.1--hf5e1c6e_0' }"
+        'oras://community.wave.seqera.io/library/bedtools_coreutils:ba273c06a3909a15':
+        'community.wave.seqera.io/library/bedtools_coreutils:a623c13f66d5262b' }"
 
     input:
-    tuple val(meta), path(intervals), val(scale)
-    path  sizes
-    val   extension
-    val   sort
+    tuple val(meta), path(sorted_tumor_bam)
+    path(fasta_index)
 
     output:
-    tuple val(meta), path("*.${extension}"), emit: genomecov
-    path  "versions.yml"                   , emit: versions
+    path("*.bed"), emit: target_bed_file
+    //path  "versions.yml"                   , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
-
+    
     script:
-    def args = task.ext.args ?: ''
-    def args_list = args.tokenize()
-    args += (scale > 0 && scale != 1) ? " -scale $scale" : ""
-    if (!args_list.contains('-bg') && (scale > 0 && scale != 1)) {
-        args += " -bg"
-    }
-    def sort_cmd = sort ? '| bedtools sort' : ''
-
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    if (intervals.name =~ /\.bam/) {
-        """
-        bedtools \\
-            genomecov \\
-            -ibam $intervals \\
-            $args \\
-            $sort_cmd \\
-            > ${prefix}.${extension}
-
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
-            bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-        END_VERSIONS
-        """
-    } else {
-        """
-        bedtools \\
-            genomecov \\
-            -i $intervals \\
-            -g $sizes \\
-            $args \\
-            $sort_cmd \\
-            > ${prefix}.${extension}
-
-        cat <<-END_VERSIONS > versions.yml
-        "${task.process}":
-            bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-        END_VERSIONS
-        """
-    }
-
-    stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch  ${prefix}.${extension}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
+    bedtools genomecov -ibam ${sorted_tumor_bam} -bg > target.bedgraph
+    bedtools merge -i target.bedgraph > ${meta.case_id}_target.bed
+    
     """
 }

@@ -51,7 +51,13 @@ workflow MODULE4 {
 
     //TRACEBACK.out.individual_genotyped_mafs.view()
     TRACEBACK.out.genotyped_maf.view()
-    PVMAF_TAGTRACEBACK.out.maf.view()
+
+
+    // tag by access
+    // access filters
+    // tag by variant classification
+
+   
 
     
     

@@ -25,10 +25,12 @@ include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_co
 include { MODULE4     } from '../subworkflows/local/module4'
 include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
 include { MUTECT1        } from '../modules/msk/mutect1'
+include { SAMTOOLS_SORT     } from '../modules/local/samtools_sort'
 include { BEDTOOLS_GENOMECOV } from '../modules/nf-core/bedtools/genomecov/main'
 include { BEDTOOLS_MERGE } from '../modules/nf-core/bedtools/merge/main' 
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
+include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main' 
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 
@@ -74,23 +76,31 @@ workflow NUCLEOVAR {
     //
 
     // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline
-    println params.input
-    def sampleSheet = file(params.input).readLines().collect { it.split(",") }
-    def allColumnsHaveValue = sampleSheet.every { row ->
-    row.every { cell -> cell.trim() }
-}
-
-    if (allColumnsHaveValue) {
-        println "Running the SNPs/indels workflow in case-control mode."
+    def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
+    println target
 
 
-        bed = Channel.from(params.bed)
-        fasta_ref = params.fasta
-        fasta_index = params.fai
-        fasta_dict = params.dict
+    canonical_bed = Channel.from(params.canonical_bed)
+    fasta_ref = params.fasta
+    fasta_index = params.fai
+    fasta_dict = params.dict
 
 
-        // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,bed)
+    // invoke the bedtools subworkflow so that a BED file is generated from tumor sample bam
+    case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
+    sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
+    SAMTOOLS_SORT( input_tumorbam_for_bedtools )
+
+    sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
+    target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
+
+
+
+
+
+
+
+    CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
         // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
 
         // vardict_filtered_vcfs
@@ -153,11 +163,21 @@ workflow NUCLEOVAR {
 
         // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-        //testing inputs for traceback temporarily
+        // Genome nexus subworkflow
+        // GENOME_NEXUS( )
+        
+        // traceback subworkflow
+        // TRACEBACK()
 
-        MODULE4( case_bams_for_traceback,control_bams_for_traceback,aux_bams,normal_bams,fasta_ref,fasta_index)
+        // maf_processing module (tag by rules)
 
-    }
+        // access filters 
+
+        // mpath loading script module
+
+        // IGV screenshot module 
+
+        //MODULE4( case_bams_for_traceback,control_bams_for_traceback,aux_bams,normal_bams,fasta_ref,fasta_index)
     //
     // Collate and save software versions
     //

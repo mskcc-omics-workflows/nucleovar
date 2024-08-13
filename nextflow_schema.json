@@ -14,7 +14,8 @@
                 "input",
                 "outdir",
                 "fasta",
-                "bed",
+                "target_bed",
+                "canonical_bed",
                 "fai",
                 "dict",
                 "rules_json",
@@ -38,10 +39,15 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "bed": {
+                "target_bed": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Filepath to the standard BED file."
+                    "description": "Filepath to the standard target BED file. Used in the variant calling process"
+                },
+                "canonical_bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to the canonical BED file. Used downstream of variant calling process"
                 },
                 "fai": {
                     "type": "string",
