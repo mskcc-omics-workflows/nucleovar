@@ -28,19 +28,16 @@
             "maf": {
                 "type": "string",
                 "format": "file-path",
-                "pattern": "^\\S+\\.maf$",
                 "errorMessage": "MAF file for sample cannot contain spaces and must have extension '.maf' "
             },
             "standard_bam": {
                 "type": "string",
                 "format": "file-path",
-                "pattern": "^\\S+\\.bam$",
                 "errorMessage": "BAM file for standard sample cannot contain spaces and must have extension '.bam' "
             },
             "standard_bai": {
                 "type": "string",
                 "format": "file-path",
-                "pattern": "^\\S+\\.bai$",
                 "errorMessage": "BAM index file for standard sample cannot contain spaces and must have extension '.bai' "
             },
             "duplex_bam": {
@@ -54,7 +51,7 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.bam$",
+                "pattern": "^\\S+\\.bai$",
                 "errorMessage": "Duplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
             },
             "simplex_bam": {
@@ -68,7 +65,7 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.bam$",
+                "pattern": "^\\S+\\.bai$",
                 "errorMessage": "Simplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
             }
         },
