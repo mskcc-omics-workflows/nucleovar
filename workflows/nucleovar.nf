@@ -25,7 +25,8 @@ include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_co
 include { MODULE4     } from '../subworkflows/local/module4'
 include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
 include { MUTECT1        } from '../modules/msk/mutect1'
-include { SAMTOOLS_SORT     } from '../modules/local/samtools_sort'
+include { MUTECT2     } from '../modules/local/mutect2/main'
+include { SAMTOOLS_SORT     } from '../modules/local/samtools/sort/main.nf'
 include { BEDTOOLS_GENOMECOV } from '../modules/nf-core/bedtools/genomecov/main'
 include { BEDTOOLS_MERGE } from '../modules/nf-core/bedtools/merge/main' 
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
@@ -77,7 +78,7 @@ workflow NUCLEOVAR {
 
     // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline
     def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
-    println target
+    
 
 
     canonical_bed = Channel.from(params.canonical_bed)
@@ -85,54 +86,68 @@ workflow NUCLEOVAR {
     fasta_index = params.fai
     fasta_dict = params.dict
 
-
-    // invoke the bedtools subworkflow so that a BED file is generated from tumor sample bam
-    case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
-    sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
-    SAMTOOLS_SORT( input_tumorbam_for_bedtools )
-
-    sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
-    target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
-
-
-
-
-
-
+    if (params.target_bed == null) {
+        println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
+        //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
+        case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
+        
+        sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
+        SAMTOOLS_SORT( input_tumorbam_for_bedtools )
+        sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
+        target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
+    }
+    else {
+        println "Target BED file is provided."
+        target_bed_file = params.target_bed
+    }
 
     CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
-        // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
+    vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
 
-        // vardict_filtered_vcfs
-        //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
-        //     .set{ vardict_filtered_vcf_standard }
+    vardict_filtered_vcfs
+        .map{ standard_vcf,complexvar_vcf -> standard_vcf}
+        .set{ vardict_filtered_vcf_standard }
 
-        // vardict_filtered_vcfs
-        //     .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
-        //     .set{ vardict_filtered_vcf_complexvar }
+    vardict_filtered_vcfs
+        .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
+        .set{ vardict_filtered_vcf_complexvar }
 
-        // duplex_bams.map{ meta,control_bam,control_bai,case_bam,case_bai -> tuple(case_bam,control_bam,case_bai,control_bai)}.set{ bams_for_mutect }
+    
+
+    target_bed_file
+        .combine(Channel.from(fasta_ref))
+        .combine(Channel.from(fasta_index))
+        .combine(Channel.from(fasta_dict))
+        .set{ input2_for_mutect }
+
+
+    duplex_bams
+        .map{ meta,control_bam,control_bai,case_bam,case_bai -> 
+            tuple(case_bam,control_bam,case_bai,control_bai)}
+        .set{ bams_for_mutect }
         
-        // sample_id_names
-        //     .combine(bams_for_mutect)
-        //     .set{ input1_for_mutect }
-
-        // bed
-        //     .combine(fasta_ref)
-        //     .combine(fasta_index)
-        //     .combine(fasta_dict)
-        //     .set{ input2_for_mutect }
+    sample_id_names
+        .combine(bams_for_mutect)
+        .set{ input1_for_mutect }
 
 
 
-        // MUTECT1(input1_for_mutect,input2_for_mutect)
-        // mutect_vcf = MUTECT1.out.mutect_vcf
-        // mutect_txt = MUTECT1.out.standard_mutect_output
+    MUTECT1(input1_for_mutect,input2_for_mutect)
+    MUTECT2( input1_for_mutect,input2_for_mutect )
 
-        // mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
 
-        // sample_id_names.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
+
+
+    // mutect_vcf = MUTECT1.out.mutect_vcf
+    // mutect_txt = MUTECT1.out.standard_mutect_output
+
+    // mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
+
+    // sample_id_names.combine(mutect_vcf).combine(mutect_txt_isolated).map{ meta1,meta2,vcf,txt -> tuple(meta1,vcf,txt)}.set{ input1_for_mutect_filter }
         
+    
+
+        ////////////////////////////////////////
 
         // MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
         // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
@@ -167,7 +182,13 @@ workflow NUCLEOVAR {
         // GENOME_NEXUS( )
         
         // traceback subworkflow
-        // TRACEBACK()
+        //input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+        //mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(input_maf)
+
+        //case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+
+        //TRACEBACK( bams, mafs, fasta, fasta_fai )
+        //PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
 
         // maf_processing module (tag by rules)
 

@@ -7,45 +7,69 @@
     "items": {
         "type": "object",
         "properties": {
-            "case_sample_name": {
+            "patient_id": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": ["id"]
+                "errorMessage": "A value for patient ID must be provided and cannot contain spaces",
+                "meta": ["patient_id"]
             },
-            "control_sample_name": {
+            "sample_id": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": ["id"]
+                "errorMessage": "A value for sample ID must be provided and cannot contain spaces",
+                "meta": ["sample_id"]
             },
-            "case_bam": {
+            "type": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "A value for sample type must be provided and cannot contain spaces",
+                "meta": ["type"]
+            },
+            "maf": {
+                "type": "string",
+                "format": "file-path",
+                "pattern": "^\\S+\\.maf$",
+                "errorMessage": "MAF file for sample cannot contain spaces and must have extension '.maf' "
+            },
+            "standard_bam": {
+                "type": "string",
+                "format": "file-path",
+                "pattern": "^\\S+\\.bam$",
+                "errorMessage": "BAM file for standard sample cannot contain spaces and must have extension '.bam' "
+            },
+            "standard_bai": {
+                "type": "string",
+                "format": "file-path",
+                "pattern": "^\\S+\\.bai$",
+                "errorMessage": "BAM index file for standard sample cannot contain spaces and must have extension '.bai' "
+            },
+            "duplex_bam": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.bam$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "errorMessage": "Duplex BAM file for sample cannot contain spaces and must have extension '.bam' "
             },
-            "control_bam": {
+            "duplex_bai": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.bam$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "errorMessage": "Duplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
             },
-            "case_bai": {
+            "simplex_bam": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.bai$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+\\.bam$",
+                "errorMessage": "Simplex BAM file for sample cannot contain spaces and must have extension '.bam' "
             },
-            "control_bai": {
+            "simplx_bai": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.bai$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+\\.bam$",
+                "errorMessage": "Simplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
             }
         },
         "required": []

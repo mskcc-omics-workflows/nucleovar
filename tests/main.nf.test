@@ -1,0 +1,33 @@
+nextflow_pipeline {
+
+    name "Test nucleovar"
+    script "../main.nf"
+    tag "pipeline"
+    tag "pipeline_nucleovar"
+
+    test("Run with profile test") {
+
+        when {
+            params {
+                outdir                       = "results"
+                max_cpus                     = 2
+                max_memory                   = '6.GB'
+                max_time                     = '6.h'
+                input                        = "$projectDir/tests/resources/v1.0/updated_pipeline_input.csv"
+                rules_json                   = "$projectDir/tests/resources/v1.0/example_rules.json"
+                aux_bams                     = "$projectDir/tests/resources/v1.0/test_aux_bams.csv"
+                fasta                        = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.fasta"
+                fai                          = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.fasta.fai"
+                canonical_bed                = "$projectDir/tests/resources/v1.0/MSK-ACCESS-v1_0panelA_canonicaltargets_500buffer.bed"
+                target_bed                   = null
+                dict                         = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.dict"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success }
+            )
+        }
+    }
+}
