@@ -1,6 +1,6 @@
 process GENOTYPEVARIANTS_ALL {
     tag "$meta.id"
-    label 'process_single'
+    label 'process_medium'
 
 
     conda "${moduleDir}/environment.yml"

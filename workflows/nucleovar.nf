@@ -32,6 +32,8 @@ include { BEDTOOLS_MERGE } from '../modules/nf-core/bedtools/merge/main'
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
 include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main' 
+include { TRACEBACK } from '../subworkflows/msk/traceback/main'
+include { PVMAF_TAGTRACEBACK } from '../modules/msk/pvmaf/tagtraceback'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 
@@ -133,13 +135,12 @@ workflow NUCLEOVAR {
 
 
     MUTECT1(input1_for_mutect,input2_for_mutect)
-    MUTECT2( input1_for_mutect,input2_for_mutect )
-
-
-
+    // MUTECT2( input1_for_mutect,input2_for_mutect )
 
     // mutect_vcf = MUTECT1.out.mutect_vcf
     // mutect_txt = MUTECT1.out.standard_mutect_output
+
+    // mutect2_vcf = MUTECT2.out.mutect2_vcf 
 
     // mutect_txt.map{ meta,file -> file}.set{ mutect_txt_isolated }
 
@@ -147,48 +148,55 @@ workflow NUCLEOVAR {
         
     
 
-        ////////////////////////////////////////
+        
 
-        // MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
-        // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
+    //MUTECT_FILTER(input1_for_mutect_filter,fasta_ref)
+    // //mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
-        // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-        // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
-        // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,fasta_ref,fasta_index )
     
-        // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
-        // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
+    // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+    // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+    // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    
+    // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+    // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
     
         
 
         
-        // // // // temp testing mutect filtered vcf (permission error in mutect filter)
-        // // // mutect_filtered_vcf = Channel.fromPath("/Users/naidur/ACCESS/access_pipeline/test_data/test_data/MSK_data/DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex-C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filter.mutect.vcf")
+    //     // // // // temp testing mutect filtered vcf (permission error in mutect filter)
+    mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
     
-        // BCFTOOLS_MUTECT( mutect_filtered_vcf,fasta_ref,fasta_index )
-        // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-        // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
+    BCFTOOLS_REHEADER( mutect_filtered_vcf )
+    BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+    // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
 
-        // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-        // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
-        // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+    //     // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
+    //     // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf,vardict_index,mutect_index )
+    //     // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
-        // BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
+    //     // BCFTOOLS_ANNOTATE(vardict_concat_vcf,mutect_concat_vcf)
 
-        // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+    //     // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-        // Genome nexus subworkflow
-        // GENOME_NEXUS( )
+    // // Genome nexus subworkflow
+    // sample_id_names.combine(mutect_filtered_vcf).set{ test }
+    // GENOME_NEXUS( test ) 
+
+    // input_maf = GENOME_NEXUS.out.maf
+    // input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
+    
         
-        // traceback subworkflow
-        //input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
-        //mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(input_maf)
+    //     // traceback subworkflow
+    //     //input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+    // mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
 
-        //case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+    // case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
-        //TRACEBACK( bams, mafs, fasta, fasta_fai )
-        //PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
+    // TRACEBACK( bams, mafs, fasta_ref, fasta_index )
+    // PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
 
         // maf_processing module (tag by rules)
 

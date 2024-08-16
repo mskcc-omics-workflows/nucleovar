@@ -13,14 +13,14 @@ nextflow_pipeline {
                 max_cpus                     = 2
                 max_memory                   = '6.GB'
                 max_time                     = '6.h'
-                input                        = "$projectDir/tests/resources/v1.0/updated_pipeline_input.csv"
-                rules_json                   = "$projectDir/tests/resources/v1.0/example_rules.json"
-                aux_bams                     = "$projectDir/tests/resources/v1.0/test_aux_bams.csv"
-                fasta                        = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.fasta"
-                fai                          = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.fasta.fai"
+                input                        = "$projectDir/tests/resources/v1.0/pipeline_input.csv"
+                rules_json                   = "$projectDir/tests/resources/v1.0/rules.json"
+                aux_bams                     = "$projectDir/tests/resources/v1.0/aux_bams.csv"
+                fasta                        = "/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta"
+                fai                          = "/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta.fai"
                 canonical_bed                = "$projectDir/tests/resources/v1.0/MSK-ACCESS-v1_0panelA_canonicaltargets_500buffer.bed"
                 target_bed                   = null
-                dict                         = "$projectDir/tests/resources/v1.0/Homo_sapiens_assembly19.dict"
+                dict                         = "/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.dict"
             }
         }
 

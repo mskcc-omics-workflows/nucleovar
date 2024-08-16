@@ -2,7 +2,11 @@ process VARDICTJAVA {
     tag "$meta.id"
     label 'process_high'
 
-    conda "${moduleDir}/vardict-java.yml"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mulled-v2-731b8c4cf44d76e9aa181af565b9eee448d82a8c:edd70e76f3529411a748168f6eb1a61f29702123-0' :
+        'biocontainers/mulled-v2-731b8c4cf44d76e9aa181af565b9eee448d82a8c:edd70e76f3529411a748168f6eb1a61f29702123-0' }"
+
 
     input:
     tuple val(meta), path(bams), path(bais), path(bed)
@@ -39,7 +43,7 @@ process VARDICTJAVA {
     | ${filter} \\
     | ${convert_to_vcf} \\
         ${args2} \\
-        "C-2HXC96-P001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex|DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex" \\
+        "${meta.case_id}|${meta.control_id}" \\
     > ${prefix}.vcf
 
     cat <<-END_VERSIONS > versions.yml

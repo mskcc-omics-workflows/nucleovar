@@ -61,8 +61,6 @@ workflow BCFTOOLS_MUTECT {
 
     main:
 
-    
-    
     BGZIP_INDEX( mutect_filtered_vcf,ref_fasta,ref_fasta_index )
 
     standard_sample_vcf_and_index = BGZIP_INDEX.out.sample_vcf_and_index

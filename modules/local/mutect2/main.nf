@@ -14,11 +14,7 @@ process MUTECT2 {
     tuple path(bed_file), path(fasta_file), path(fasta_index_file), path(fasta_dict_file)
 
     output:
-    
-    tuple val(meta), path(case_bam), path(control_bam), path(case_bai), path(control_bai)
-    tuple path(bed_file), path(fasta_file), path(fasta_index_file), path(fasta_dict_file)
-    
-    path "versions.yml"           , emit: versions
+    path("*.mutect2.vcf"), emit: mutect2_vcf
 
     when:
     task.ext.when == null || task.ext.when
