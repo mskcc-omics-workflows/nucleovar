@@ -20,6 +20,7 @@
 
 include { BCFTOOLS_VARDICT     } from '../subworkflows/local/bcftools_vardict'
 include { BCFTOOLS_MUTECT     } from '../subworkflows/local/bcftools_mutect'
+include { BCFTOOLS_REHEADER } from '../modules/nf-core/bcftools/reheader/main' 
 include { CALL_VARIANTS_CASECONTROL     } from '../subworkflows/local/call_variants_casecontrol'
 include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_concat_vardicts'
 include { MODULE4     } from '../subworkflows/local/module4'
