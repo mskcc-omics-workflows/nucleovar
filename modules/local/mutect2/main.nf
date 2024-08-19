@@ -14,7 +14,7 @@ process MUTECT2 {
     tuple path(bed_file), path(fasta_file), path(fasta_index_file), path(fasta_dict_file)
 
     output:
-    path("*.mutect2.vcf"), emit: mutect2_vcf
+    tuple val(meta), path("*.mutect2.vcf"), emit: mutect2_vcf
 
     when:
     task.ext.when == null || task.ext.when

@@ -102,17 +102,17 @@ workflow NORM_STANDARD_ {
     main:
     
     BCFTOOLS_NORM( sample_vcf_and_index, meta_plus_fasta_ch )
-    vardict_normalized_vcf = BCFTOOLS_NORM.out.vcf
+    vardict_std_normalized_vcf = BCFTOOLS_NORM.out.vcf
 
-    sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
+    // sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
 
-    sample_metamap
-        .combine(vardict_normalized_vcf)
-        .set{ meta_plus_vardict_normalized_vcf_ch }
+    // sample_metamap
+    //     .combine(vardict_normalized_vcf)
+    //     .set{ meta_plus_vardict_normalized_vcf_ch }
 
 
     emit:
-    meta_plus_vardict_normalized_vcf_ch
+    vardict_std_normalized_vcf
 
 }
 
@@ -123,17 +123,17 @@ workflow NORM_COMPLEXVAR_ {
 
     main:
     BCFTOOLS_NORM( sample_vcf_and_index, meta_plus_fasta_ch )
-    vardict_normalized_vcf = BCFTOOLS_NORM.out.vcf
+    vardict_complexvar_normalized_vcf = BCFTOOLS_NORM.out.vcf
 
-    sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
+    // sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
 
 
-    sample_metamap
-        .combine(vardict_normalized_vcf)
-        .set{ meta_plus_vardict_normalized_vcf_ch }
+    // sample_metamap
+    //     .combine(vardict_normalized_vcf)
+    //     .set{ meta_plus_vardict_normalized_vcf_ch }
     
     emit:
-    meta_plus_vardict_normalized_vcf_ch
+    vardict_complexvar_normalized_vcf
     
 }
 
@@ -155,6 +155,7 @@ workflow BCFTOOLS_VARDICT {
 
     standard_sample_vcf_and_index = BGZIP_INDEX_STANDARD_.out.sample_vcf_and_index
     standard_meta_plus_fasta = BGZIP_INDEX_STANDARD_.out.meta_plus_fasta_ch
+    standard_meta_plus_fasta.map{ meta,fasta -> meta}.set{ sample_meta }
 
     complexvar_sample_vcf_and_index = BGZIP_INDEX_COMPLEXVAR_.out.sample_vcf_and_index
     complexvar_meta_plus_fasta = BGZIP_INDEX_COMPLEXVAR_.out.meta_plus_fasta_ch
@@ -163,16 +164,11 @@ workflow BCFTOOLS_VARDICT {
     NORM_STANDARD_( standard_sample_vcf_and_index,standard_meta_plus_fasta )
     NORM_COMPLEXVAR_( complexvar_sample_vcf_and_index,standard_meta_plus_fasta )
 
-    standard_norm_sorted_vcf = NORM_STANDARD_.out.meta_plus_vardict_normalized_vcf_ch
+    standard_norm_sorted_vcf = NORM_STANDARD_.out.vardict_std_normalized_vcf
     
-    complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.meta_plus_vardict_normalized_vcf_ch
+    complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.vardict_complexvar_normalized_vcf
 
-    standard_sample_vcf_and_index.map{sample,vcf,index -> sample}.set{sample_metamap_standard}
-    complexvar_sample_vcf_and_index.map{sample,vcf,index -> sample}.set{sample_metamap_complexvar}
-
-
-
-    standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_standard}
+    standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{vardict_index}
     complexvar_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_complexvar}
 
     standard_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_standard}
@@ -180,7 +176,7 @@ workflow BCFTOOLS_VARDICT {
 
     
     
-    sample_metamap_standard
+    sample_meta
         .combine(vcf_standard)
         .combine(vcf_complexvar)
         .set{ inputs_for_bcftools_concat_ch }
@@ -188,8 +184,6 @@ workflow BCFTOOLS_VARDICT {
     
     BCFTOOLS_CONCAT( inputs_for_bcftools_concat_ch )
     vardict_concat_vcf = BCFTOOLS_CONCAT.out.concat_vcf
-
-    standard_sample_vcf_and_index.map{ id,vcf,index -> index}.set{ vardict_index }
 
     emit:
     vardict_concat_vcf

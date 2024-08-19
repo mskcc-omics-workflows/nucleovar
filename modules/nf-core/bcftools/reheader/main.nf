@@ -8,11 +8,10 @@ process BCFTOOLS_REHEADER {
         'biocontainers/bcftools:1.20--h8b25389_0' }"
 
     input:
-    tuple val(meta), path(vcf), path(header), path(samples)
-    tuple val(meta2), path(fai)
+    tuple val(meta), path(vcf), path(samples)
 
     output:
-    tuple val(meta), path("*.{vcf,vcf.gz,bcf,bcf.gz}"), emit: vcf
+    tuple val(meta), path("*.vcf"), emit: sample_reordered_vcf
     path "versions.yml"                               , emit: versions
 
     when:
@@ -21,28 +20,9 @@ process BCFTOOLS_REHEADER {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def fai_argument      = fai ? "--fai $fai" : ""
-    def header_argument   = header ? "--header $header" : ""
-    def samples_argument  = samples ? "--samples $samples" : ""
-
-    def args2 = task.ext.args2 ?: '--output-type z'
-    def extension = args2.contains("--output-type b") || args2.contains("-Ob") ? "bcf.gz" :
-                    args2.contains("--output-type u") || args2.contains("-Ou") ? "bcf" :
-                    args2.contains("--output-type z") || args2.contains("-Oz") ? "vcf.gz" :
-                    args2.contains("--output-type v") || args2.contains("-Ov") ? "vcf" :
-                    "vcf"
     """
-    bcftools \\
-        reheader \\
-        $fai_argument \\
-        $header_argument \\
-        $samples_argument \\
-        $args \\
-        --threads $task.cpus \\
-        $vcf \\
-        | bcftools view \\
-        $args2 \\
-        --output ${prefix}.${extension}
+    bcftools reheader -s ${samples} -o ${vcf.BaseName}_reordered.vcf ${vcf}
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -53,12 +33,6 @@ process BCFTOOLS_REHEADER {
     stub:
     def args2 = task.ext.args2 ?: '--output-type z'
     def prefix = task.ext.prefix ?: "${meta.id}"
-
-    def extension = args2.contains("--output-type b") || args2.contains("-Ob") ? "bcf.gz" :
-                    args2.contains("--output-type u") || args2.contains("-Ou") ? "bcf" :
-                    args2.contains("--output-type z") || args2.contains("-Oz") ? "vcf.gz" :
-                    args2.contains("--output-type v") || args2.contains("-Ov") ? "vcf" :
-                    "vcf"
     """
     touch ${prefix}.${extension}
 

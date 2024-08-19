@@ -12,7 +12,7 @@ process BCFTOOLS_NORM {
     tuple val(meta2), path(fasta)
 
     output:
-    path("${meta.id}_norm_sorted.vcf.gz")  , emit: vcf
+    tuple val(meta), path("*_sorted.vcf.gz")  , emit: vcf
     path "versions.yml"                 , emit: versions
 
     when:

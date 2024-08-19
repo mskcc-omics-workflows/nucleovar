@@ -2,7 +2,7 @@ process MUTECT_FILTER {
     tag "$meta.id"
     label 'process_single'
 
-    container "ghcr.io/msk-access/postprocessing_variant_calls:postprocessing_0.0.5"
+    container "ghcr.io/msk-access/postprocessing_variant_calls:mutect_filter_0.0.1"
 
     input:
     tuple val(meta), path(mutect_vcf_file), path(mutect_txt_file)
@@ -10,8 +10,8 @@ process MUTECT_FILTER {
     
 
     output:
-    path("*.mutect_filtered.vcf"),                     emit: mutect_filtered_vcf
-    path("*.mutect_filtered.txt"),                     emit: std_mutect_filter_output
+    path("*_filtered.vcf"),                     emit: mutect_filtered_vcf
+    path("*_filtered.txt"),                     emit: std_mutect_filter_output
     //path "versions.yml", emit: versions
 
     when:
