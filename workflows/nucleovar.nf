@@ -91,128 +91,128 @@ workflow NUCLEOVAR {
     fasta_index = params.fai
     fasta_dict = params.dict
 
-    if (params.target_bed == null) {
-        println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
-        sample_id_names
-            .map { meta -> [meta.case_id,meta.control_id] }
-            .map { items -> items.join('\n') }
-            .view { data -> new File('sample_order.txt').text = data }
-        sample_order_file = Channel.fromPath('sample_order.txt')
-        //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
-        case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
+    // if (params.target_bed == null) {
+    //     println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
+    //     sample_id_names
+    //         .map { meta -> [meta.case_id,meta.control_id] }
+    //         .map { items -> items.join('\n') }
+    //         .view { data -> new File('sample_order.txt').text = data }
+    //     sample_order_file = Channel.fromPath('sample_order.txt')
+    //     //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
+    //     case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
 
-        sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
-        SAMTOOLS_SORT( input_tumorbam_for_bedtools )
-        sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
-        target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
-    }
-    else {
-        println "Target BED file is provided."
-        target_bed_file = params.target_bed
-    }
+    //     sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
+    //     SAMTOOLS_SORT( input_tumorbam_for_bedtools )
+    //     sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
+    //     target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
+    // }
+    // else {
+    //     println "Target BED file is provided."
+    //     target_bed_file = params.target_bed
+    // }
 
-    CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
-    vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
+    // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
+    // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
 
-    vardict_filtered_vcfs
-        .map{ standard_vcf,complexvar_vcf -> standard_vcf}
-        .set{ vardict_filtered_vcf_standard }
+    // vardict_filtered_vcfs
+    //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
+    //     .set{ vardict_filtered_vcf_standard }
 
-    vardict_filtered_vcfs
-        .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
-        .set{ vardict_filtered_vcf_complexvar }
-
-
-
-    target_bed_file
-        .combine(Channel.from(fasta_ref))
-        .combine(Channel.from(fasta_index))
-        .combine(Channel.from(fasta_dict))
-        .set{ input2_for_mutect }
-
-
-    duplex_bams
-        .map{ meta,control_bam,control_bai,case_bam,case_bai ->
-            tuple(case_bam,control_bam,case_bai,control_bai)}
-        .set{ bams_for_mutect }
-
-    sample_id_names
-        .combine(bams_for_mutect)
-        .set{ input1_for_mutect }
+    // vardict_filtered_vcfs
+    //     .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
+    //     .set{ vardict_filtered_vcf_complexvar }
 
 
 
-    MUTECT1(input1_for_mutect,input2_for_mutect)
-    MUTECT2( input1_for_mutect,input2_for_mutect )
+    // target_bed_file
+    //     .combine(Channel.from(fasta_ref))
+    //     .combine(Channel.from(fasta_index))
+    //     .combine(Channel.from(fasta_dict))
+    //     .set{ input2_for_mutect }
 
-    mutect1_vcf = MUTECT1.out.mutect_vcf
-    mutect1_txt = MUTECT1.out.standard_mutect_output
-    mutect2_vcf = MUTECT2.out.mutect2_vcf
 
+    // duplex_bams
+    //     .map{ meta,control_bam,control_bai,case_bam,case_bai ->
+    //         tuple(case_bam,control_bam,case_bai,control_bai)}
+    //     .set{ bams_for_mutect }
 
-    mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
-    mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-
-    MUTECT1_REHEADER( input_for_mutect1_reheader )
-    MUTECT2_REHEADER( input_for_mutect2_reheader )
-
-    mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
-
-    mutect1_ordered_vcf.combine(mutect1_txt).set{ input_for_mutect_filter }
-
-    MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
-    mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
+    // sample_id_names
+    //     .combine(bams_for_mutect)
+    //     .set{ input1_for_mutect }
 
 
 
-    sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-    sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
-    BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    // MUTECT1(input1_for_mutect,input2_for_mutect)
+    // MUTECT2( input1_for_mutect,input2_for_mutect )
 
-    vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
-    vardict_index = BCFTOOLS_VARDICT.out.vardict_index
-
-
+    // mutect1_vcf = MUTECT1.out.mutect_vcf
+    // mutect1_txt = MUTECT1.out.standard_mutect_output
+    // mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
-    //     // // // // temp testing mutect filtered vcf (permission error in mutect filter)
-    //mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
+    // mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
+    // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
+
+    // MUTECT1_REHEADER( input_for_mutect1_reheader )
+    // MUTECT2_REHEADER( input_for_mutect2_reheader )
+
+    // mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
+
+    // mutect1_ordered_vcf.combine(mutect1_txt).set{ input_for_mutect_filter }
+
+    // MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
+    // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
 
 
-    BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
-    mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-    mutect_index = BCFTOOLS_MUTECT.out.mutect_index
+    // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+    // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+    // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
+
+    // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+    // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
 
 
-    vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-    mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
-
-    BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
-    sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
 
-    sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
-    mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
-    sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
-
-    //NOTE: turn into argument on CLI
-    //header_file = Channel.from("/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/mutect_annotate_concat_header.txt")
+    // //     // // // // temp testing mutect filtered vcf (permission error in mutect filter)
+    // //mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
 
 
-    BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
-    annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+
+    // BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+    // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
 
-    // // Genome nexus subworkflow
-    GENOME_NEXUS( annotated_vcf )
+    // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
+    // mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
 
-    input_maf = GENOME_NEXUS.out.maf
-    input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
+    // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
+    // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+
+
+    // sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
+    // mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
+    // sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
+
+    // //NOTE: turn into argument on CLI
+    // header_file = Channel.from("/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/mutect_annotate_concat_header.txt")
+
+
+    // BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
+    // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+
+
+    // // // Genome nexus subworkflow
+    // GENOME_NEXUS( annotated_vcf )
+
+    // input_maf = GENOME_NEXUS.out.maf
+    // input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
 
 
     //     // traceback subworkflow
-    //     //input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+    test_maf_only = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
     mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
 
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
@@ -220,14 +220,14 @@ workflow NUCLEOVAR {
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
     PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
     genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
-    // maf_processing module (tag by rules)
-    MAF_PROCESSING( genotyped_maf, rules_file )
-    tagged_maf = MAF_PROCESSING.out.maf
-    // access filters
-    ACCESS_FILTERS( tagged_maf )
-    access_filtered_maf = ACCESS_FILTERS.out.maf
-    // mpath loading script module
-    TAG_BY_VARIANT_ANNOTATION( access_filtered_maf )
+    // // maf_processing module (tag by rules)
+    // MAF_PROCESSING( genotyped_maf, rules_file )
+    // tagged_maf = MAF_PROCESSING.out.maf
+    // // access filters
+    // ACCESS_FILTERS( tagged_maf )
+    // access_filtered_maf = ACCESS_FILTERS.out.maf
+    // // mpath loading script module
+    // TAG_BY_VARIANT_ANNOTATION( access_filtered_maf )
 
 
 
@@ -238,7 +238,7 @@ workflow NUCLEOVAR {
         .set { ch_collated_versions }
 
     emit:
-    // //multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    genotyped_maf
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 
