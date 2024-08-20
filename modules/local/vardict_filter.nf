@@ -6,13 +6,13 @@ process VARDICT_FILTER {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3':
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3' }"
-    
+
 
     input:
     val(meta)
     path(vardict_vcf_file)
     path(bams)
-    
+
 
     output:
     path("*.vcf"),                     emit: filtered_vardict_vcf
@@ -27,7 +27,7 @@ process VARDICT_FILTER {
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
     def paired_mode = bams instanceof List && bams.size() == 2 ? true : false
-    
+
 
     """
 
@@ -35,7 +35,7 @@ process VARDICT_FILTER {
     --inputVcf ${vardict_vcf_file} \
     --tsampleName ${meta.case_id} \
     ${args}
-    
+
     """
 
 
@@ -59,7 +59,7 @@ process VARDICT_FILTER {
     // def vardict_vcf_file = vardict_vcf_file ? "--inputVcf ${vardict_vcf_file}" : ''
 
     // """
-    // mkdir vardict_filtered_output/${prefix} 
+    // mkdir vardict_filtered_output/${prefix}
     // touch vardict_filtered_output/${prefix}/${prefix}.vcf
     // touch vardict_filtered_output/${prefix}/${prefix}.complex.vcf
     // touch vardict_filtered_output/${prefix}/${prefix}.txt

@@ -2,11 +2,11 @@
 
 //import bcftools subworkflow for vardict filtered regular
 include { TABIX_BGZIPTABIX } from '../../modules/nf-core/tabix/bgziptabix/main'
-include { BGZIP } from '../../modules/nf-core/tabix/bgzip/main' 
+include { BGZIP } from '../../modules/nf-core/tabix/bgzip/main'
 include { BCFTOOLS_INDEX } from '../../modules/nf-core/bcftools/index/main'
-include { BCFTOOLS_NORM } from '../../modules/nf-core/bcftools/norm/main' 
-include { BCFTOOLS_SORT } from '../../modules/nf-core/bcftools/sort/main' 
-include { BCFTOOLS_CONCAT } from '../../modules/nf-core/bcftools/concat/main' 
+include { BCFTOOLS_NORM } from '../../modules/nf-core/bcftools/norm/main'
+include { BCFTOOLS_SORT } from '../../modules/nf-core/bcftools/sort/main'
+include { BCFTOOLS_CONCAT } from '../../modules/nf-core/bcftools/concat/main'
 //include { BCFTOOLS_ALL_VARDICT     } from '../subworkflows/local/bcftools_all_vardict'
 
 workflow BGZIP_INDEX_STANDARD_ {
@@ -14,7 +14,7 @@ workflow BGZIP_INDEX_STANDARD_ {
     vardict_filtered_vcf
     ref_fasta
     ref_fasta_index
-    
+
 
     main:
     vardict_filtered_vcf
@@ -29,14 +29,14 @@ workflow BGZIP_INDEX_STANDARD_ {
         .combine( ref_fasta )
         .set{ meta_plus_fasta_ch }
 
-    
+
     BCFTOOLS_INDEX( vardict_filtered_vcf_for_bcftools_ch )
     sample_vcf_and_index = BCFTOOLS_INDEX.out.tbi
 
     sample_vcf_and_index
         .map{ sample,vcf,index -> sample}
         .set{ sample_metamap }
-    
+
     sample_vcf_and_index
         .map{ sample,vcf,index -> index}
         .set{ isolated_index }
@@ -57,7 +57,7 @@ workflow BGZIP_INDEX_COMPLEXVAR_ {
     vardict_filtered_vcf
     ref_fasta
     ref_fasta_index
-    
+
 
     main:
     vardict_filtered_vcf
@@ -72,14 +72,14 @@ workflow BGZIP_INDEX_COMPLEXVAR_ {
         .combine( ref_fasta )
         .set{ meta_plus_fasta_ch }
 
-    
+
     BCFTOOLS_INDEX( vardict_filtered_vcf_for_bcftools_ch )
     sample_vcf_and_index = BCFTOOLS_INDEX.out.tbi
 
     sample_vcf_and_index
         .map{ sample,vcf,index -> sample}
         .set{ sample_metamap }
-    
+
     sample_vcf_and_index
         .map{ sample,vcf,index -> index}
         .set{ isolated_index }
@@ -87,7 +87,7 @@ workflow BGZIP_INDEX_COMPLEXVAR_ {
     sample_metamap
         .combine(ref_fasta)
         .set{ meta_plus_fasta_ch }
-    
+
     emit:
     sample_vcf_and_index
     meta_plus_fasta_ch
@@ -100,7 +100,7 @@ workflow NORM_STANDARD_ {
     meta_plus_fasta_ch
 
     main:
-    
+
     BCFTOOLS_NORM( sample_vcf_and_index, meta_plus_fasta_ch )
     vardict_std_normalized_vcf = BCFTOOLS_NORM.out.vcf
 
@@ -131,10 +131,10 @@ workflow NORM_COMPLEXVAR_ {
     // sample_metamap
     //     .combine(vardict_normalized_vcf)
     //     .set{ meta_plus_vardict_normalized_vcf_ch }
-    
+
     emit:
     vardict_complexvar_normalized_vcf
-    
+
 }
 
 
@@ -146,10 +146,10 @@ workflow BCFTOOLS_VARDICT {
     ref_fasta
     ref_fasta_index
 
-    
+
 
     main:
-    
+
     BGZIP_INDEX_STANDARD_( vardict_filtered_vcf_std,ref_fasta,ref_fasta_index )
     BGZIP_INDEX_COMPLEXVAR_( vardict_filtered_vcf_complexvar,ref_fasta,ref_fasta_index )
 
@@ -159,13 +159,13 @@ workflow BCFTOOLS_VARDICT {
 
     complexvar_sample_vcf_and_index = BGZIP_INDEX_COMPLEXVAR_.out.sample_vcf_and_index
     complexvar_meta_plus_fasta = BGZIP_INDEX_COMPLEXVAR_.out.meta_plus_fasta_ch
-    
-    
+
+
     NORM_STANDARD_( standard_sample_vcf_and_index,standard_meta_plus_fasta )
     NORM_COMPLEXVAR_( complexvar_sample_vcf_and_index,standard_meta_plus_fasta )
 
     standard_norm_sorted_vcf = NORM_STANDARD_.out.vardict_std_normalized_vcf
-    
+
     complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.vardict_complexvar_normalized_vcf
 
     standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{vardict_index}
@@ -174,21 +174,21 @@ workflow BCFTOOLS_VARDICT {
     standard_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_standard}
     complexvar_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_complexvar}
 
-    
-    
+
+
     sample_meta
         .combine(vcf_standard)
         .combine(vcf_complexvar)
         .set{ inputs_for_bcftools_concat_ch }
-    
-    
+
+
     BCFTOOLS_CONCAT( inputs_for_bcftools_concat_ch )
     vardict_concat_vcf = BCFTOOLS_CONCAT.out.concat_vcf
 
     emit:
     vardict_concat_vcf
     vardict_index
-    
+
 
 }
 

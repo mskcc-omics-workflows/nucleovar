@@ -79,7 +79,7 @@ workflow PIPELINE_INITIALISATION {
     //
     input1 = Channel.fromPath(input)
     input2 = Channel.fromPath(input)
-    
+
     input1
         .splitCsv(header: true)
         .set { ch_samplesheet }
@@ -89,12 +89,12 @@ workflow PIPELINE_INITIALISATION {
         .collect()
         .map{ [id:"${it[1]}_${it[0]}",case_id:it[0],control_id:it[1]] }
         .set{ sample_id_names_ch }
-    
+
     ch_samplesheet
         .branch{ row -> standard: row.type == "standard"
             return tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,row.standard_bai) }
         .set{ standard_bams_ch }
-    
+
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
             return tuple(row.duplex_bam,row.duplex_bai) }
@@ -154,9 +154,9 @@ workflow PIPELINE_INITIALISATION {
             [] )}
         .filter { item -> item[1] != 'null' }
         .set{ normal_bams_ch }
-        
 
-    
+
+
 
     emit:
     samplesheet = ch_samplesheet
@@ -171,7 +171,7 @@ workflow PIPELINE_INITIALISATION {
     samplesheets_for_traceback = samplesheets_for_traceback_ch
     aux_bams = aux_bams_ch
     normal_bams = normal_bams_ch
-    
+
 }
 
 /*

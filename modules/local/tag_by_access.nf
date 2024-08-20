@@ -6,7 +6,7 @@ process MUTECT_FILTER {
 
     input:
     tuple val(meta), path(maf), path(rules_json_file)
-    
+
 
     output:
     path("*.maf"),                     emit: tagged_maf
@@ -18,11 +18,11 @@ process MUTECT_FILTER {
     script:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    
+
 
     """
-    
+
     pv maf tag by_rules --maf ${maf} --rules ${rules_json_file}
-    
+
     """
 }

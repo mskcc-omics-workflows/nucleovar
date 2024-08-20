@@ -1,6 +1,6 @@
 process VCF2MAF {
     tag "$meta.id"
-    label 'process_low' 
+    label 'process_low'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,9 +10,9 @@ process VCF2MAF {
     input:
 
     tuple val(meta), path(vcf), path(ref_fasta)
-    
+
     output:
-    
+
     tuple val(meta), path("*.maf"), emit: maf
 
 
@@ -23,7 +23,7 @@ process VCF2MAF {
     def args = task.ext.args ?: ''
     def args2 = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-   
+
     """
     vcf2maf.pl $args \\
     --normal-id ${meta.control_id} \\
@@ -38,11 +38,11 @@ process VCF2MAF {
 
 
     cat <<-END_VERSIONS > versions.yml
-    "${task.process}": 
+    "${task.process}":
         vcf2maf: \$(echo \$(vcf2maf.pl --help) | echo 'vcf2maf version 1.6.21 VEP v105')
     END_VERSIONS
     """
-    
+
     stub:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args ?: ''
@@ -52,7 +52,7 @@ process VCF2MAF {
     echo "stub test" >> ${prefix}.maf
 
     cat <<-END_VERSIONS > versions.yml
-    "${task.process}": 
+    "${task.process}":
         vcf2maf: \$(echo \$(vcf2maf.pl --help) | echo 'vcf2maf version 1.6.21 VEP v105')
     END_VERSIONS
     """

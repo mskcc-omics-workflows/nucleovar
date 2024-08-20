@@ -3,7 +3,7 @@ process GUNZIP_LOCAL {
     label 'process_single'
     debug true
 
-    
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3' :
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.3' }"
@@ -20,7 +20,7 @@ process GUNZIP_LOCAL {
 
     script:
     def args = task.ext.args ?: ''
-    
+
     """
     gzip ${input_file} > ${input_file.baseName}
 

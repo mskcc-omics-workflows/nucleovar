@@ -15,7 +15,7 @@ process SAMTOOLS_SORT {
 
     when:
     task.ext.when == null || task.ext.when
-    
+
     script:
     """
     samtools sort $tumor_bam -o ${meta.case_id}_sorted.bam

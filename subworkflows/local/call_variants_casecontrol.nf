@@ -31,7 +31,7 @@ workflow CALL_VARIANTS_CASECONTROL {
 
 
 
-    
+
     VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)
     vardict_vcf = VARDICTJAVA.out.vcf
     vardict_vcf.map{ meta,vcf -> file(vcf)}.set{ vardict_vcf_isolated }
@@ -46,7 +46,7 @@ workflow CALL_VARIANTS_CASECONTROL {
 
     vardict_filter_output_txt = VARDICT_FILTER.out.std_vardict_filter_output
 
-    
+
     emit:
     vardict_filtered_vcfs
     vardict_filter_output_txt

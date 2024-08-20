@@ -17,12 +17,12 @@ workflow MODULE4 {
     aux_bams
     normal_bams
     fasta
-    fasta_fai 
-    //rules_json 
-    
+    fasta_fai
+    //rules_json
+
 
     main:
-    // temporary input maf for testing purposes 
+    // temporary input maf for testing purposes
     input_maf = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
     mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(input_maf)
 
@@ -41,10 +41,10 @@ workflow MODULE4 {
     //     .view()
     //     .set{ standard_bams_for_traceback }
 
-    
+
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
-    
-    // simplex/duplex channel input 
+
+    // simplex/duplex channel input
     TRACEBACK( bams, mafs, fasta, fasta_fai )
     // Tag with traceback columns aka combine ref stats from access and impact
     PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
@@ -57,10 +57,10 @@ workflow MODULE4 {
     // access filters
     // tag by variant classification
 
-   
 
-    
-    
+
+
+
 }
 
 
@@ -68,7 +68,7 @@ def mapMeta(metaMap) {
     // create meta map
     def meta = [:]
     meta.initial = '/Users/naidur/Desktop/header.txt'
-    inputs = meta 
+    inputs = meta
 }
 
 class MyChannel extends Channel {

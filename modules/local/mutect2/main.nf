@@ -1,7 +1,7 @@
 process MUTECT2 {
     tag "$meta.id"
     label 'process_low'
-    
+
 
 
     conda "${moduleDir}/environment.yml"
@@ -26,7 +26,7 @@ process MUTECT2 {
     def control_sample_name = task.ext.prefix ?: "${meta.control_id}"
     def bed_file = bed_file ? "--intervals ${bed_file}" : ''
 
-    
+
     """
     gatk "Mutect2" \\
     -R ${fasta_file} \\
@@ -37,6 +37,6 @@ process MUTECT2 {
     --disable-read-filter MateOnSameContigOrNoMappedMateReadFilter \\
     --minimum-allele-fraction .0002 \\
     --output ${meta.id}.mutect2.vcf
-    
+
     """
 }
