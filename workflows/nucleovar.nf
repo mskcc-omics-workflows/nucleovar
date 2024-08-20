@@ -25,7 +25,6 @@ include { BCFTOOLS_REHEADER as MUTECT2_REHEADER } from '../modules/local/bcftool
 include { BCFTOOLS_ANNOTATE } from '../modules/local/bcftools/annotate/main'
 include { CALL_VARIANTS_CASECONTROL     } from '../subworkflows/local/call_variants_casecontrol'
 include { BCFTOOLS_CONCAT_VARDICTS     } from '../subworkflows/local/bcftools_concat_vardicts'
-include { MODULE4     } from '../subworkflows/local/module4'
 include { GUNZIP_FILES     } from '../modules/local/gunzip_files'
 include { MUTECT1        } from '../modules/msk/mutect1'
 include { MUTECT2     } from '../modules/local/mutect2/main'

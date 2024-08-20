@@ -5,9 +5,9 @@ nextflow_pipeline {
     tag "pipeline"
     tag "pipeline_nucleovar"
 
+        
+    test("Run with profile test") {
 
-    test("stub") {
-        options "-stub"
         when {
             params {
                 outdir                       = "results"
@@ -16,7 +16,7 @@ nextflow_pipeline {
                 max_time                     = '6.h'
                 input                        = "$projectDir/tests/resources/v1.0/pipeline_input.csv"
                 rules_json                   = "$projectDir/tests/resources/v1.0/rules.json"
-                aux_bams                     = "$projectDir/tests/resources/v1.0/short_aux_bams.csv"
+                aux_bams                     = "$projectDir/tests/resources/v1.0/aux_bams.csv"
                 fasta                        = "/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta"
                 fai                          = "/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta.fai"
                 canonical_bed                = "$projectDir/tests/resources/v1.0/MSK-ACCESS-v1_0panelA_canonicaltargets_500buffer.bed"
@@ -31,4 +31,33 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("stub test") {
+        options "-stub"
+        when {
+            params {
+                outdir                       = "results"
+                max_cpus                     = 2
+                max_memory                   = '6.GB'
+                max_time                     = '6.h'
+                input                        = "https://raw.githubusercontent.com/nf-core/test-datasets/data/genomics/mus_musculus/rnaseq_expression/SRP254919.samplesheet.csv"
+                rules_json                   = "https://raw.githubusercontent.com/mskcc-omics-workflows/test-datasets/neoantigen/neoantigen/test4_mutass/0.json"
+                aux_bams                     = "https://raw.githubusercontent.com/nf-core/test-datasets/data/genomics/mus_musculus/rnaseq_expression/SRP254919.contrasts.csv"
+                fasta                        = "https://raw.githubusercontent.com/mskcc-omics-workflows/test-datasets/chr22/chr22/chr22.fasta"
+                fai                          = "https://raw.githubusercontent.com/mskcc-omics-workflows/test-datasets/chr22/chr22/chr22.fasta.fai"
+                canonical_bed                = "https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/genome/bed/test.bed"
+                target_bed                   = "https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/genome/bed/test2.bed"
+                dict                         = "https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/genome/genome.dict"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success }
+            )
+        }
+    }
 }
+
+
+
