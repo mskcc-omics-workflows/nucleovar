@@ -278,6 +278,9 @@
         },
         {
             "$ref": "#/definitions/generic_options"
+        },
+        {
+            "$ref": "#/definitions/reference_genome_options"
         }
     ]
 }
