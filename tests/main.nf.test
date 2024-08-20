@@ -5,7 +5,7 @@ nextflow_pipeline {
     tag "pipeline"
     tag "pipeline_nucleovar"
 
-        
+
     test("Run with profile test") {
 
         when {
@@ -58,6 +58,3 @@ nextflow_pipeline {
         }
     }
 }
-
-
-
