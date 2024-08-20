@@ -2,7 +2,7 @@
 
 //import bcftools subworkflow for vardict filtered regular
 //include { GUNZIP } from '../../modules/nf-core/gunzip/main'
-include { BCFTOOLS_CONCAT } from '../../modules/nf-core/bcftools/concat/main'
+include { BCFTOOLS_CONCAT } from '../../modules/local/bcftools/concat/main'
 include { GUNZIP_FILES } from '../../modules/local/gunzip_files'
 
 
