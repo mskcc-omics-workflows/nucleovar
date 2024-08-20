@@ -40,7 +40,7 @@ process BCFTOOLS_NORM {
         --temp-dir . \\
         $args \\
         ${prefix}_norm.vcf.gz
-    
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

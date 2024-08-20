@@ -29,8 +29,8 @@ process BCFTOOLS_INDEX {
         $args \\
         --threads $task.cpus \\
         ${vcf}.gz
-    
-    
+
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

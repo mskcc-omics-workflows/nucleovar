@@ -21,7 +21,7 @@ process BCFTOOLS_ANNOTATE {
     script:
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
-    
+
     """
     bcftools index --threads $task.cpus ${mutect_vcf}
     bcftools index --threads $task.cpus ${combined_vcf}

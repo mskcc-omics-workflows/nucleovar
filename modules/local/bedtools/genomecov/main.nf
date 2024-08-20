@@ -16,11 +16,11 @@ process BEDTOOLS_GENOMECOV {
 
     when:
     task.ext.when == null || task.ext.when
-    
+
     script:
     """
     bedtools genomecov -ibam ${sorted_tumor_bam} -bg > target.bedgraph
     bedtools merge -i target.bedgraph > ${meta.case_id}_target.bed
-    
+
     """
 }
