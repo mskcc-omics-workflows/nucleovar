@@ -65,18 +65,6 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to file containing curated simplex/duplex bams for traceback"
-                },
-                "maf_header": {
-                    "type": "string",
-                    "format": "file-path",
-                    "default": "/home/naidur/access_pipeline/inputs/maf_header.txt",
-                    "description": "Filepath to header MAF file used for traceback."
-                },
-                "maf_header_genotype": {
-                    "type": "string",
-                    "format": "file-path",
-                    "default": "/home/naidur/access_pipeline/inputs/maf_header_genotype.txt",
-                    "description": "Filepath to header genotype MAF file used for traceback."
                 }
             }
         },
