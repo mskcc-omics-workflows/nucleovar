@@ -61,7 +61,7 @@
                 "pattern": "^\\S+\\.bam$",
                 "errorMessage": "Simplex BAM file for sample cannot contain spaces and must have extension '.bam' "
             },
-            "simplx_bai": {
+            "simplex_bai": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
