@@ -44,4 +44,4 @@ jobs:
         # Remember that you can parallelise this by using strategy.matrix
         run: |
           wget -qO- https://get.nf-test.com | bash 
-          nf-test test --profile singularity --tag pipeline_nucleovar
+          bash nf-test test --profile singularity --tag pipeline_nucleovar
