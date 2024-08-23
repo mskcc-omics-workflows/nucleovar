@@ -40,7 +40,7 @@ jobs:
 
       - name: Run pipeline with stub test
         # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
+        # For example: addingig multiple test runs with different parameters
         # Remember that you can parallelise this by using strategy.matrix
         run: |
           wget --help
