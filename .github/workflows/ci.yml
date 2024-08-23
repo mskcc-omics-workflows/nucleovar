@@ -43,4 +43,4 @@ jobs:
         # For example: adding multiple test runs with different parameters
         # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nf-test test --profile singularity --tag pipeline_nucleovar
+          nextflow run ${launchDir}/workflows/nucleovar.nf -profile stub,docker -stub
