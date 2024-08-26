@@ -1,6 +1,6 @@
 sample_id,normal_path,duplex_path,simplex_path,type
-sample1,${projectDir}/tests/resources/v1.0/stub/standard.bam,null,null,TYPE
-sample2,null,${projectDir}/tests/resources/v1.0/stub/duplex.bam,${projectDir}/tests/resources/v1.0/stub/simplex.bam,TYPE
-sample3,null,${projectDir}/tests/resources/v1.0/stub/duplex.bam,${projectDir}/tests/resources/v1.0/stub/simplex.bam,TYPE
-sample4,${projectDir}/tests/resources/v1.0/stub/standard.bam,null,null,TYPE
+sample1,null,null,null,TYPE
+sample2,null,null,null,TYPE
+sample3,null,null,TYPE
+sample4,null,null,null,TYPE
 
