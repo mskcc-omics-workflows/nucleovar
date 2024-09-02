@@ -43,4 +43,4 @@ jobs:
         # For example: addingig multiple test runs with different parameters
         # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile stub -stub --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile stub,singularity -stub --outdir ./results
