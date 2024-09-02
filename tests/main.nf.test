@@ -14,7 +14,7 @@ nextflow_pipeline {
                 max_cpus                     = 2
                 max_memory                   = '6.GB'
                 max_time                     = '6.h'
-                input                        = "https://raw.githubusercontent.com/mskcc-omics-workflows/nucleovar/feature/call_variants/tests/resources/v1.0/pipeline_input.csv"
+                input                        = "/home/naidur/snvs_indels/nucleovar/tests/resources/stub/stub_pipeline_input.csv"
                 rules_json                   = "https://github.com/mskcc-omics-workflows/nucleovar/tree/feature/call_variants/tests/resources/stub/stub_rules.json"
                 aux_bams                     = "https://raw.githubusercontent.com/mskcc-omics-workflows/nucleovar/feature/call_variants/tests/resources/stub/stub_aux_bams.csv"
                 fasta                        = "https://github.com/nf-core/test-datasets/blob/modules/data/genomics/sarscov2/genome/genome.fasta"

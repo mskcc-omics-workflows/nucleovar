@@ -1,3 +1,3 @@
 patient_id,sample_id,type,maf,standard_bam,standard_bai,duplex_bam,duplex_bai,simplex_bam,simplex_bai
-null,sample1,CASE,null,null,null,/tests/resources/v1.0/stub/duplex.bam,/tests/resources/v1.0/stub/duplex.bai,/tests/resources/v1.0/stub/simplex.bam,/tests/resources/v1.0/stub/simplex.bai
-null,sample2,CONTROL,null,null,null,/tests/resources/v1.0/stub/duplex.bam,/tests/resources/v1.0/stub/duplex.bai,/tests/resources/v1.0/stub/simplex.bam,/tests/resources/v1.0/stub/simplex.bai
+null1,sample1,CASE,dummy1,dummy3,dummy4,dummy7,dummy8,dummy10,dummy14
+null,sample2,CONTROL,dummy2,dummy5,dummy6,dummy9,dummy11,dummy12,dummy13
