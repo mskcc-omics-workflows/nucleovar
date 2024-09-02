@@ -39,4 +39,14 @@ process MUTECT2 {
     --output ${meta.id}.mutect2.vcf
 
     """
+
+    stub:
+    """
+    touch ${meta.id}.mutect2.vcf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        gatk "Mutect2": \$(gatk "Mutect2" --version | sed -e "s/gatk "Mutect2" v//g")
+    END_VERSIONS
+    """
 }

@@ -97,7 +97,7 @@ workflow NUCLEOVAR {
             .map { items -> items.join('\n') }
             .view { data -> new File('sample_order.txt').text = data }
         sample_order_file = Channel.fromPath('sample_order.txt')
-        //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
+        // //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
         case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
 
         sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}

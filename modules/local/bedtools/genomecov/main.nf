@@ -23,4 +23,14 @@ process BEDTOOLS_GENOMECOV {
     bedtools merge -i target.bedgraph > ${meta.case_id}_target.bed
 
     """
+
+    stub:
+    """
+    touch ${meta.case_id}_target.bed
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
+    END_VERSIONS
+    """
 }
