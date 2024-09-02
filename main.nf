@@ -61,7 +61,7 @@ workflow MSK_NUCLEOVAR {
         normal_bams    )
 
     emit:
-    genotyped_maf = NUCLEOVAR.out.genotyped_maf
+    mutect2_vcf = NUCLEOVAR.out.mutect2_vcf
     versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
 
 }

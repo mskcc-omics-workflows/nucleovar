@@ -90,25 +90,25 @@ workflow NUCLEOVAR {
     fasta_index = params.fai
     fasta_dict = params.dict
 
-    // if (params.target_bed == null) {
-    //     println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
-    //     sample_id_names
-    //         .map { meta -> [meta.case_id,meta.control_id] }
-    //         .map { items -> items.join('\n') }
-    //         .view { data -> new File('sample_order.txt').text = data }
-    //     sample_order_file = Channel.fromPath('sample_order.txt')
-    //     //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
-    //     case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
+    if (params.target_bed == null) {
+        println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
+        sample_id_names
+            .map { meta -> [meta.case_id,meta.control_id] }
+            .map { items -> items.join('\n') }
+            .view { data -> new File('sample_order.txt').text = data }
+        sample_order_file = Channel.fromPath('sample_order.txt')
+        //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
+        case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
 
-    //     sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
-    //     SAMTOOLS_SORT( input_tumorbam_for_bedtools )
-    //     sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
-    //     target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
-    // }
-    // else {
-    //     println "Target BED file is provided."
-    //     target_bed_file = params.target_bed
-    // }
+        sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
+        SAMTOOLS_SORT( input_tumorbam_for_bedtools )
+        sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
+        target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
+    }
+    else {
+        println "Target BED file is provided."
+        target_bed_file = params.target_bed
+    }
 
     // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
     // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
@@ -123,30 +123,30 @@ workflow NUCLEOVAR {
 
 
 
-    // target_bed_file
-    //     .combine(Channel.from(fasta_ref))
-    //     .combine(Channel.from(fasta_index))
-    //     .combine(Channel.from(fasta_dict))
-    //     .set{ input2_for_mutect }
+    target_bed_file
+        .combine(Channel.from(fasta_ref))
+        .combine(Channel.from(fasta_index))
+        .combine(Channel.from(fasta_dict))
+        .set{ input2_for_mutect }
 
 
-    // duplex_bams
-    //     .map{ meta,control_bam,control_bai,case_bam,case_bai ->
-    //         tuple(case_bam,control_bam,case_bai,control_bai)}
-    //     .set{ bams_for_mutect }
+    duplex_bams
+        .map{ meta,control_bam,control_bai,case_bam,case_bai ->
+            tuple(case_bam,control_bam,case_bai,control_bai)}
+        .set{ bams_for_mutect }
 
-    // sample_id_names
-    //     .combine(bams_for_mutect)
-    //     .set{ input1_for_mutect }
+    sample_id_names
+        .combine(bams_for_mutect)
+        .set{ input1_for_mutect }
 
 
 
     // MUTECT1(input1_for_mutect,input2_for_mutect)
-    // MUTECT2( input1_for_mutect,input2_for_mutect )
+    MUTECT2( input1_for_mutect,input2_for_mutect )
 
     // mutect1_vcf = MUTECT1.out.mutect_vcf
     // mutect1_txt = MUTECT1.out.standard_mutect_output
-    // mutect2_vcf = MUTECT2.out.mutect2_vcf
+    mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
     // mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
@@ -211,14 +211,14 @@ workflow NUCLEOVAR {
 
 
     //     // traceback subworkflow
-    test_maf_only = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
-    mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
+    // test_maf_only = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+    // mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
 
-    case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+    // case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
-    TRACEBACK( bams, mafs, fasta_ref, fasta_index )
-    PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
-    genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
+    // TRACEBACK( bams, mafs, fasta_ref, fasta_index )
+    // PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
+    // genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
     // // maf_processing module (tag by rules)
     // MAF_PROCESSING( genotyped_maf, rules_file )
     // tagged_maf = MAF_PROCESSING.out.maf
@@ -237,7 +237,7 @@ workflow NUCLEOVAR {
         .set { ch_collated_versions }
 
     emit:
-    genotyped_maf
+    mutect2_vcf
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 
