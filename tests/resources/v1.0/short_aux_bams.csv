@@ -1,7 +1,0 @@
-sample_id,normal_path,duplex_path,simplex_path,type
-C-PR83CF-N002-d02,/work/access/production/runs/voyager/bam_qc/c33a8ae2-8d7b-11ee-9a57-ac1f6bb4ad16/C-PR83CF-N002-d02_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX.bam,null,null,MATCHED_NORMAL
-DONOR38-TP,null,/juno/work/access/production/resources/msk-access/v1.0/novaseq_curated_duplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam,/juno/work/access/production/resources/msk-access/v1.0/novaseq_curated_simplex_bams_dmp/versions/v2.0/DONOR38-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam,CURATED
-C-PR83CF-L004-d04,null,/work/access/production/runs/voyager/bam_qc/c33b9310-8d7b-11ee-9a57-ac1f6bb4ad16/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.bam,/work/access/production/runs/voyager/bam_qc/c33b9310-8d7b-11ee-9a57-ac1f6bb4ad16/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-simplex.bam,PLASMA
-C-35MA0W-N001-d01,/work/access/production/runs/voyager/bam_qc/765e045a-bece-4b93-99d8-52db63ffe867/C-35MA0W-N001-d01_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX.bam,null,null,UNMATCHED_NORMAL
-
-

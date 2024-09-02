@@ -1,1 +1,0 @@
-##INFO=<ID=MUTECT,Number=0,Type=Flag,Description="Variant was called by MuTect">
