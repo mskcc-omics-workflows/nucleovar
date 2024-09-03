@@ -10,7 +10,18 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir", "fasta", "canonical_bed", "fai", "dict", "rules_json", "aux_bams"],
+            "required": [
+                "input",
+                "outdir",
+                "fasta",
+                "canonical_bed",
+                "fai",
+                "dict",
+                "rules_json",
+                "aux_bams",
+                "sample_order_file",
+                "header_file"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -64,6 +75,16 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to file containing curated simplex/duplex bams for traceback"
+                },
+                "sample_order_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing sample ID names and order which the user wants them to appear in all variant caller VCFs"
+                },
+                "header_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing the genotype headers which are used in the BCFTools Annotation Module."
                 }
             }
         },

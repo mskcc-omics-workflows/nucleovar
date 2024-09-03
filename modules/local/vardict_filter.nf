@@ -15,8 +15,8 @@ process VARDICT_FILTER {
 
 
     output:
-    path("*.vcf"),                     emit: filtered_vardict_vcf
-    path("*_complex.vcf"),             emit: complex_variants_vardict_vcf
+    path("*_STDfilter.vcf"),                     emit: std_vcf
+    path("*_STDfilter_complex.vcf"),             emit: complex_variants_vardict_vcf
     path("*.txt"),                     emit: std_vardict_filter_output
     path "versions.yml", emit: versions
 
@@ -49,8 +49,8 @@ process VARDICT_FILTER {
     def paired_mode = bams instanceof List && bams.size() == 2 ? true : false
 
     """
-    touch ${meta.id}.vcf
-    touch ${meta.id}_complex.vcf
+    touch ${meta.id}_STDfilter.vcf
+    touch ${meta.id}_STDfilter_complex.vcf
     touch ${meta.id}.txt
 
     cat <<-END_VERSIONS > versions.yml

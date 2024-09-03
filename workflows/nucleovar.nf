@@ -96,7 +96,7 @@ workflow NUCLEOVAR {
             .map { meta -> [meta.case_id,meta.control_id] }
             .map { items -> items.join('\n') }
             .view { data -> new File('sample_order.txt').text = data }
-        sample_order_file = Channel.fromPath('sample_order.txt')
+        sample_order_file = Channel.fromPath(params.sample_order_file)
         // //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
         case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
 
@@ -112,9 +112,12 @@ workflow NUCLEOVAR {
 
     CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
     
-    vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.filtered_vardict_vcf
+    vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.std_vardict_vcf
     vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complex_variants_vardict_vcf
-
+    
+    // vardict_filtered_vcfs.view()
+    //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> std_vcf}.set{ vardict_filtered_vcf_standard }
+    //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> complexvar_vcf}.set{ vardict_filtered_vcf_complexvar }
 
     target_bed_file
         .combine(Channel.from(fasta_ref))
@@ -149,13 +152,15 @@ workflow NUCLEOVAR {
     MUTECT2_REHEADER( input_for_mutect2_reheader )
 
     mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
+    mutect1_txt.map{ meta,txt -> txt}.set{ mutect1_txt_only }
 
-    mutect1_ordered_vcf.combine(mutect1_txt).set{ input_for_mutect_filter }
+    mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
 
-    // MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
-    // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
-
-
+    
+    MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
+    mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
+    
+    // placeholder for mutect2 filtering code 
 
     sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
     sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
@@ -165,46 +170,42 @@ workflow NUCLEOVAR {
     vardict_index = BCFTOOLS_VARDICT.out.vardict_index
 
 
-
-
-    // //     // // // // temp testing mutect filtered vcf (permission error in mutect filter)
-    mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
-
-
-
     BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
-    // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-    // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
+    mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+    mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
 
-    // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-    // mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
+    vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
+    mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
 
-    // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
-    // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+    BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
+    sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+    
 
+    sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
+    mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
+    sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
 
-    // sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
-    // mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
-    // sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
-
-    // //NOTE: turn into argument on CLI
-    // header_file = Channel.from("/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/mutect_annotate_concat_header.txt")
-
-
-    // BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
-    // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+    // // //NOTE: turn into argument on CLI
+    header_file = Channel.from(params.header_file)
 
 
-    // // // Genome nexus subworkflow
-    // GENOME_NEXUS( annotated_vcf )
+    BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
+    annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-    // input_maf = GENOME_NEXUS.out.maf
-    // input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
+    
+
+
+    // // // // Genome nexus subworkflow
+    GENOME_NEXUS( annotated_vcf )
+
+    input_maf = GENOME_NEXUS.out.maf
+    input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
+    
 
 
     //     // traceback subworkflow
-    // test_maf_only = Channel.fromPath("/work/access/production/data/small_variants/C-PR83CF/C-PR83CF-L004-d04/current/C-PR83CF-L004-d04.DONOR22-TP.combined-variants.vep_keptrmv_taggedHotspots.maf")
+    
     // mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
 
     // case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }

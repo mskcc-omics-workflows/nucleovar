@@ -57,7 +57,7 @@ process BCFTOOLS_NORM {
                     args.contains("--output-type v") || args.contains("-Ov") ? "vcf" :
                     "vcf.gz"
     """
-    touch ${prefix}_norm.vcf.gz
+    touch ${prefix}_norm_sorted.vcf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

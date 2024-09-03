@@ -39,7 +39,7 @@ process BCFTOOLS_CONCAT {
     stub:
     prefix   = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.vcf.gz
+    touch ${prefix}_vardict_concat.vcf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

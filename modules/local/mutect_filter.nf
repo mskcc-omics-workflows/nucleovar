@@ -26,5 +26,20 @@ process MUTECT_FILTER {
     chmod -R 777 .
     pv mutect1 case-control filter --inputVcf ${mutect_vcf_file} --inputTxt ${mutect_txt_file} --refFasta ${reference_fasta} --tsampleName ${meta.case_id} --outDir .
 
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python --version | sed -e "s/python v//g")
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch ${meta.id}_filtered.vcf
+    touch ${meta.id}_filtered.txt
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
+    END_VERSIONS
     """
 }

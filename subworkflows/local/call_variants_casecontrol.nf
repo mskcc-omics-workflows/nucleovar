@@ -42,13 +42,15 @@ workflow CALL_VARIANTS_CASECONTROL {
 
     VARDICT_FILTER( sample_id_names,vardict_vcf_isolated,bams_for_vardict_filter )
 
-    filtered_vardict_vcf = VARDICT_FILTER.out.filtered_vardict_vcf
+    std_vardict_vcf = VARDICT_FILTER.out.std_vcf
     complex_variants_vardict_vcf = VARDICT_FILTER.out.complex_variants_vardict_vcf
     vardict_filter_output_txt = VARDICT_FILTER.out.std_vardict_filter_output
 
+    
+
 
     emit:
-    filtered_vardict_vcf
+    std_vardict_vcf
     complex_variants_vardict_vcf
     vardict_filter_output_txt
 }
