@@ -34,7 +34,7 @@ process BCFTOOLS_REHEADER {
     def args2 = task.ext.args2 ?: '--output-type z'
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.${extension}
+    touch ${vcf.BaseName}_reordered.vcf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

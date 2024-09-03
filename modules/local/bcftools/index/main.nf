@@ -44,7 +44,7 @@ process BCFTOOLS_INDEX {
     def extension = args.contains("--tsi") || args.contains("-t") ? "tbi" :
                     "csi"
     """
-    touch ${vcf}.${extension}
+    touch ${vcf}.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

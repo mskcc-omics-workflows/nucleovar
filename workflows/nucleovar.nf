@@ -142,37 +142,37 @@ workflow NUCLEOVAR {
     mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
-    // mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
-    // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
+    mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
+    mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
 
-    // MUTECT1_REHEADER( input_for_mutect1_reheader )
-    // MUTECT2_REHEADER( input_for_mutect2_reheader )
+    MUTECT1_REHEADER( input_for_mutect1_reheader )
+    MUTECT2_REHEADER( input_for_mutect2_reheader )
 
-    // mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
+    mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
 
-    // mutect1_ordered_vcf.combine(mutect1_txt).set{ input_for_mutect_filter }
+    mutect1_ordered_vcf.combine(mutect1_txt).set{ input_for_mutect_filter }
 
     // MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
 
 
-    // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-    // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
-    // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+    sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+    BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
 
-    // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
-    // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
+    vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+    vardict_index = BCFTOOLS_VARDICT.out.vardict_index
 
 
 
 
     // //     // // // // temp testing mutect filtered vcf (permission error in mutect filter)
-    // //mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
+    mutect_filtered_vcf = Channel.fromPath("/home/naidur/snvs_indels/C-PR83CF-L004-d04_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.DONOR22-TP_cl_aln_srt_MD_IR_FX_BR__aln_srt_IR_FX-duplex.mutect_filtered.vcf")
 
 
 
-    // BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
     // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
     // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
