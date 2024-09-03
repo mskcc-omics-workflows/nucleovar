@@ -110,8 +110,8 @@ workflow NUCLEOVAR {
         target_bed_file = params.target_bed
     }
 
-    // CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
-    // vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
+    CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
+    vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
 
     // vardict_filtered_vcfs
     //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
