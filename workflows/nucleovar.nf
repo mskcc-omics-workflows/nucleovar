@@ -111,16 +111,9 @@ workflow NUCLEOVAR {
     }
 
     CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
-    vardict_filtered_vcfs = CALL_VARIANTS_CASECONTROL.out.vardict_filtered_vcfs
-
-    // vardict_filtered_vcfs
-    //     .map{ standard_vcf,complexvar_vcf -> standard_vcf}
-    //     .set{ vardict_filtered_vcf_standard }
-
-    // vardict_filtered_vcfs
-    //     .map{ standard_vcf,complexvar_vcf -> complexvar_vcf}
-    //     .set{ vardict_filtered_vcf_complexvar }
-
+    
+    vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.filtered_vardict_vcf
+    vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complex_variants_vardict_vcf
 
 
     target_bed_file
@@ -141,11 +134,11 @@ workflow NUCLEOVAR {
 
 
 
-    // MUTECT1(input1_for_mutect,input2_for_mutect)
+    MUTECT1(input1_for_mutect,input2_for_mutect)
     MUTECT2( input1_for_mutect,input2_for_mutect )
 
-    // mutect1_vcf = MUTECT1.out.mutect_vcf
-    // mutect1_txt = MUTECT1.out.standard_mutect_output
+    mutect1_vcf = MUTECT1.out.mutect_vcf
+    mutect1_txt = MUTECT1.out.standard_mutect_output
     mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
