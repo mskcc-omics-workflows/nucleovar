@@ -36,6 +36,8 @@ include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools
 include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main'
 include { TRACEBACK } from '../subworkflows/msk/traceback/main'
 include { PVMAF_TAGTRACEBACK } from '../modules/msk/pvmaf/tagtraceback'
+include { ACCESS_FILTERS } from '../modules/local/access_filters/main'
+include { TAG_BY_VARIANT_ANNOTATION } from '../modules/local/tag_by_variant_annotation/main'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 
@@ -111,10 +113,10 @@ workflow NUCLEOVAR {
     }
 
     CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
-    
+
     vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.std_vardict_vcf
     vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complex_variants_vardict_vcf
-    
+
     // vardict_filtered_vcfs.view()
     //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> std_vcf}.set{ vardict_filtered_vcf_standard }
     //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> complexvar_vcf}.set{ vardict_filtered_vcf_complexvar }
@@ -156,11 +158,11 @@ workflow NUCLEOVAR {
 
     mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
 
-    
+
     MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
-    
-    // placeholder for mutect2 filtering code 
+
+    // placeholder for mutect2 filtering code
 
     sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
     sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
@@ -180,7 +182,7 @@ workflow NUCLEOVAR {
 
     BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
     sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
-    
+
 
     sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
     mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
@@ -193,7 +195,7 @@ workflow NUCLEOVAR {
     BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
     annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-    
+
 
 
     // // // // Genome nexus subworkflow
@@ -201,28 +203,33 @@ workflow NUCLEOVAR {
 
     input_maf = GENOME_NEXUS.out.maf
     input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
-    
+
 
 
     // // // // traceback subworkflow
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
     //mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
-    
+
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
     PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
     genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
-    genotyped_maf.view()
+
 
     // // maf_processing module (tag by rules)
     // MAF_PROCESSING( genotyped_maf, rules_file )
     // tagged_maf = MAF_PROCESSING.out.maf
+
     // // access filters
-    // ACCESS_FILTERS( tagged_maf )
-    // access_filtered_maf = ACCESS_FILTERS.out.maf
+    genotyped_maf.combine(test_maf_only).set{ inputs_for_access_filters }
+    ACCESS_FILTERS( inputs_for_access_filters )
+    access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
+    access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
+
+
     // // mpath loading script module
-    // TAG_BY_VARIANT_ANNOTATION( access_filtered_maf )
+    TAG_BY_VARIANT_ANNOTATION( access_filtered_maf )
 
 
 
