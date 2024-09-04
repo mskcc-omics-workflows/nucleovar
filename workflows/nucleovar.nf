@@ -204,15 +204,17 @@ workflow NUCLEOVAR {
     
 
 
-    //     // traceback subworkflow
+    // // // // traceback subworkflow
+    input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
+    //mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
     
-    // mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
+    case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
-    // case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+    TRACEBACK( bams, mafs, fasta_ref, fasta_index )
+    PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
+    genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
+    genotyped_maf.view()
 
-    // TRACEBACK( bams, mafs, fasta_ref, fasta_index )
-    // PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
-    // genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
     // // maf_processing module (tag by rules)
     // MAF_PROCESSING( genotyped_maf, rules_file )
     // tagged_maf = MAF_PROCESSING.out.maf

@@ -55,7 +55,10 @@ process GENOTYPEVARIANTS_ALL {
     def patient = "${meta.patient}"
 
     """
-    touch ${prefix}.maf
+    touch ${prefix}-DUPLEX_genotyped.maf
+    touch ${prefix}-ORG-SIMPLEX-DUPLEX_genotyped.maf
+    touch ${prefix}-SIMPLEX-DUPLEX_genotyped.maf
+    touch ${prefix}-SIMPLEX_genotyped.maf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

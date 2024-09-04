@@ -1,6 +1,6 @@
 sample_id,normal_path,duplex_path,simplex_path,type
-sample1,null,null,null,TYPE
-sample2,null,null,null,TYPE
-sample3,null,null,TYPE
-sample4,null,null,null,TYPE
+sample1,null,null,null,MATCHED_NORMAL
+sample2,null,null,null,CURATED
+sample3,null,null,PLASMA
+sample4,null,null,null,UNMATCHED_NORMAL
 
