@@ -40,7 +40,7 @@ process BCFTOOLS_INDEX {
     stub:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    
+
     """
     touch ${vcf}.gz
     touch ${vcf}.tbi

@@ -46,7 +46,7 @@ workflow CALL_VARIANTS_CASECONTROL {
     complex_variants_vardict_vcf = VARDICT_FILTER.out.complex_variants_vardict_vcf
     vardict_filter_output_txt = VARDICT_FILTER.out.std_vardict_filter_output
 
-    
+
 
 
     emit:

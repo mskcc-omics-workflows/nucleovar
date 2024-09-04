@@ -58,5 +58,5 @@ process VARDICT_FILTER {
         python: \$(python --version | sed 's/Python //g')
     END_VERSIONS
     """
-    
+
 }

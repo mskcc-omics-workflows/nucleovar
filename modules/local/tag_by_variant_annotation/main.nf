@@ -14,8 +14,8 @@ process TAG_BY_VARIANT_ANNOTATION {
     path("annotated_silent_variants.txt"), emit: annotated_silent
     path("annotated_nonpanel_exonic_variants.txt"), emit: annotated_nonpanel_exonic
     path("annotated_nonpanel_silent_variants.txt"), emit: annotated_nonpanel_silent
-    path("annotated_dropped_variants.txt"), emit: annotated_dropped 
-    
+    path("annotated_dropped_variants.txt"), emit: annotated_dropped
+
     path  "versions.yml"                   , emit: versions
 
     when:
