@@ -1,8 +1,0 @@
-[33mNextflow 24.04.4 is available - Please consider updating your version to it(B[m
-[0;31mThe following invalid input values have been detected:
-
-* --input: the file or directory 'test' does not exist.
-* --input: string [test] does not match pattern ^\S+\.csv$ (test)
-* --fasta: string [test] does not match pattern ^\S+\.fn?a(sta)?(\.gz)?$ (test)
-[0m
- -- Check script '/rtsess01/juno/home/naidur/snvs_indels/nucleovar/./subworkflows/local/utils_nfcore_nucleovar_pipeline/../../nf-core/utils_nfvalidation_plugin/main.nf' at line: 57 or see '/rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/4181324982f52679f945c438d27041c7/meta/nextflow.log' file for more details
