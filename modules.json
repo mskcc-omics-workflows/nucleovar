@@ -28,7 +28,7 @@
                     },
                     "mutect1": {
                         "branch": "mutect1_lint_update",
-                        "git_sha": "6a33ae0aca3f66dd743d982563be6d5d0875908c",
+                        "git_sha": "3afc2950088f36e46bd993cdacc6e5bbebdbbb2b",
                         "installed_by": [
                             "modules"
                         ]
