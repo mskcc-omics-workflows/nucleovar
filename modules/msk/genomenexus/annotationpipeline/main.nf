@@ -4,14 +4,14 @@ process GENOMENEXUS_ANNOTATIONPIPELINE {
 
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/genomenexus_annotation-pipeline:1.0.4':
-        'ghcr.io/msk-access/genomenexus_annotation-pipeline:1.0.4' }"
+        'ghcr.io/msk-access/genomenexus_annotation-pipeline:1.0.3':
+        'ghcr.io/msk-access/genomenexus_annotation-pipeline:1.0.3' }"
 
     input:
     tuple val(meta), path(input_maf)
 
     output:
-    tuple val(meta), path("${meta.control_id}_${meta.case_id}_annotated.maf"), emit: annotated_maf
+    tuple val(meta), path("*.maf"), emit: annotated_maf
     path "versions.yml"           , emit: versions
 
     when:
@@ -35,7 +35,7 @@ process GENOMENEXUS_ANNOTATIONPIPELINE {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch ${meta.control_id}_${meta.case_id}_annotated.maf
+    touch ${meta.id}_annotated.maf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

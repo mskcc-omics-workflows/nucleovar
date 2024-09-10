@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/msk/nucleovar/master/nextflow_schema.json",
     "title": "msk/nucleovar pipeline parameters",
     "description": "snps and indels variant calling for access",
