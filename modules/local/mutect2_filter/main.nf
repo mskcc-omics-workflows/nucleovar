@@ -22,7 +22,7 @@ process MUTECT2_FILTER {
 
     """
     pv mutect2 case-control filter --inputVcf ${mutect_vcf_file} --tsampleName ${meta.case_id} --outDir .
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python --version | sed -e "s/python v//g")

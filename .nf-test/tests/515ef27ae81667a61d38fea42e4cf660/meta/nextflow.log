@@ -1,0 +1,343 @@
+Aug-23 13:09:12.302 [main] DEBUG nextflow.cli.Launcher - $> nextflow -quiet -log /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/meta/nextflow.log run /rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/../main.nf -c /rtsess01/juno/home/naidur/snvs_indels/nucleovar/nextflow.config -c /rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/nextflow.config -params-file /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/meta/params.json -ansi-log false -profile singularity -with-trace /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/meta/trace.csv -w /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work
+Aug-23 13:09:12.379 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.04.2
+Aug-23 13:09:12.400 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/naidur/.nextflow/plugins; core-plugins: nf-amazon@2.5.2,nf-azure@1.6.0,nf-cloudcache@0.4.1,nf-codecommit@0.2.0,nf-console@1.1.3,nf-ga4gh@1.3.0,nf-google@1.13.2,nf-tower@1.9.1,nf-wave@1.4.2
+Aug-23 13:09:12.413 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Aug-23 13:09:12.414 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Aug-23 13:09:12.417 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.10.0 in 'deployment' mode
+Aug-23 13:09:12.430 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Aug-23 13:09:12.455 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/nextflow.config
+Aug-23 13:09:12.460 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/nextflow.config
+Aug-23 13:09:12.461 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/nextflow.config
+Aug-23 13:09:12.463 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/nextflow.config
+Aug-23 13:09:12.463 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/nextflow.config
+Aug-23 13:09:12.464 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/nextflow.config
+Aug-23 13:09:12.491 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /home/naidur/.nextflow/secrets/store.json
+Aug-23 13:09:12.494 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@75b21c3b] - activable => nextflow.secret.LocalSecretsProvider@75b21c3b
+Aug-23 13:09:12.515 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `singularity`
+Aug-23 13:09:13.665 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `singularity`
+Aug-23 13:09:13.832 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `singularity`
+Aug-23 13:09:13.857 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [debug, test, apptainer, docker, gitpod, shifter, mamba, charliecloud, conda, stub, singularity, arm, lsf, podman]
+Aug-23 13:09:13.905 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+Aug-23 13:09:13.922 [main] INFO  nextflow.cli.CmdRun - Launching `/rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/../main.nf` [gloomy_kirch] DSL2 - revision: 6f3f6533ed
+Aug-23 13:09:13.924 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins declared=[nf-validation@1.1.3]
+Aug-23 13:09:13.924 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Aug-23 13:09:13.925 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[nf-validation@1.1.3]
+Aug-23 13:09:13.925 [main] DEBUG nextflow.plugin.PluginUpdater - Installing plugin nf-validation version: 1.1.3
+Aug-23 13:09:13.958 [main] INFO  org.pf4j.AbstractPluginManager - Plugin 'nf-validation@1.1.3' resolved
+Aug-23 13:09:13.958 [main] INFO  org.pf4j.AbstractPluginManager - Start plugin 'nf-validation@1.1.3'
+Aug-23 13:09:13.993 [main] DEBUG nextflow.plugin.BasePlugin - Plugin started nf-validation@1.1.3
+Aug-23 13:09:14.065 [main] DEBUG nextflow.Session - Session UUID: 1f5280e9-f900-4588-85e2-1a5aa9697e64
+Aug-23 13:09:14.066 [main] DEBUG nextflow.Session - Run name: gloomy_kirch
+Aug-23 13:09:14.066 [main] DEBUG nextflow.Session - Executor pool size: 72
+Aug-23 13:09:14.074 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Aug-23 13:09:14.079 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=216; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Aug-23 13:09:14.109 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 24.04.2 build 5914
+  Created: 29-05-2024 06:19 UTC (02:19 EDT)
+  System: Linux 3.10.0-1160.45.1.el7.x86_64
+  Runtime: Groovy 4.0.21 on OpenJDK 64-Bit Server VM 17.0.10+7
+  Encoding: UTF-8 (UTF-8)
+  Process: 192107@terra [10.0.200.186]
+  CPUs: 72 - Mem: 1.5 TB (601.1 GB) - Swap: 0 (0)
+Aug-23 13:09:14.151 [main] DEBUG nextflow.Session - Work-dir: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work [gpfs]
+Aug-23 13:09:14.152 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/bin
+Aug-23 13:09:14.181 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Aug-23 13:09:14.198 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Aug-23 13:09:14.287 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Aug-23 13:09:14.299 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 73; maxThreads: 1000
+Aug-23 13:09:14.394 [main] DEBUG nextflow.Session - Session start
+Aug-23 13:09:14.397 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/meta/trace.csv
+Aug-23 13:09:14.404 [main] DEBUG nextflow.Session - Using default localLib path: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/lib
+Aug-23 13:09:14.409 [main] DEBUG nextflow.Session - Adding to the classpath library: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/lib
+Aug-23 13:09:14.592 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Aug-23 13:09:17.345 [main] DEBUG nextflow.script.IncludeDef - Loading included plugin extensions with names: [paramsHelp:paramsHelp]; plugin Id: nf-validation
+Aug-23 13:09:17.360 [main] DEBUG nextflow.script.IncludeDef - Loading included plugin extensions with names: [paramsSummaryLog:paramsSummaryLog]; plugin Id: nf-validation
+Aug-23 13:09:17.360 [main] DEBUG nextflow.script.IncludeDef - Loading included plugin extensions with names: [validateParameters:validateParameters]; plugin Id: nf-validation
+Aug-23 13:09:17.363 [main] DEBUG nextflow.script.IncludeDef - Loading included plugin extensions with names: [paramsSummaryMap:paramsSummaryMap]; plugin Id: nf-validation
+Aug-23 13:09:17.363 [main] DEBUG nextflow.script.IncludeDef - Loading included plugin extensions with names: [fromSamplesheet:fromSamplesheet]; plugin Id: nf-validation
+Aug-23 13:09:17.591 [main] DEBUG nextflow.Nextflow - Using schema file: nextflow_schema.json
+Aug-23 13:09:17.594 [main] WARN  nextflow.script.ScriptBinding - Access to undefined parameter `monochromeLogs` -- Initialise it to a default value eg. `params.monochromeLogs = some_value`
+Aug-23 13:09:17.602 [main] INFO  nextflow.Nextflow - 
+
+-[2m----------------------------------------------------[0m-
+                                        [0;32m,--.[0;30m/[0;32m,-.[0m
+[0;34m        ___     __   __   __   ___     [0;32m/,-._.--~'[0m
+[0;34m  |\ | |__  __ /  ` /  \ |__) |__         [0;33m}  {[0m
+[0;34m  | \| |       \__, \__/ |  \ |___     [0;32m\`-._,-`-,[0m
+                                        [0;32m`._,._,'[0m
+[0;35m  msk/nucleovar v1.0dev[0m
+-[2m----------------------------------------------------[0m-
+[1mCore Nextflow options[0m
+  [0;34mrunName        : [0;32mgloomy_kirch[0m
+  [0;34mcontainerEngine: [0;32msingularity[0m
+  [0;34mlaunchDir      : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660[0m
+  [0;34mworkDir        : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work[0m
+  [0;34mprojectDir     : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar[0m
+  [0;34muserName       : [0;32mnaidur[0m
+  [0;34mprofile        : [0;32msingularity[0m
+  [0;34mconfigFiles    : [0;32m[0m
+
+[1mInput/output options[0m
+  [0;34minput          : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/pipeline_input.csv[0m
+  [0;34moutdir         : [0;32mresults[0m
+  [0;34mcanonical_bed  : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/MSK-ACCESS-v1_0panelA_canonicaltargets_500buffer.bed[0m
+  [0;34mfai            : [0;32m/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta.fai[0m
+  [0;34mdict           : [0;32m/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.dict[0m
+  [0;34mrules_json     : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/rules.json[0m
+  [0;34maux_bams       : [0;32m/rtsess01/juno/home/naidur/snvs_indels/nucleovar/tests/resources/v1.0/aux_bams.csv[0m
+
+[1mReference genome options[0m
+  [0;34mfasta          : [0;32m/juno/cmo/access/production/resources/reference/current/Homo_sapiens_assembly19.fasta[0m
+
+[1mMax job request options[0m
+  [0;34mmax_cpus       : [0;32m2[0m
+  [0;34mmax_memory     : [0;32m6.GB[0m
+  [0;34mmax_time       : [0;32m6.h[0m
+
+!! Only displaying parameters that differ from the pipeline defaults !!
+-[2m----------------------------------------------------[0m-
+If you use msk/nucleovar for your analysis please cite:
+
+* The pipeline
+
+* The nf-core framework
+  https://doi.org/10.1038/s41587-020-0439-x
+
+* Software dependencies
+  https://github.com/msk/nucleovar/blob/master/CITATIONS.md
+-[2m----------------------------------------------------[0m-
+Aug-23 13:09:17.604 [main] DEBUG nextflow.validation.SchemaValidator - Starting parameters validation
+Aug-23 13:09:17.736 [main] WARN  nextflow.validation.SchemaValidator - The following invalid input values have been detected:
+
+* --bed: null
+
+
+Aug-23 13:09:17.750 [main] DEBUG nextflow.validation.SchemaValidator - Finishing parameters validation
+Aug-23 13:09:17.940 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_single` matches labels `process_single` for process with name MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL
+Aug-23 13:09:17.952 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-23 13:09:17.952 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-23 13:09:17.959 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Aug-23 13:09:17.965 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=72; memory=1.5 TB; capacity=72; pollInterval=100ms; dumpInterval=5m
+Aug-23 13:09:17.968 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Aug-23 13:09:18.036 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:GENOTYPEVARIANTS_ALL
+Aug-23 13:09:18.037 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withName:GENOTYPEVARIANTS_ALL` matches process MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:GENOTYPEVARIANTS_ALL
+Aug-23 13:09:18.040 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-23 13:09:18.040 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-23 13:09:18.069 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_single` matches labels `process_single` for process with name MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_GENOTYPE
+Aug-23 13:09:18.072 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-23 13:09:18.072 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-23 13:09:18.084 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_single` matches labels `process_single` for process with name MSK_NUCLEOVAR:NUCLEOVAR:PVMAF_TAGTRACEBACK
+Aug-23 13:09:18.087 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-23 13:09:18.087 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-23 13:09:18.126 [main] DEBUG nextflow.Session - Config process names validation disabled as requested
+Aug-23 13:09:18.129 [main] DEBUG nextflow.Session - Igniting dataflow network (17)
+Aug-23 13:09:18.141 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL
+Aug-23 13:09:18.141 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:GENOTYPEVARIANTS_ALL
+Aug-23 13:09:18.142 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_GENOTYPE
+Aug-23 13:09:18.144 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MSK_NUCLEOVAR:NUCLEOVAR:PVMAF_TAGTRACEBACK
+Aug-23 13:09:18.145 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_ac0074e646e4a89d: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/traceback/main.nf
+  Script_fa5994465f71816c: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/bcftools/norm/main.nf
+  Script_337a764104700e71: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/samtools/sort/main.nf
+  Script_b8ddcb128022e9cb: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/tabix/bgzip/main.nf
+  Script_34a6e65ee7dbdbe0: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./subworkflows/local/utils_nfcore_nucleovar_pipeline/../../nf-core/utils_nextflow_pipeline/main.nf
+  Script_d23aa3579a5488a7: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/bcftools/concat/main.nf
+  Script_a7d371fe23db7aab: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./subworkflows/local/utils_nfcore_nucleovar_pipeline/../../nf-core/utils_nfvalidation_plugin/main.nf
+  Script_ec1da840c471dbfc: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/nucleovar.nf
+  Script_83087cb49abd06e2: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/msk/mutect1/main.nf
+  Script_f0a1358cdea34d7c: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/msk/pvmaf/tagtraceback/main.nf
+  Script_959c2ed1883ec991: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/genome_nexus/../../../modules/msk/genomenexus/annotationpipeline/main.nf
+  Script_eba6f4a18a135f22: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/bcftools_mutect.nf
+  Script_3d4eca32a752f0e6: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/mutect2/main.nf
+  Script_e5962e6543ac3007: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/nf-core/vardictjava/main.nf
+  Script_cc1d31c6c74a5ca1: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/gunzip_files.nf
+  Script_90f5362815b84d48: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/bcftools/index/main.nf
+  Script_6ba1f52a0c03ea5c: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./subworkflows/local/utils_nfcore_nucleovar_pipeline/main.nf
+  Script_25575ff508135139: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/call_variants_casecontrol.nf
+  Script_9a9735536805ee91: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./subworkflows/local/utils_nfcore_nucleovar_pipeline/../../nf-core/utils_nfcore_pipeline/main.nf
+  Script_27b1d96a38732160: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/mutect_filter.nf
+  Script_e42e33314a5fab04: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/vardict_filter.nf
+  Script_c8b7a06c4a1337d6: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/traceback/../../../modules/msk/pvmaf/concat/main.nf
+  Script_789723d21ca7aa79: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/bcftools/annotate/main.nf
+  Script_995a58f055c66345: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/bcftools_concat2/main.nf
+  Script_30c3f5bd5264b278: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/genome_nexus/../../../modules/msk/genomenexus/vcf2maf/main.nf
+  Script_5f7126b2074c6a7d: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/bedtools/genomecov/main.nf
+  Script_998ea203507dc3ed: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/bcftools_concat_vardicts.nf
+  Script_3fbee32d0499d22d: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/bcftools/reheader/main.nf
+  Script_e0e7b45107ecefae: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../modules/local/bedtools/merge/main.nf
+  Script_a2c432b422d72465: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/bcftools_concat_with_mutect.nf
+  Script_e3d97f8871113e5d: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/traceback/../../../modules/msk/genotypevariants/all/main.nf
+  Script_30064479aefa35b5: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/bcftools_vardict.nf
+  Script_5589f1563ff18daf: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/msk/genome_nexus/main.nf
+  Script_2a7107c947270d51: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/./workflows/../subworkflows/local/../../modules/local/bcftools/sort/main.nf
+  Script_71a45d7f9dd5875a: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/main.nf
+Aug-23 13:09:18.145 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Aug-23 13:09:18.145 [main] DEBUG nextflow.Session - Session await
+Aug-23 13:09:18.290 [Actor Thread 71] WARN  nextflow.container.SingularityCache - Singularity cache directory has not been defined -- Remote image will be stored in the path: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work/singularity -- Use the environment variable NXF_SINGULARITY_CACHEDIR to specify a different location
+Aug-23 13:09:18.290 [Actor Thread 71] INFO  nextflow.container.SingularityCache - Pulling Singularity image docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 [cache /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work/singularity/ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img]
+Aug-23 13:09:18.290 [Actor Thread 73] DEBUG nextflow.sort.BigSort - Sort completed -- entries: 1; slices: 1; internal sort time: 0.001 s; external sort time: 0.018 s; total time: 0.019 s
+Aug-23 13:09:18.331 [Actor Thread 73] DEBUG nextflow.file.FileCollector - Saved collect-files list to: /rtsess01/juno/home/naidur/snvs_indels/nucleovar/.nf-test/tests/515ef27ae81667a61d38fea42e4cf660/work/collect-file/b9ae4aeb3af6f8f5ff0b057ef7eb83e9
+Aug-23 13:09:18.342 [Actor Thread 64] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL (1); work-dir=null
+  error [java.lang.IllegalStateException]: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img.pulling.1724432958290 docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 > /dev/null
+  status : 1
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    ERROR: Unknown command 'pull'
+
+Aug-23 13:09:18.345 [Actor Thread 73] DEBUG nextflow.file.FileCollector - Deleting file collector temp dir: /tmp/nxf-13238169841831510896
+Aug-23 13:09:18.364 [Actor Thread 64] ERROR nextflow.processor.TaskProcessor - Error executing process > 'MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL (1)'
+
+Caused by:
+  Failed to pull singularity image
+    command: singularity pull  --name ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img.pulling.1724432958290 docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 > /dev/null
+    status : 1
+    hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+    message:
+      ERROR: Unknown command 'pull'
+
+
+java.lang.IllegalStateException: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img.pulling.1724432958290 docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 > /dev/null
+  status : 1
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    ERROR: Unknown command 'pull'
+
+	at nextflow.container.SingularityCache.getCachePathFor(SingularityCache.groovy:356)
+	at nextflow.container.ContainerHandler.createSingularityCache(ContainerHandler.groovy:108)
+	at nextflow.container.ContainerHandler.normalizeImageName(ContainerHandler.groovy:75)
+	at nextflow.container.resolver.DefaultContainerResolver.resolveImage0(DefaultContainerResolver.groovy:49)
+	at nextflow.container.resolver.DefaultContainerResolver.resolveImage(DefaultContainerResolver.groovy:42)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.containerInfo0(TaskRun.groovy:685)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:96)
+	at nextflow.processor.TaskRun.this$dist$invoke$1(TaskRun.groovy)
+	at nextflow.processor.TaskRun$4.methodMissing(TaskRun.groovy)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:924)
+	at groovy.lang.MetaClassImpl.invokePropertyOrMissing(MetaClassImpl.java:1413)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1335)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun$4.apply(TaskRun.groovy:670)
+	at nextflow.processor.TaskRun$4.apply(TaskRun.groovy)
+	at java.base/java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.containerInfo(TaskRun.groovy:667)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.getContainer(TaskRun.groovy:693)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.isContainerEnabled(TaskRun.groovy:738)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskProcessor.createTaskHashKey(TaskProcessor.groovy:2193)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskProcessor.invokeTask(TaskProcessor.groovy:659)
+	at nextflow.processor.InvokeTaskAdapter.call(InvokeTaskAdapter.groovy:52)
+	at groovyx.gpars.dataflow.operator.DataflowOperatorActor.startTask(DataflowOperatorActor.java:120)
+	at groovyx.gpars.dataflow.operator.ForkingDataflowOperatorActor.access$001(ForkingDataflowOperatorActor.java:35)
+	at groovyx.gpars.dataflow.operator.ForkingDataflowOperatorActor$1.run(ForkingDataflowOperatorActor.java:58)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img.pulling.1724432958290 docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 > /dev/null
+  status : 1
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    ERROR: Unknown command 'pull'
+
+	at nextflow.container.SingularityCache.runCommand(SingularityCache.groovy:308)
+	at nextflow.container.SingularityCache.downloadContainerImage0(SingularityCache.groovy:275)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.container.SingularityCache$_downloadContainerImage_closure1.doCall(SingularityCache.groovy:243)
+	at nextflow.container.SingularityCache$_downloadContainerImage_closure1.call(SingularityCache.groovy)
+	at nextflow.file.FileMutex.lock(FileMutex.groovy:106)
+	at nextflow.container.SingularityCache.downloadContainerImage(SingularityCache.groovy:243)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.container.SingularityCache$_getLazyImagePath_closure2.doCall(SingularityCache.groovy:333)
+	at nextflow.container.SingularityCache$_getLazyImagePath_closure2.call(SingularityCache.groovy)
+	at groovyx.gpars.dataflow.LazyDataflowVariable$1.run(LazyDataflowVariable.java:70)
+	... 3 common frames omitted
+Aug-23 13:09:18.375 [Actor Thread 64] DEBUG nextflow.Session - Session aborted -- Cause: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name ghcr.io-msk-access-postprocessing_variant_calls-0.3.0.img.pulling.1724432958290 docker://ghcr.io/msk-access/postprocessing_variant_calls:0.3.0 > /dev/null
+  status : 1
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    ERROR: Unknown command 'pull'
+
+Aug-23 13:09:18.378 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Aug-23 13:09:18.403 [Actor Thread 64] DEBUG nextflow.Session - The following nodes are still active:
+[process] MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL
+  status=ACTIVE
+  port 0: (queue) closed; channel: -
+  port 1: (cntrl) -     ; channel: $
+
+[process] MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:GENOTYPEVARIANTS_ALL
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (value) bound ; channel: fasta
+  port 2: (value) bound ; channel: fai
+  port 3: (cntrl) -     ; channel: $
+
+[process] MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_GENOTYPE
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (cntrl) -     ; channel: $
+
+[process] MSK_NUCLEOVAR:NUCLEOVAR:PVMAF_TAGTRACEBACK
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (value) bound ; channel: sample_sheets
+  port 2: (cntrl) -     ; channel: $
+
+Aug-23 13:09:18.412 [main] DEBUG nextflow.Session - Session await > all processes finished
+Aug-23 13:09:18.413 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Aug-23 13:09:18.415 [Actor Thread 68] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=MSK_NUCLEOVAR:NUCLEOVAR:TRACEBACK:PVMAFCONCAT_INITIAL; work-dir=null
+  error [java.lang.InterruptedException]: java.lang.InterruptedException
+Aug-23 13:09:18.418 [main] INFO  nextflow.Nextflow - -[0;35m[msk/nucleovar][0;31m Pipeline completed with errors[0m-
+Aug-23 13:09:18.426 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=0; peakCpus=0; peakMemory=0; ]
+Aug-23 13:09:18.427 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Aug-23 13:09:18.430 [main] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Aug-23 13:09:19.111 [main] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Aug-23 13:09:19.222 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Aug-23 13:09:19.245 [main] INFO  org.pf4j.AbstractPluginManager - Stop plugin 'nf-validation@1.1.3'
+Aug-23 13:09:19.245 [main] DEBUG nextflow.plugin.BasePlugin - Plugin stopped nf-validation
+Aug-23 13:09:19.248 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
