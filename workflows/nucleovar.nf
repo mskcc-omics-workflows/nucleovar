@@ -36,6 +36,7 @@ include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools
 include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main'
 include { TRACEBACK } from '../subworkflows/msk/traceback/main'
 include { PVMAF_TAGTRACEBACK } from '../modules/msk/pvmaf/tagtraceback'
+include { MAF_PROCESSING     } from '../modules/local/maf_processing/main'
 include { ACCESS_FILTERS } from '../modules/local/access_filters/main'
 include { TAG_BY_VARIANT_ANNOTATION } from '../modules/local/tag_by_variant_annotation/main'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -91,6 +92,11 @@ workflow NUCLEOVAR {
     fasta_ref = params.fasta
     fasta_index = params.fai
     fasta_dict = params.dict
+    rules_file = Channel.fromPath(params.rules_json)
+    header_file = Channel.fromPath(params.header_file)
+    blocklist = Channel.fromPath(params.blocklist)
+    canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
+
 
     if (params.target_bed == null) {
         println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
@@ -99,6 +105,7 @@ workflow NUCLEOVAR {
             .map { items -> items.join('\n') }
             .view { data -> new File('sample_order.txt').text = data }
         sample_order_file = Channel.fromPath(params.sample_order_file)
+
         // //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
         case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
 
@@ -117,9 +124,6 @@ workflow NUCLEOVAR {
     vardict_filtered_vcf_standard = CALL_VARIANTS_CASECONTROL.out.std_vardict_vcf
     vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complex_variants_vardict_vcf
 
-    // vardict_filtered_vcfs.view()
-    //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> std_vcf}.set{ vardict_filtered_vcf_standard }
-    //vardict_filtered_vcfs.map{ std_vcf,complexvar_vcf -> complexvar_vcf}.set{ vardict_filtered_vcf_complexvar }
 
     target_bed_file
         .combine(Channel.from(fasta_ref))
@@ -162,7 +166,7 @@ workflow NUCLEOVAR {
     MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
-    // placeholder for mutect2 filtering code
+    
 
     sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
     sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
@@ -188,16 +192,10 @@ workflow NUCLEOVAR {
     mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
     sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
 
-    // // //NOTE: turn into argument on CLI
-    header_file = Channel.from(params.header_file)
-
 
     BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
     annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
-
-
-
-
+    
     // // // // Genome nexus subworkflow
     GENOME_NEXUS( annotated_vcf )
 
@@ -205,10 +203,9 @@ workflow NUCLEOVAR {
     input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
 
 
-
     // // // // traceback subworkflow
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
-    //mafs = Channel.from([patient:'test',id:"C-PR83CF-L004-d04.DONOR22-TP.combined-variants"]).merge(test_maf_only)
+   
 
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
@@ -217,23 +214,21 @@ workflow NUCLEOVAR {
     genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
 
 
-    // // maf_processing module (tag by rules)
-    // MAF_PROCESSING( genotyped_maf, rules_file )
-    // tagged_maf = MAF_PROCESSING.out.maf
+    // // // maf_processing module (tag by rules)
+    MAF_PROCESSING( genotyped_maf, rules_file )
+    tagged_maf = MAF_PROCESSING.out.maf
 
-    // // access filters
-    genotyped_maf.combine(test_maf_only).set{ inputs_for_access_filters }
+    // // // access filters
+    genotyped_maf.combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
     ACCESS_FILTERS( inputs_for_access_filters )
     access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
     access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
 
 
-    // // mpath loading script module
-    TAG_BY_VARIANT_ANNOTATION( access_filtered_maf )
+    // // // mpath loading script module
+    TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
 
-
-
-    //Collate and save software versions
+    // //Collate and save software versions
 
     softwareVersionsToYAML(ch_versions)
         .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
@@ -244,45 +239,6 @@ workflow NUCLEOVAR {
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 
-}
-
-def create_std_filename( it ) {
-
-    def finalFileName = "vcf_standard.vcf.gz"
-
-    file(it).moveTo(file(finalFileName))
-}
-
-def create_mutect_filename( it ) {
-
-    def finalFileName = "vcf_mutect.vcf.gz"
-
-    file(it).moveTo(file(finalFileName))
-}
-
-def create_complexvar_filename( it ) {
-
-    def finalFileName = "vcf_complexvar.vcf.gz"
-
-    file(it).moveTo(file(finalFileName))
-}
-
-
-def create_duplex_bams_channel(LinkedHashMap row) {
-    // create meta map
-
-    // set bams variable
-    if (row.type.isEmpty()) {
-        error "Sample ID is missing for one or more entries. Please double check samplesheet before running the workflow."
-    } else {
-        if (row.type == "case") {
-            case_id = row.type
-        if (row.type == "control") {
-            control_id = row.type
-        }
-        sample_ids = [case_id,control_id]
-        }
-    }
 }
 
 /*

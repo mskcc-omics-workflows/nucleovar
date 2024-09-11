@@ -27,7 +27,7 @@ process BCFTOOLS_ANNOTATE {
     bcftools index --threads $task.cpus ${combined_vcf}
 
 
-    bcftools annotate --header-lines ${header_file} --annotations ${mutect_vcf} --mark-sites +MUTECT --output-type v --output ${prefix}_annotated.vcf ${combined_vcf}
+    bcftools annotate --header-lines ${header_file} --annotations ${mutect_vcf} --mark-sites +MUTECT --output-type v --output ${prefix}.vcf ${combined_vcf}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -40,7 +40,7 @@ process BCFTOOLS_ANNOTATE {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch ${prefix}_annotated.vcf
+    touch ${prefix}.vcf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

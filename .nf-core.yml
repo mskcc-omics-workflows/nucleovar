@@ -1,4 +1,6 @@
 lint:
+  template_strings:
+    - input.template.json
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-nucleovar_logo_light.png

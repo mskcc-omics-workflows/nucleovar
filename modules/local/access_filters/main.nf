@@ -7,7 +7,7 @@ process ACCESS_FILTERS {
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.4' }"
 
     input:
-    tuple val(meta), path(traceback_maf), path(anno_maf)
+    tuple val(meta), path(traceback_maf), path(anno_maf), path(blocklist)
 
     output:
     tuple val(meta), path("*_filtered.maf"), emit: filtered_maf
@@ -19,7 +19,7 @@ process ACCESS_FILTERS {
 
     script:
     """
-    samtools sort $tumor_bam -o ${meta.case_id}_sorted.bam
+    pv maf filter access_filters -f ${traceback_maf} -a ${anno_maf} -ts ${meta.case_id}  -ns ${meta.control_id} -bl ${blocklist}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

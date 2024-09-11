@@ -8,6 +8,7 @@ process TAG_BY_VARIANT_ANNOTATION {
 
     input:
     tuple val(meta), path(access_filtered_maf)
+    path(canonical_tx_ref)
 
     output:
     path("annotated_exonic_variants.maf"), emit: annotated_exonic
@@ -23,7 +24,7 @@ process TAG_BY_VARIANT_ANNOTATION {
 
     script:
     """
-    samtools sort $tumor_bam -o ${meta.case_id}_sorted.bam
+    pv maf tag by_variant_classification --maf ${access_filtered_maf} --canonical_tx_ref ${canonical_tx_ref} --output_dir .
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

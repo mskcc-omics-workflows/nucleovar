@@ -20,7 +20,9 @@
                 "rules_json",
                 "aux_bams",
                 "sample_order_file",
-                "header_file"
+                "header_file",
+                "blocklist",
+                "canonical_tx_ref"
             ],
             "properties": {
                 "input": {
@@ -85,6 +87,16 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to file containing the genotype headers which are used in the BCFTools Annotation Module."
+                },
+                "blocklist": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing blocklist for access filter module."
+                },
+                "canonical_tx_ref": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing canonical transcript references"
                 }
             }
         },
