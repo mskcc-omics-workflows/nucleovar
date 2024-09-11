@@ -83,6 +83,54 @@
                 "type": "array"
             },
             "template": "sample_id\tnormal_path\tduplex_path\tsimplex_path\ttype\n{{#aux_bams}}\n{{sample_id}}\t{{normal_path}}\t{{duplex_path}}\t{{simplex_path}}\t{{type}}\n{{/aux_bams}}"
+        },
+        {
+            "id": "fasta",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "fai",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "dict",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "canonical_bed",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "target_bed",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "rules_json",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "header_file",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "sample_order_file",
+            "schema": {
+                "type": "File"
+            }
         }
     ],
     "outputs": [
