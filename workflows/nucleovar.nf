@@ -166,7 +166,7 @@ workflow NUCLEOVAR {
     MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
-    
+
 
     sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
     sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
@@ -195,7 +195,7 @@ workflow NUCLEOVAR {
 
     BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
     annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
-    
+
     // // // // Genome nexus subworkflow
     GENOME_NEXUS( annotated_vcf )
 
@@ -205,7 +205,7 @@ workflow NUCLEOVAR {
 
     // // // // traceback subworkflow
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
-   
+
 
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
