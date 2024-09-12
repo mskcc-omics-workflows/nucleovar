@@ -127,12 +127,6 @@
             }
         },
         {
-            "id": "sample_order_file",
-            "schema": {
-                "type": "File"
-            }
-        },
-        {
             "id": "blocklist",
             "schema": {
                 "type": "File"
