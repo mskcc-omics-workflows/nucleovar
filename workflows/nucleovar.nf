@@ -62,8 +62,9 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 workflow NUCLEOVAR {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    samplesheet
     sample_id_names
+    sample_order_file
     standard_bams
     case_bams
     control_bams
@@ -86,8 +87,6 @@ workflow NUCLEOVAR {
     // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline
     def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
 
-
-
     canonical_bed = Channel.from(params.canonical_bed)
     fasta_ref = params.fasta
     fasta_index = params.fai
@@ -100,11 +99,6 @@ workflow NUCLEOVAR {
 
     if (params.target_bed == null) {
         println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
-        sample_id_names
-            .map { meta -> [meta.case_id,meta.control_id] }
-            .map { items -> items.join('\n') }
-            .view { data -> new File('sample_order.txt').text = data }
-        sample_order_file = Channel.fromPath(params.sample_order_file)
 
         // //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
         case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
@@ -116,7 +110,7 @@ workflow NUCLEOVAR {
     }
     else {
         println "Target BED file is provided."
-        target_bed_file = params.target_bed
+        target_bed_file = Channel.from(params.target_bed)
     }
 
     CALL_VARIANTS_CASECONTROL (sample_id_names,duplex_bams,Channel.from(fasta_ref),Channel.from(fasta_index),Channel.from(fasta_dict),target_bed_file)
@@ -142,7 +136,7 @@ workflow NUCLEOVAR {
         .set{ input1_for_mutect }
 
 
-
+    // run mutect1 and mutect2 variant callers
     MUTECT1(input1_for_mutect,input2_for_mutect)
     MUTECT2( input1_for_mutect,input2_for_mutect )
 
@@ -154,6 +148,7 @@ workflow NUCLEOVAR {
     mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
     mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
 
+    // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
     MUTECT1_REHEADER( input_for_mutect1_reheader )
     MUTECT2_REHEADER( input_for_mutect2_reheader )
 
@@ -162,7 +157,7 @@ workflow NUCLEOVAR {
 
     mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
 
-
+    // filtering variant callers
     MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
@@ -170,12 +165,14 @@ workflow NUCLEOVAR {
 
     sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
     sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+
+    // bcftools suite subworkflow for VarDict VCFs
     BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
 
     vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
     vardict_index = BCFTOOLS_VARDICT.out.vardict_index
 
-
+    // bcftools suite subworkflow for MuTect VCFs
     BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
     mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
     mutect_index = BCFTOOLS_MUTECT.out.mutect_index
@@ -184,6 +181,7 @@ workflow NUCLEOVAR {
     vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
     mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
 
+    // concatenation of VarDict and MuTect VCFs
     BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
     sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
 
@@ -192,7 +190,7 @@ workflow NUCLEOVAR {
     mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
     sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
 
-
+    // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
     BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
     annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
@@ -228,14 +226,12 @@ workflow NUCLEOVAR {
     // // // mpath loading script module
     TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
 
-    // //Collate and save software versions
-
+    // // //Collate and save software versions
     softwareVersionsToYAML(ch_versions)
         .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
 
     emit:
-    mutect2_vcf
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 

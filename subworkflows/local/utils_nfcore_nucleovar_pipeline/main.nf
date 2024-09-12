@@ -155,12 +155,19 @@ workflow PIPELINE_INITIALISATION {
         .filter { item -> item[1] != 'null' }
         .set{ normal_bams_ch }
 
+    sample_id_names_ch
+        .map { meta -> [meta.case_id,meta.control_id] }
+        .map { items -> items.join('\n') }
+        .view { data -> new File('sample_order.txt').text = data }
+    sample_order_ch = Channel.fromPath('sample_order.txt')
+
 
 
 
     emit:
     samplesheet = ch_samplesheet
     sample_id_names = sample_id_names_ch
+    sample_order_file = sample_order_ch
     standard_bams = standard_bams_ch
     case_bams = case_bams_ch
     control_bams = control_bams_ch

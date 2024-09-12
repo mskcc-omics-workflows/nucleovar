@@ -33,6 +33,7 @@ workflow MSK_NUCLEOVAR {
     take:
     samplesheet
     sample_id_names
+    sample_order_file
     standard_bams
     case_bams
     control_bams
@@ -50,6 +51,7 @@ workflow MSK_NUCLEOVAR {
     NUCLEOVAR (
         samplesheet,
         sample_id_names,
+        sample_order_file,
         standard_bams,
         case_bams,
         control_bams,
@@ -61,7 +63,6 @@ workflow MSK_NUCLEOVAR {
         normal_bams    )
 
     emit:
-    mutect2_vcf = NUCLEOVAR.out.mutect2_vcf
     versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
 
 }
@@ -95,6 +96,7 @@ workflow {
     MSK_NUCLEOVAR (
         PIPELINE_INITIALISATION.out.samplesheet,
         PIPELINE_INITIALISATION.out.sample_id_names,
+        PIPELINE_INITIALISATION.out.sample_order_file,
         PIPELINE_INITIALISATION.out.standard_bams,
         PIPELINE_INITIALISATION.out.case_bams,
         PIPELINE_INITIALISATION.out.control_bams,
