@@ -131,6 +131,18 @@
             "schema": {
                 "type": "File"
             }
+        },
+        {
+            "id": "blocklist",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "canonical_tx_ref",
+            "schema": {
+                "type": "File"
+            }
         }
     ],
     "outputs": [
