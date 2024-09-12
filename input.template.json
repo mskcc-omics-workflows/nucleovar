@@ -1,0 +1,159 @@
+{
+    "inputs": [
+        {
+            "id": "input",
+            "schema": {
+                "items": {
+                    "fields": [
+                        {
+                            "name": "patient_id",
+                            "type": "string"
+                        },
+                        {
+                            "name": "sample_id",
+                            "type": "string"
+                        },
+                        {
+                            "name": "maf",
+                            "type": "File"
+                        },
+                        {
+                            "name": "standard_bam",
+                            "type": "File"
+                        },
+                        {
+                            "name": "standard_bai",
+                            "type": "File"
+                        },
+                        {
+                            "name": "duplex_bam",
+                            "type": "File"
+                        },
+                        {
+                            "name": "duplex_bai",
+                            "type": "File"
+                        },
+                        {
+                            "name": "simplex_bam",
+                            "type": "File"
+                        },
+                        {
+                            "name": "simplex_bai",
+                            "type": "File"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        }
+                    ],
+                    "type": "record"
+                },
+                "type": "array"
+            },
+            "template": "patient_id\tsample_id\ttype\tmaf\tstandard_bam\tstandard_bai\tduplex_bam\tduplex_bai\tsimplex_bam\tsimplex_bai\n{{#input}}\n{{patient_id}}\t{{sample_id}}\t{{maf}}\t{{standard_bam}}\t{{standard_bai}}\t{{duplex_bam}}\t{{duplex_bai}}\t{{simplex_bam}}\t{{simplex_bai}}\n{{/input}}"
+        },
+        {
+            "id": "aux_bams",
+            "schema": {
+                "items": {
+                    "fields": [
+                        {
+                            "name": "sample_id",
+                            "type": "string"
+                        },
+                        {
+                            "name": "normal_path",
+                            "type": "string"
+                        },
+                        {
+                            "name": "duplex_path",
+                            "type": "File"
+                        },
+                        {
+                            "name": "simplex_path",
+                            "type": "File"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        }
+                    ],
+                    "type": "record"
+                },
+                "type": "array"
+            },
+            "template": "sample_id\tnormal_path\tduplex_path\tsimplex_path\ttype\n{{#aux_bams}}\n{{sample_id}}\t{{normal_path}}\t{{duplex_path}}\t{{simplex_path}}\t{{type}}\n{{/aux_bams}}"
+        },
+        {
+            "id": "fasta",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "fai",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "dict",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "canonical_bed",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "target_bed",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "rules_json",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "header_file",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "sample_order_file",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "blocklist",
+            "schema": {
+                "type": "File"
+            }
+        },
+        {
+            "id": "canonical_tx_ref",
+            "schema": {
+                "type": "File"
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "id": "outputs",
+            "schema": {
+                "type": {
+                    "items": "File",
+                    "type": "array"
+                }
+            }
+        }
+    ]
+}
