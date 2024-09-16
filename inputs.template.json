@@ -50,7 +50,7 @@
                 },
                 "type": "array"
             },
-            "template": "patient_id\tsample_id\ttype\tmaf\tstandard_bam\tstandard_bai\tduplex_bam\tduplex_bai\tsimplex_bam\tsimplex_bai\n{{#input}}\n{{patient_id}}\t{{sample_id}}\t{{maf}}\t{{standard_bam}}\t{{standard_bai}}\t{{duplex_bam}}\t{{duplex_bai}}\t{{simplex_bam}}\t{{simplex_bai}}\n{{/input}}"
+            "template": "patient_id\tsample_id\ttype\tmaf\tstandard_bam\tstandard_bai\tduplex_bam\tduplex_bai\tsimplex_bam\tsimplex_bai\n{{#input}}\n{{patient_id}}\t{{sample_id}}\t{{type}}\t{{maf}}\t{{standard_bam}}\t{{standard_bai}}\t{{duplex_bam}}\t{{duplex_bai}}\t{{simplex_bam}}\t{{simplex_bai}}\n{{/input}}"
         },
         {
             "id": "aux_bams",
