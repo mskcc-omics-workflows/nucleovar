@@ -50,7 +50,7 @@
                 },
                 "type": "array"
             },
-            "template": "patient_id\tsample_id\ttype\tmaf\tstandard_bam\tstandard_bai\tduplex_bam\tduplex_bai\tsimplex_bam\tsimplex_bai\n{{#input}}\n{{patient_id}}\t{{sample_id}}\t{{maf}}\t{{standard_bam}}\t{{standard_bai}}\t{{duplex_bam}}\t{{duplex_bai}}\t{{simplex_bam}}\t{{simplex_bai}}\n{{/input}}"
+            "template": "patient_id\tsample_id\ttype\tmaf\tstandard_bam\tstandard_bai\tduplex_bam\tduplex_bai\tsimplex_bam\tsimplex_bai\n{{#mapping}}\n{{patient_id}}\t{{sample_id}}\t{{maf}}\t{{standard_bam}}\t{{standard_bai}}\t{{duplex_bam}}\t{{duplex_bai}}\t{{simplex_bam}}\t{{simplex_bai}}\n{{/mapping}}"
         },
         {
             "id": "aux_bams",
@@ -82,7 +82,7 @@
                 },
                 "type": "array"
             },
-            "template": "sample_id\tnormal_path\tduplex_path\tsimplex_path\ttype\n{{#aux_bams}}\n{{sample_id}}\t{{normal_path}}\t{{duplex_path}}\t{{simplex_path}}\t{{type}}\n{{/aux_bams}}"
+            "template": "sample_id\tnormal_path\tduplex_path\tsimplex_path\ttype\n{{#mapping}}\n{{sample_id}}\t{{normal_path}}\t{{duplex_path}}\t{{simplex_path}}\t{{type}}\n{{/mapping}}"
         },
         {
             "id": "fasta",
