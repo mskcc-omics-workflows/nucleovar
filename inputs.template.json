@@ -143,12 +143,6 @@
             "schema": {
                 "type": "File"
             }
-        },
-        {
-            "id": "sample_order_file",
-            "schema": {
-                "type": "File"
-            }
         }
     ],
     "outputs": [
