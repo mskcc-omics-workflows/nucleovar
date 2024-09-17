@@ -19,7 +19,6 @@
                 "dict",
                 "rules_json",
                 "aux_bams",
-                "sample_order_file",
                 "header_file",
                 "blocklist",
                 "canonical_tx_ref"
