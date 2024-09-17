@@ -99,12 +99,12 @@ workflow PIPELINE_INITIALISATION {
         .branch{ row -> tumor: row.type == "CASE"
             return tuple(row.duplex_bam,row.duplex_bai) }
         .set{ case_bams_ch }
-
+    case_bams_ch.view()
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
             return tuple(row.duplex_bam,row.duplex_bai) }
         .set{ control_bams_ch }
-
+    control_bams_ch.view()
     sample_id_names_ch
         .combine(control_bams_ch)
         .combine(case_bams_ch)
