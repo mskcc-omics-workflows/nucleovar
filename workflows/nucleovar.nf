@@ -130,10 +130,6 @@ workflow NUCLEOVAR {
         .map{ meta,control_bam,control_bai,case_bam,case_bai ->
             tuple(case_bam,control_bam,case_bai,control_bai)}
         .set{ bams_for_mutect }
-    case_bam.view()
-    control_bam.view()
-    case_bai.view()
-    control_bai.view()
     duplex_bams.view()
     sample_id_names
         .combine(bams_for_mutect)
