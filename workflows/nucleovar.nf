@@ -137,6 +137,8 @@ workflow NUCLEOVAR {
 
 
     // run mutect1 and mutect2 variant callers
+    input1_for_mutect.view()
+    input2_for_mutect.view()
     MUTECT1(input1_for_mutect,input2_for_mutect)
     MUTECT2( input1_for_mutect,input2_for_mutect )
 
