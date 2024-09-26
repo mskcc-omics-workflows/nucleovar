@@ -7,8 +7,8 @@ process PVMAF_TAGTRACEBACK {
     //               For Conda, the build (i.e. "h9402c20_2") must be EXCLUDED to support installation on different operating systems.
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.7':
-        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.7' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.8':
+        'ghcr.io/msk-access/postprocessing_variant_calls:type_traceback_0.0.8' }"
 
     input:
     tuple val(meta), path(maf)

@@ -95,6 +95,7 @@ workflow NUCLEOVAR {
     header_file = Channel.fromPath(params.header_file)
     blocklist = Channel.fromPath(params.blocklist)
     canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
+    hotspots = Channel.fromPath(params.hotspots)
 
 
     if (params.target_bed == null) {
@@ -130,15 +131,12 @@ workflow NUCLEOVAR {
         .map{ meta,control_bam,control_bai,case_bam,case_bai ->
             tuple(case_bam,control_bam,case_bai,control_bai)}
         .set{ bams_for_mutect }
-    duplex_bams.view()
     sample_id_names
         .combine(bams_for_mutect)
         .set{ input1_for_mutect }
 
 
     // run mutect1 and mutect2 variant callers
-    input1_for_mutect.view()
-    input2_for_mutect.view()
     MUTECT1(input1_for_mutect,input2_for_mutect)
     MUTECT2( input1_for_mutect,input2_for_mutect )
 
@@ -149,7 +147,7 @@ workflow NUCLEOVAR {
 
     mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
     mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-
+    
     // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
     MUTECT1_REHEADER( input_for_mutect1_reheader )
     MUTECT2_REHEADER( input_for_mutect2_reheader )
@@ -215,7 +213,7 @@ workflow NUCLEOVAR {
 
 
     // // // maf_processing module (tag by rules)
-    MAF_PROCESSING( genotyped_maf, rules_file )
+    MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
     tagged_maf = MAF_PROCESSING.out.maf
 
     // // // access filters

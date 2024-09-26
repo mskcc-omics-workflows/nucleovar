@@ -21,7 +21,8 @@
                 "aux_bams",
                 "header_file",
                 "blocklist",
-                "canonical_tx_ref"
+                "canonical_tx_ref",
+                "hotspots"
             ],
             "properties": {
                 "input": {
@@ -95,6 +96,11 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to file containing canonical transcript references"
+                },
+                "hotspots": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing hotspots for maf processing."
                 }
             }
         },
