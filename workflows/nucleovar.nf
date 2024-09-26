@@ -139,19 +139,19 @@ workflow NUCLEOVAR {
 
     // run mutect1 and mutect2 variant callers
     MUTECT1(input1_for_mutect,input2_for_mutect)
-    MUTECT2( input1_for_mutect,input2_for_mutect )
+    // MUTECT2( input1_for_mutect,input2_for_mutect )
 
     mutect1_vcf = MUTECT1.out.mutect_vcf
     mutect1_txt = MUTECT1.out.standard_mutect_output
-    mutect2_vcf = MUTECT2.out.mutect2_vcf
+    // mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
     mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
-    mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
+    // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
     
     // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
     MUTECT1_REHEADER( input_for_mutect1_reheader )
-    MUTECT2_REHEADER( input_for_mutect2_reheader )
+    // MUTECT2_REHEADER( input_for_mutect2_reheader )
 
     mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
     mutect1_txt.map{ meta,txt -> txt}.set{ mutect1_txt_only }
@@ -223,15 +223,19 @@ workflow NUCLEOVAR {
     // // // maf_processing module (tag by rules)
     MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
     tagged_maf = MAF_PROCESSING.out.maf
+    tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
 
+    
     // // // access filters
-    genotyped_maf.combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
+    
+    sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
+    
     ACCESS_FILTERS( inputs_for_access_filters )
     access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
     access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
 
 
-    // // // mpath loading script module
+    // // // // mpath loading script module
     TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
 
     // // //Collate and save software versions

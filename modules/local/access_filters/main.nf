@@ -3,8 +3,8 @@ process ACCESS_FILTERS {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.4' :
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.4' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.1' :
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.1' }"
 
     input:
     tuple val(meta), path(traceback_maf), path(anno_maf), path(blocklist)
@@ -19,7 +19,7 @@ process ACCESS_FILTERS {
 
     script:
     """
-    pv maf filter access_filters -f ${traceback_maf} -a ${anno_maf} -ts ${meta.case_id}  -ns ${meta.control_id} -bl ${blocklist}
+    pv maf filter access_filters -f ${traceback_maf} -a ${anno_maf} -ts ${meta.case_id}  -ns ${meta.control_id} -bl ${blocklist} --output ${meta.id}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
