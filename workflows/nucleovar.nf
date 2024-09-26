@@ -33,6 +33,7 @@ include { BEDTOOLS_GENOMECOV } from '../modules/local/bedtools/genomecov/main'
 include { BEDTOOLS_MERGE } from '../modules/local/bedtools/merge/main'
 include { MUTECT_FILTER     } from '../modules/local/mutect_filter'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
+include { VCF2MAF } from '../modules/msk/vcf2maf/main'
 include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main'
 include { TRACEBACK } from '../subworkflows/msk/traceback/main'
 include { PVMAF_TAGTRACEBACK } from '../modules/msk/pvmaf/tagtraceback'
@@ -197,10 +198,17 @@ workflow NUCLEOVAR {
     BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
     annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
 
-    // // // // Genome nexus subworkflow
-    GENOME_NEXUS( annotated_vcf )
 
-    input_maf = GENOME_NEXUS.out.maf
+    if (params.annotator == 'genomenexus') {
+        println "User has specified genomenexus for annotation software flag. Proceeding with Genome Nexus Subworkflow..."
+        GENOME_NEXUS( annotated_vcf )
+        input_maf = GENOME_NEXUS.out.maf
+    }
+    else if (params.annotator == 'vcf2maf') {
+        println "User has specified vcf2maf for annotation software flag. Proceeding with PERL vcf2maf module..."
+        
+    }
+
     input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
 
 
