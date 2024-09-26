@@ -81,7 +81,7 @@ workflow PIPELINE_INITIALISATION {
     input2 = Channel.fromPath(input)
 
     input1
-        .splitCsv(header: true)
+        .splitCsv(header: true, sep: '\t')
         .set { ch_samplesheet }
 
     ch_samplesheet
@@ -103,7 +103,11 @@ workflow PIPELINE_INITIALISATION {
         .branch{ row -> tumor: row.type == "CONTROL"
             return tuple(row.duplex_bam.toString(),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ control_bams_ch }
-    
+
+    sample_id_names_ch
+        .combine(control_bams_ch)
+        .combine(case_bams_ch)
+        .set{ duplex_bams_ch }
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
@@ -129,7 +133,7 @@ workflow PIPELINE_INITIALISATION {
 
     Channel
         .fromPath(aux_bams)
-        .splitCsv(header: true)
+        .splitCsv(header: true, sep: '\t')
         .map{ row -> tuple(row.sample_id,row.normal_path,row.duplex_path,row.simplex_path,row.type)}
         .set{ temp_ch }
 
@@ -143,7 +147,6 @@ workflow PIPELINE_INITIALISATION {
                     (file(simplex_path).parent/file(simplex_path).baseName +'.bai').toString()) }
         .filter { item -> item[3] != 'null' }
         .set{ aux_bams_ch }
-
 
     temp_ch
         .map{ sample_id,normal_path,duplex_path,simplex_path,type -> tuple([patient:'null',id:sample_id,type:type],

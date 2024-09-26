@@ -60,7 +60,8 @@ workflow MSK_NUCLEOVAR {
         control_bams_for_traceback,
         samplesheets_for_traceback,
         aux_bams,
-        normal_bams    )
+        normal_bams
+        )
 
     emit:
     versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
@@ -105,7 +106,7 @@ workflow {
         PIPELINE_INITIALISATION.out.control_bams_for_traceback,
         PIPELINE_INITIALISATION.out.samplesheets_for_traceback,
         PIPELINE_INITIALISATION.out.aux_bams,
-        PIPELINE_INITIALISATION.out.normal_bams
+        PIPELINE_INITIALISATION.out.normal_bams,
 
     )
 

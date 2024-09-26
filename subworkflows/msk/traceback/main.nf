@@ -32,7 +32,6 @@ workflow TRACEBACK {
     .combine(concat_maf, by:0)
     .map { it[1..-1] }
     .set{bam_list_maf}
-
     // genotype each bam combined maf, per patient if provided
     GENOTYPEVARIANTS_ALL(bam_list_maf, reference, reference_fai)
     ch_versions = ch_versions.mix(GENOTYPEVARIANTS_ALL.out.versions.first())
