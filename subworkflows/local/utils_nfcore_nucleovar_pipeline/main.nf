@@ -91,34 +91,35 @@ workflow PIPELINE_INITIALISATION {
         .set{ sample_id_names_ch }
 
     ch_samplesheet
-        .branch{ row -> standard: row.type == "standard"
-            return tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,row.standard_bai) }
+        .map{ row -> tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,(file(row.standard_bam).parent/file(row.standard_bam).baseName +'.bai').toString()) }
         .set{ standard_bams_ch }
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
-            return tuple(row.duplex_bam,row.duplex_bai) }
+            return tuple(row.duplex_bam.toString(),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ case_bams_ch }
-    case_bams_ch.view()
+    
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
-            return tuple(row.duplex_bam,row.duplex_bai) }
+            return tuple(row.duplex_bam.toString(),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ control_bams_ch }
-    control_bams_ch.view()
-    sample_id_names_ch
-        .combine(control_bams_ch)
-        .combine(case_bams_ch)
-        .set{ duplex_bams_ch }
+    
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
-            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ case_bams_for_traceback_ch }
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
-            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),file(row.duplex_bai),file(row.simplex_bam),file(row.simplex_bai)) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ control_bams_for_traceback_ch }
+
+
+    sample_id_names_ch
+        .combine(control_bams_ch)
+        .combine(case_bams_ch)
+        .set{ duplex_bams_ch }
 
 
     aux_bams1 = Channel.fromPath(aux_bams)
