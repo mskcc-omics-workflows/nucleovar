@@ -9,6 +9,7 @@ process MAF_PROCESSING {
     input:
     tuple val(meta), path(genotyped_maf)
     path(rules_file)
+    path(hotspots_file)
 
     output:
     tuple val(meta), path("*.maf"), emit: maf
@@ -19,7 +20,7 @@ process MAF_PROCESSING {
 
     script:
     """
-    pv maf tag by_rules --maf ${genotyped_maf} --rules_json ${rules_file}
+    pv maf tag maf_processing --maf ${genotyped_maf} --rules_json ${rules_file} --hotspots ${hotspots_file}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
