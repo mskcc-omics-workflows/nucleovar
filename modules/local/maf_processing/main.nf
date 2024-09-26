@@ -3,8 +3,8 @@ process MAF_PROCESSING {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.7' :
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.7' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:dev_maf_process' :
+        'ghcr.io/msk-access/postprocessing_variant_calls:dev_maf_process' }"
 
     input:
     tuple val(meta), path(genotyped_maf)
@@ -20,7 +20,7 @@ process MAF_PROCESSING {
 
     script:
     """
-    pv maf tag maf_processing --maf ${genotyped_maf} --rules_json ${rules_file} --hotspots ${hotspots}
+    pv maf tag maf_processing --maf ${genotyped_maf} --rules ${rules_file} --hotspots ${hotspots}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
