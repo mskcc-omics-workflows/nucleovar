@@ -3,8 +3,8 @@ process TAG_BY_VARIANT_ANNOTATION {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.1' :
-        'ghcr.io/msk-access/postprocessing_variant_calls:0.3.1' }"
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.6' :
+        'ghcr.io/msk-access/postprocessing_variant_calls:0.2.6' }"
 
     input:
     tuple val(meta), path(access_filtered_maf)
