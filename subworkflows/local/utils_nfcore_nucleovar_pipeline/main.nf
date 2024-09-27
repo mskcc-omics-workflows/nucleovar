@@ -90,7 +90,7 @@ workflow PIPELINE_INITIALISATION {
         .map{ [id:"${it[1]}_${it[0]}",control_id:it[0],case_id:it[1]] }
         .set{ sample_id_names_ch }
 
-    sample_id_names_ch.view()
+    
 
     ch_samplesheet
         .map{ row -> tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,(file(row.standard_bam).parent/file(row.standard_bam).baseName +'.bai').toString()) }
@@ -113,12 +113,12 @@ workflow PIPELINE_INITIALISATION {
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CASE"
-            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.simplex_bam).parent/file(row.simplex_bam).baseName +'.bai').toString()) }
         .set{ case_bams_for_traceback_ch }
 
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
-            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
+            return tuple([patient: row.patient_id,id: row.sample_id,type: row.type],[],[],file(row.duplex_bam),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString(),file(row.simplex_bam),(file(row.simplex_bam).parent/file(row.simplex_bam).baseName +'.bai').toString()) }
         .set{ control_bams_for_traceback_ch }
 
 

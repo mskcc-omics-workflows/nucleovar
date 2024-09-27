@@ -213,6 +213,7 @@ workflow NUCLEOVAR {
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
 
 
+    
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
