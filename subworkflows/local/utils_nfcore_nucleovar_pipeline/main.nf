@@ -90,8 +90,6 @@ workflow PIPELINE_INITIALISATION {
         .map{ [id:"${it[1]}_${it[0]}",control_id:it[0],case_id:it[1]] }
         .set{ sample_id_names_ch }
 
-    
-
     ch_samplesheet
         .map{ row -> tuple([patient_id: row.patient_id,sample_id: row.sample_id,type:row.type],row.standard_bam,(file(row.standard_bam).parent/file(row.standard_bam).baseName +'.bai').toString()) }
         .set{ standard_bams_ch }
