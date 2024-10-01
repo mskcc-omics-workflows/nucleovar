@@ -16,7 +16,7 @@ nextflow_process {
         when {
             process {
                 """
-                
+
                 input[0] = [
                     [ id:'tumor.normal', case_id:'tumor', control_id:'normal' ], // meta map
                     file("stub_vcf_file"),

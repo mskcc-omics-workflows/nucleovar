@@ -98,7 +98,7 @@ workflow PIPELINE_INITIALISATION {
         .branch{ row -> tumor: row.type == "CASE"
             return tuple(row.duplex_bam.toString(),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }
         .set{ case_bams_ch }
-    
+
     ch_samplesheet
         .branch{ row -> tumor: row.type == "CONTROL"
             return tuple(row.duplex_bam.toString(),(file(row.duplex_bam).parent/file(row.duplex_bam).baseName +'.bai').toString()) }

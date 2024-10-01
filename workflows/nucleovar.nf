@@ -148,7 +148,7 @@ workflow NUCLEOVAR {
 
     mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
     // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-    
+
     // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
     MUTECT1_REHEADER( input_for_mutect1_reheader )
     // MUTECT2_REHEADER( input_for_mutect2_reheader )
@@ -203,7 +203,7 @@ workflow NUCLEOVAR {
     }
     else if (params.annotator == 'vcf2maf') {
         println "User has specified vcf2maf for annotation software flag. Proceeding with PERL vcf2maf module..."
-        
+
     }
 
     input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
@@ -213,7 +213,7 @@ workflow NUCLEOVAR {
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
 
 
-    
+
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
 
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
@@ -226,11 +226,11 @@ workflow NUCLEOVAR {
     tagged_maf = MAF_PROCESSING.out.maf
     tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
 
-    
+
     // // // access filters
-    
+
     sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
-    
+
     ACCESS_FILTERS( inputs_for_access_filters )
     access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
     access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf

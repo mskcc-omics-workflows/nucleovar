@@ -20,8 +20,8 @@
                         ]
                     },
                     "genotypevariants/all": {
-                        "branch": "traceback_lint_update",
-                        "git_sha": "948e7b289d5ba4e67b0535f7b126ce02b94a3d93",
+                        "branch": "traceback2_lint_update",
+                        "git_sha": "b4e81212549acb92743565aa080f5c3851f7e478",
                         "installed_by": [
                             "traceback"
                         ]
@@ -34,15 +34,15 @@
                         ]
                     },
                     "pvmaf/concat": {
-                        "branch": "traceback_lint_update",
-                        "git_sha": "d5dff49e75e18d52b0caca17f49802d64b55509d",
+                        "branch": "traceback2_lint_update",
+                        "git_sha": "7c41c266b9e0d9e7b51b37d727e2a524a0e7e319",
                         "installed_by": [
                             "traceback"
                         ]
                     },
                     "pvmaf/tagtraceback": {
-                        "branch": "Subworkflow-traceback",
-                        "git_sha": "a9e056a4bd1c7d5974013972ed26414d867d28a3",
+                        "branch": "traceback2_lint_update",
+                        "git_sha": "b206828edb6f6330586643768f8b9ace9fb27a8b",
                         "installed_by": [
                             "modules"
                         ]
@@ -66,8 +66,8 @@
                         ]
                     },
                     "traceback": {
-                        "branch": "traceback_lint_update",
-                        "git_sha": "d5dff49e75e18d52b0caca17f49802d64b55509d",
+                        "branch": "traceback2_lint_update",
+                        "git_sha": "b4e81212549acb92743565aa080f5c3851f7e478",
                         "installed_by": [
                             "subworkflows"
                         ]
