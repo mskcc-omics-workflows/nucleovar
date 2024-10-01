@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+## yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
 name: "genotypevariants_all"
 description: write your description here
 keywords:
@@ -25,7 +25,8 @@ input:
         pattern: "*.{bam}"
     - bai_standard:
         type: file
-        description: Requires the standard .bai file is present at same location as
+        description:
+          Requires the standard .bai file is present at same location as
           the bam file.
         pattern: "*.{bai}"
     - bam_duplex:
@@ -34,7 +35,8 @@ input:
         pattern: "*.{bam}"
     - bai_duplex:
         type: file
-        description: Requires the duplex .bai file is present at same location as the
+        description:
+          Requires the duplex .bai file is present at same location as the
           bam file.
         pattern: "*.{bai}"
     - bam_simplex:
@@ -43,7 +45,8 @@ input:
         pattern: "*.{bam}"
     - bai_simplex:
         type: file
-        description: Requires the simplex .bai file is present at same location as the
+        description:
+          Requires the simplex .bai file is present at same location as the
           bam file.
         pattern: "*.{bai}"
     - maf:
@@ -68,7 +71,8 @@ output:
             e.g. `[ id:'sample1', patient:'patient_1' ]`
       - "*.maf":
           type: file
-          description: Genotyped maf for each bam provided and a merged genotyped maf.
+          description:
+            Genotyped maf for each bam provided and a merged genotyped maf.
             The mafs will be labelled with patient identifier or sample identifier as
             the prefix, and end with the type of bam (duplex, simplex, or standard). The
             sample identifier is prioritized.
