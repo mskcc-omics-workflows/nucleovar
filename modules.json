@@ -46,13 +46,6 @@
                         "installed_by": [
                             "modules"
                         ]
-                    },
-                    "vcf2maf": {
-                        "branch": "feature/vcf2maf",
-                        "git_sha": "97011e750a9ac77c5c2162933ebf363d465ff9a2",
-                        "installed_by": [
-                            "modules"
-                        ]
                     }
                 }
             },
