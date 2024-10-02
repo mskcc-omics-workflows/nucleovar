@@ -1,6 +1,5 @@
 lint:
-  template_strings:
-    - input.template.json
+  template_strings: False
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-nucleovar_logo_light.png
@@ -31,6 +30,9 @@ lint:
     - process.memory
     - process.time
     - custom_config
+    - params.max_cpus
+    - params.max_memory
+    - params.max_time
 repository_type: pipeline
 template:
   prefix: msk

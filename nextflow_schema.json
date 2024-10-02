@@ -22,7 +22,8 @@
                 "header_file",
                 "blocklist",
                 "canonical_tx_ref",
-                "hotspots"
+                "hotspots",
+                "annotator"
             ],
             "properties": {
                 "input": {
@@ -100,7 +101,11 @@
                 "hotspots": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Filepath to file containing hotspots for maf processing."
+                    "description": "Filepath to file containing hotspots to tag input MAF by"
+                },
+                "annotator": {
+                    "type": "string",
+                    "description": "String indicating which annotation software user would like to use. options are 'genomenexus' or 'vcf2maf' "
                 }
             }
         },

@@ -104,12 +104,6 @@ workflow NORM_STANDARD_ {
     BCFTOOLS_NORM( sample_vcf_and_index, meta_plus_fasta_ch )
     vardict_std_normalized_vcf = BCFTOOLS_NORM.out.vcf
 
-    // sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
-
-    // sample_metamap
-    //     .combine(vardict_normalized_vcf)
-    //     .set{ meta_plus_vardict_normalized_vcf_ch }
-
 
     emit:
     vardict_std_normalized_vcf
@@ -124,13 +118,6 @@ workflow NORM_COMPLEXVAR_ {
     main:
     BCFTOOLS_NORM( sample_vcf_and_index, meta_plus_fasta_ch )
     vardict_complexvar_normalized_vcf = BCFTOOLS_NORM.out.vcf
-
-    // sample_vcf_and_index.map{ sample,vcf,index -> sample}.set{ sample_metamap }
-
-
-    // sample_metamap
-    //     .combine(vardict_normalized_vcf)
-    //     .set{ meta_plus_vardict_normalized_vcf_ch }
 
     emit:
     vardict_complexvar_normalized_vcf
@@ -200,20 +187,6 @@ def create_samplenames_for_bcftools_standard( it ) {
         inputs = meta
     }
 
-// def create_samplenames_for_bcftools_standard(it) {
-//     // create meta map
-//     def meta = [:]
-
-//     if (it instanceof File) {
-//         meta.id = file(it).getSimpleName()
-//     } else if (it instanceof String) {
-//         meta.id = it // Use the string as the sample name directly
-//     } else {
-//         meta.id = "dummy" // Default to "unknown" or any placeholder you prefer
-//     }
-
-//     inputs = meta
-// }
 
 def create_samplenames_for_bcftools_complexvar( it ) {
     // create meta map
