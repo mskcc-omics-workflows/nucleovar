@@ -105,6 +105,7 @@
                 },
                 "annotator": {
                     "type": "string",
+                    "format": "string",
                     "description": "String indicating which annotation software user would like to use. options are 'genomenexus' or 'vcf2maf' "
                 }
             }
