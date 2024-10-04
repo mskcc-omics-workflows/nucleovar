@@ -27,7 +27,7 @@
             "properties": {
                 "input": {
                     "type": "string",
-                    "format": "file-path",
+                    "format": "sample-sheet",
                     "exists": true,
                     "mimetype": "text/csv",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
@@ -74,7 +74,7 @@
                 },
                 "aux_bams": {
                     "type": "string",
-                    "format": "file-path",
+                    "format": "sample-sheet",
                     "description": "Filepath to file containing curated simplex/duplex bams for traceback"
                 },
                 "sample_order_file": {
@@ -100,7 +100,12 @@
                 "hotspots": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Filepath to file containing hotspots for maf processing."
+                    "description": "Filepath to file containing hotspots to tag input MAF by"
+                },
+                "annotator": {
+                    "type": "string",
+                    "format": "string",
+                    "description": "String indicating which annotation software user would like to use. options are 'genomenexus' or 'vcf2maf' "
                 }
             }
         },
