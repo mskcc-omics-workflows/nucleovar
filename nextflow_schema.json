@@ -22,7 +22,8 @@
                 "header_file",
                 "blocklist",
                 "canonical_tx_ref",
-                "hotspots"
+                "hotspots",
+                "annotator"
             ],
             "properties": {
                 "input": {

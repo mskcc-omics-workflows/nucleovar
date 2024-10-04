@@ -27,6 +27,7 @@ workflow TRACEBACK {
     .map {it -> [it[0].subMap('patient')[0], *it[1..-1]] }
     .set{concat_maf}
 
+
     bams
     .map { it -> [it[0].subMap('patient')[0], it[0], *it[1..-1]] }
     .combine(concat_maf, by:0)
