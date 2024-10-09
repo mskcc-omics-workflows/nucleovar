@@ -8,7 +8,7 @@ process BCFTOOLS_ANNOTATE {
         'ghcr.io/msk-access/bcftools:1.15.1' }"
 
     input:
-    tuple val(meta), path(mutect_vcf), path(combined_vcf)
+    tuple val(meta), path(combined_vcf), path(singular_vcf)
     path(header_file)
 
     output:
@@ -23,11 +23,11 @@ process BCFTOOLS_ANNOTATE {
     def prefix  = task.ext.prefix ?: "${meta.id}"
 
     """
-    bcftools index --threads $task.cpus ${mutect_vcf}
+    bcftools index --threads $task.cpus ${singular_vcf}
     bcftools index --threads $task.cpus ${combined_vcf}
 
 
-    bcftools annotate --header-lines ${header_file} --annotations ${mutect_vcf} ${args} --output ${prefix}.vcf ${combined_vcf}
+    bcftools annotate --header-lines ${header_file} --annotations ${singular_vcf} ${args} --output ${prefix}.vcf ${combined_vcf}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
