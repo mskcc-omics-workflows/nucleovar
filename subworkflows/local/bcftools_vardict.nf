@@ -154,13 +154,14 @@ workflow BCFTOOLS_VARDICT {
 
     standard_norm_sorted_vcf = NORM_STANDARD_.out.vardict_std_normalized_vcf
 
-    complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.vardict_complexvar_normalized_vcf
+    //complexvar_norm_sorted_vcf = NORM_COMPLEXVAR_.out.vardict_complexvar_normalized_vcf
 
     standard_sample_vcf_and_index.map{sample,vcf,index -> index}.set{vardict_index}
-    complexvar_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_complexvar}
+    //complexvar_sample_vcf_and_index.map{sample,vcf,index -> index}.set{index_complexvar}
 
     standard_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_standard}
-    complexvar_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_complexvar}
+    complexvar_sample_vcf_and_index.map{ meta,vcf,index -> vcf}.set{vcf_complexvar}
+    //complexvar_norm_sorted_vcf.map{ sample,vcf -> vcf}.set{vcf_complexvar}
 
 
 
