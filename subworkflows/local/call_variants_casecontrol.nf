@@ -30,6 +30,7 @@ workflow CALL_VARIANTS_CASECONTROL {
         .set{ vardict_input_set3 }
 
 
+    
 
 
     VARDICTJAVA(vardict_input_set1,vardict_input_set2,vardict_input_set3)

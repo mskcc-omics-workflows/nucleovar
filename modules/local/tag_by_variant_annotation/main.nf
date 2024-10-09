@@ -1,6 +1,6 @@
 process TAG_BY_VARIANT_ANNOTATION {
     label 'process_single'
-
+    //publishDir '${params.outdir}'
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ghcr.io/msk-access/postprocessing_variant_calls:0.2.6' :

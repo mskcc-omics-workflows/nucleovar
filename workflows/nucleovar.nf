@@ -17,23 +17,21 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { PREPARE_INPUTS         } from '../subworkflows/local/prepare_inputs'
 include { VARDICT_PROCESSING     } from '../subworkflows/local/vardict_processing'
 include { MUTECT1_PROCESSING     } from '../subworkflows/local/mutect1_processing'
 include { MUTECT2_PROCESSING     } from '../subworkflows/local/mutect2_processing'
-include { BCFTOOLS_ANNOTATE as ANNOTATE_WITH_MUTECT1 } from '../modules/local/bcftools/annotate/main'
-include { BCFTOOLS_ANNOTATE as ANNOTATE_WITH_VARDICT } from '../modules/local/bcftools/annotate/main'
-include { SAMTOOLS_SORT     } from '../modules/local/samtools/sort/main.nf'
-include { BEDTOOLS_GENOMECOV } from '../modules/local/bedtools/genomecov/main'
-include { BEDTOOLS_MERGE } from '../modules/local/bedtools/merge/main'
 include { BCFTOOLS_CONCAT_WITH_MUTECT     } from '../subworkflows/local/bcftools_concat_with_mutect'
-include { VCF2MAF } from '../modules/local/vcf2maf'
 include { GENOME_NEXUS } from '../subworkflows/msk/genome_nexus/main'
 include { TRACEBACK } from '../subworkflows/msk/traceback/main'
+include { BCFTOOLS_ANNOTATE as ANNOTATE_WITH_MUTECT1 } from '../modules/local/bcftools/annotate/main'
+include { BCFTOOLS_ANNOTATE as ANNOTATE_WITH_VARDICT } from '../modules/local/bcftools/annotate/main'
+include { VCF2MAF } from '../modules/local/vcf2maf'
 include { PVMAF_TAGTRACEBACK } from '../modules/msk/pvmaf/tagtraceback'
 include { MAF_PROCESSING     } from '../modules/local/maf_processing/main'
 include { ACCESS_FILTERS } from '../modules/local/access_filters/main'
 include { TAG_BY_VARIANT_ANNOTATION } from '../modules/local/tag_by_variant_annotation/main'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 
 
@@ -74,12 +72,7 @@ workflow NUCLEOVAR {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
-    //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
-    //
-
-    // sanity check to see if tumor and normal samples are included-- kicks off case control method of running pipeline
-    def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
+    // def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
 
     canonical_bed = Channel.from(params.canonical_bed)
     fasta_ref = params.fasta
@@ -92,23 +85,13 @@ workflow NUCLEOVAR {
     canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
     hotspots = Channel.fromPath(params.hotspots)
 
+    
+    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    PREPARE_INPUTS( case_bams,sample_id_names,Channel.from(params.target_bed) )
+    
+    target_bed_file = PREPARE_INPUTS.out.target_bed_file
 
-    if (params.target_bed == null) {
-        println "Target BED file not provided. Will generate BED file for TUMOR/CASE sample."
-
-        // //invoke the samtools sort and bedtools modules to generate a BED file for the tumor sample
-        case_bams.map{ bam,bai -> bam}.set{ case_bam_only }
-
-        sample_id_names.combine(case_bam_only).set{ input_tumorbam_for_bedtools}
-        SAMTOOLS_SORT( input_tumorbam_for_bedtools )
-        sorted_tumor_bam = SAMTOOLS_SORT.out.sorted_bam
-        target_bed_file = BEDTOOLS_GENOMECOV( sorted_tumor_bam, Channel.from(fasta_index) )
-    }
-    else {
-        println "Target BED file is provided."
-        target_bed_file = Channel.from(params.target_bed)
-    }
-
+    // processing subworkflows for each variant caller 
     VARDICT_PROCESSING( sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,target_bed_file )
     vardict_concat_vcf_isolated = VARDICT_PROCESSING.out.vardict_concat_vcf_isolated
     vardict_index = VARDICT_PROCESSING.out.vardict_index
@@ -117,20 +100,20 @@ workflow NUCLEOVAR {
     mutect1_vcf_isolated = MUTECT1_PROCESSING.out.mutect1_vcf_isolated
     mutect1_index = MUTECT1_PROCESSING.out.mutect1_index
 
-    MUTECT2_PROCESSING( target_bed_file,fasta_ref,fasta_index,fasta_dict,duplex_bams,sample_id_names,sample_order_file )
+    //MUTECT2_PROCESSING( target_bed_file,fasta_ref,fasta_index,fasta_dict,duplex_bams,sample_id_names,sample_order_file )
 
 
-    // concatenation of VarDict and MuTect VCFs
+    // // concatenation of VarDict and MuTect VCFs
     BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect1_vcf_isolated,vardict_index,mutect1_index )
     sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
-
-
     sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
-    mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
-
-    sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
     
-    // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
+    mutect1_vcf_isolated.map{ meta,vcf -> vcf}.set{ mutect1_norm_sorted_vcf_isolated }
+    sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect1_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
+    
+
+
+    // // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
     ANNOTATE_WITH_MUTECT1( input_for_bcftools_annotate,mutect1_header_file )
     annotated_with_mutect1_vcf = ANNOTATE_WITH_MUTECT1.out.vcf
     annotated_with_mutect1_vcf.combine(vardict_concat_vcf_isolated).set{ input_for_bcftools_annotate2 }
@@ -149,39 +132,40 @@ workflow NUCLEOVAR {
         VCF2MAF( inputs_for_perlvcf2maf )
         input_maf = VCF2MAF.out.maf
     }
-
     input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
 
 
-    // // // // traceback subworkflow
+
+    // // // // // traceback subworkflow
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
-
-
-
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
-
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
     PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
     genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
 
 
-    // // // maf_processing module (tag by rules)
+    // // // // maf_processing module (tag by rules)
     MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
     tagged_maf = MAF_PROCESSING.out.maf
     tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
 
 
-    // // // access filters
-
+    // // // // access filters
     sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
-
     ACCESS_FILTERS( inputs_for_access_filters )
     access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
     access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
 
 
-    // // // // mpath loading script module
+    // // // // // mpath loading script module
     TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
+
+    annotated_exonic_maf_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_exonic
+    annotated_silent_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_silent
+    annotated_nonpanel_exonic_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_nonpanel_exonic
+    annotated_nonpanel_silent_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_nonpanel_silent
+    annotated_dropped_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_dropped
+
 
     // // //Collate and save software versions
     softwareVersionsToYAML(ch_versions)
@@ -190,6 +174,14 @@ workflow NUCLEOVAR {
 
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    access_filtered_maf
+    access_filtered_condensed_maf
+    annotated_exonic_maf_file
+    annotated_silent_file
+    annotated_nonpanel_exonic_file
+    annotated_nonpanel_silent_file
+    annotated_dropped_file
+
 
 
 }
