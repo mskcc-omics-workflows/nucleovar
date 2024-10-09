@@ -85,13 +85,13 @@ workflow NUCLEOVAR {
     canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
     hotspots = Channel.fromPath(params.hotspots)
 
-    
+
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     PREPARE_INPUTS( case_bams,sample_id_names,Channel.from(params.target_bed) )
-    
+
     target_bed_file = PREPARE_INPUTS.out.target_bed_file
 
-    // processing subworkflows for each variant caller 
+    // processing subworkflows for each variant caller
     VARDICT_PROCESSING( sample_id_names,duplex_bams,fasta_ref,fasta_index,fasta_dict,target_bed_file )
     vardict_concat_vcf_isolated = VARDICT_PROCESSING.out.vardict_concat_vcf_isolated
     vardict_index = VARDICT_PROCESSING.out.vardict_index
@@ -107,10 +107,10 @@ workflow NUCLEOVAR {
     BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect1_vcf_isolated,vardict_index,mutect1_index )
     sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
     sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
-    
+
     mutect1_vcf_isolated.map{ meta,vcf -> vcf}.set{ mutect1_norm_sorted_vcf_isolated }
     sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect1_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
-    
+
 
 
     // // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF

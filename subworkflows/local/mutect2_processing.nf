@@ -13,9 +13,9 @@ workflow MUTECT2_PROCESSING {
     target_bed_file
     fasta_ref
     fasta_index
-    fasta_dict 
-    duplex_bams 
-    sample_id_names 
+    fasta_dict
+    duplex_bams
+    sample_id_names
     sample_order_file
 
     main:
@@ -39,7 +39,7 @@ workflow MUTECT2_PROCESSING {
 
     mutect2_vcf = MUTECT2.out.mutect2_vcf
 
-    
+
     mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
 
 
@@ -47,21 +47,21 @@ workflow MUTECT2_PROCESSING {
 
     mutect2_ordered_vcf = MUTECT2_REHEADER.out.sample_reordered_vcf
 
-    mutect2_ordered_vcf.view()
-    // MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
-    // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
-    // BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
-    // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-    // mutect1_index = BCFTOOLS_MUTECT.out.mutect_index
+    MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
+    mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
-    // mutect_vcf.map{ id,vcf -> vcf}.set{ mutect1_vcf_isolated }
+    BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+    mutect1_index = BCFTOOLS_MUTECT.out.mutect_index
 
-    // mutect1_vcf_isolated.view()
+    mutect_vcf.map{ id,vcf -> vcf}.set{ mutect1_vcf_isolated }
 
-    // emit:
-    // mutect1_vcf_isolated 
-    // mutect1_index
+    mutect1_vcf_isolated.view()
+
+    emit:
+    mutect1_vcf_isolated
+    mutect1_index
 }
 
 

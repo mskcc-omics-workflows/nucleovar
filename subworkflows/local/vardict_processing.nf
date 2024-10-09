@@ -10,9 +10,9 @@ workflow VARDICT_PROCESSING {
     sample_id_names
     duplex_bams
     fasta_ref
-    fasta_index 
-    fasta_dict 
-    target_bed_file 
+    fasta_index
+    fasta_dict
+    target_bed_file
 
     main:
 
@@ -30,7 +30,7 @@ workflow VARDICT_PROCESSING {
 
 
     emit:
-    vardict_concat_vcf_isolated 
+    vardict_concat_vcf_isolated
     vardict_index
 }
 

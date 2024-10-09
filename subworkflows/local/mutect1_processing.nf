@@ -13,9 +13,9 @@ workflow MUTECT1_PROCESSING {
     target_bed_file
     fasta_ref
     fasta_index
-    fasta_dict 
-    duplex_bams 
-    sample_id_names 
+    fasta_dict
+    duplex_bams
+    sample_id_names
     sample_order_file
 
     main:
@@ -39,7 +39,7 @@ workflow MUTECT1_PROCESSING {
 
     mutect1_vcf = MUTECT1.out.mutect_vcf
     mutect1_txt = MUTECT1.out.standard_mutect_output
-    
+
     mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
 
 
@@ -50,7 +50,7 @@ workflow MUTECT1_PROCESSING {
 
     mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
 
-    
+
     MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
     mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
@@ -60,10 +60,10 @@ workflow MUTECT1_PROCESSING {
 
     mutect_vcf.map{ id,vcf -> vcf}.set{ mutect1_vcf_isolated }
 
-    
+
 
     emit:
-    mutect1_vcf_isolated 
+    mutect1_vcf_isolated
     mutect1_index
 }
 
