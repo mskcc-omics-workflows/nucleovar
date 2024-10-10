@@ -19,7 +19,6 @@
                 "dict",
                 "rules_json",
                 "aux_bams",
-                "header_file",
                 "blocklist",
                 "canonical_tx_ref",
                 "hotspots",
@@ -82,11 +81,6 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Filepath to file containing sample ID names and order which the user wants them to appear in all variant caller VCFs"
-                },
-                "header_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Filepath to file containing the genotype headers which are used in the BCFTools Annotation Module."
                 },
                 "blocklist": {
                     "type": "string",

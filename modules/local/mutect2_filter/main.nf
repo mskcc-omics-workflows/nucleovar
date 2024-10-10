@@ -2,7 +2,7 @@ process MUTECT2_FILTER {
     tag "$meta.id"
     label 'process_single'
 
-    container "ghcr.io/msk-access/postprocessing_variant_calls:mutect_filter_0.0.2"
+    container "ghcr.io/msk-access/postprocessing_variant_calls:access_filters_fix"
 
     input:
     tuple val(meta), path(mutect_vcf_file)

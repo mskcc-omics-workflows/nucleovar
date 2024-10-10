@@ -79,6 +79,8 @@ workflow PIPELINE_INITIALISATION {
     //
     input1 = Channel.fromPath(input)
     input2 = Channel.fromPath(input)
+    input_ss_ch = Channel.fromPath(input)
+    aux_bams_ss_ch = Channel.fromPath(aux_bams)
 
     input1
         .splitCsv(header: true, sep: '\t')
@@ -169,7 +171,8 @@ workflow PIPELINE_INITIALISATION {
 
 
     emit:
-    samplesheet = ch_samplesheet
+    input_ss = input_ss_ch
+    aux_bams_ss = aux_bams_ss_ch
     sample_id_names = sample_id_names_ch
     sample_order_file = sample_order_ch
     standard_bams = standard_bams_ch
