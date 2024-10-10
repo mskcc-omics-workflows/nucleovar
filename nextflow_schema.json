@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/msk/nucleovar/master/nextflow_schema.json",
     "title": "msk/nucleovar pipeline parameters",
     "description": "snps and indels variant calling for access",
@@ -12,15 +12,25 @@
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
                 "input",
-                "outdir"
+                "outdir",
+                "fasta",
+                "canonical_bed",
+                "fai",
+                "dict",
+                "rules_json",
+                "aux_bams",
+                "header_file",
+                "blocklist",
+                "canonical_tx_ref",
+                "hotspots",
+                "annotator"
             ],
             "properties": {
                 "input": {
                     "type": "string",
-                    "format": "file-path",
+                    "format": "sample-sheet",
                     "exists": true,
                     "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
@@ -31,6 +41,26 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "target_bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to the standard target BED file. Used in the variant calling process"
+                },
+                "canonical_bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to the canonical BED file. Used downstream of variant calling process"
+                },
+                "fai": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to the standard genome fasta index file."
+                },
+                "dict": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to the standard genome fasta dictionary file."
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -38,10 +68,45 @@
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
                     "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
                 },
-                "multiqc_title": {
+                "rules_json": {
                     "type": "string",
-                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
+                    "format": "file-path",
+                    "description": "Filepath to rules."
+                },
+                "aux_bams": {
+                    "type": "string",
+                    "format": "sample-sheet",
+                    "description": "Filepath to file containing curated simplex/duplex bams for traceback"
+                },
+                "sample_order_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing sample ID names and order which the user wants them to appear in all variant caller VCFs"
+                },
+                "header_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing the genotype headers which are used in the BCFTools Annotation Module."
+                },
+                "blocklist": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing blocklist for access filter module."
+                },
+                "canonical_tx_ref": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing canonical transcript references"
+                },
+                "hotspots": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Filepath to file containing hotspots to tag input MAF by"
+                },
+                "annotator": {
+                    "type": "string",
+                    "format": "string",
+                    "description": "String indicating which annotation software user would like to use. options are 'genomenexus' or 'vcf2maf' "
                 }
             }
         },
@@ -54,7 +119,7 @@
                 "fasta": {
                     "type": "string",
                     "format": "file-path",
-                    "exists": true,
+                    "exists": false,
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file.",
@@ -144,14 +209,7 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": [
-                        "symlink",
-                        "rellink",
-                        "link",
-                        "copy",
-                        "copyNoFollow",
-                        "move"
-                    ],
+                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
                 "email_on_fail": {
@@ -243,9 +301,6 @@
             "$ref": "#/definitions/input_output_options"
         },
         {
-            "$ref": "#/definitions/reference_genome_options"
-        },
-        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
@@ -253,6 +308,9 @@
         },
         {
             "$ref": "#/definitions/generic_options"
+        },
+        {
+            "$ref": "#/definitions/reference_genome_options"
         }
     ]
 }

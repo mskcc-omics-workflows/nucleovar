@@ -11,55 +11,117 @@ nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE & PRINT PARAMETER SUMMARY
+    IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { validateParameters; paramsHelp } from 'plugin/nf-validation'
-
-// Print help message if needed
-if (params.help) {
-    def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
-    def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
-    def String command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
-    log.info logo + paramsHelp(command) + citation + NfcoreTemplate.dashedLine(params.monochrome_logs)
-    System.exit(0)
-}
-
-// Validate input parameters
-if (params.validate_params) {
-    validateParameters()
-}
-
-WorkflowMain.initialise(workflow, params, log)
+include { NUCLEOVAR  } from './workflows/nucleovar'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_nucleovar_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_nucleovar_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { NUCLEOVAR } from './workflows/nucleovar'
-
 //
-// WORKFLOW: Run main msk/nucleovar analysis pipeline
+// WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow MSK_NUCLEOVAR {
-    NUCLEOVAR ()
-}
 
+    take:
+    samplesheet
+    sample_id_names
+    sample_order_file
+    standard_bams
+    case_bams
+    control_bams
+    duplex_bams
+    case_bams_for_traceback
+    control_bams_for_traceback
+    samplesheets_for_traceback
+    aux_bams
+    normal_bams
+
+    main:
+    //
+    // WORKFLOW: Run pipeline
+    //
+    NUCLEOVAR (
+        samplesheet,
+        sample_id_names,
+        sample_order_file,
+        standard_bams,
+        case_bams,
+        control_bams,
+        duplex_bams,
+        case_bams_for_traceback,
+        control_bams_for_traceback,
+        samplesheets_for_traceback,
+        aux_bams,
+        normal_bams
+        )
+
+    emit:
+    versions = NUCLEOVAR.out.versions // channel: /path/to/multiqc_report.html
+
+}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN ALL WORKFLOWS
+    RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// WORKFLOW: Execute a single named workflow for the pipeline
-// See: https://github.com/nf-core/rnaseq/issues/619
-//
 workflow {
-    MSK_NUCLEOVAR ()
+
+    main:
+
+    //
+    // SUBWORKFLOW: Run initialisation tasks
+    //
+    PIPELINE_INITIALISATION (
+        params.version,
+        params.help,
+        params.validate_params,
+        params.monochrome_logs,
+        args,
+        params.outdir,
+        params.input,
+        params.aux_bams
+    )
+
+    //
+    // WORKFLOW: Run main workflow
+    //
+    MSK_NUCLEOVAR (
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.sample_id_names,
+        PIPELINE_INITIALISATION.out.sample_order_file,
+        PIPELINE_INITIALISATION.out.standard_bams,
+        PIPELINE_INITIALISATION.out.case_bams,
+        PIPELINE_INITIALISATION.out.control_bams,
+        PIPELINE_INITIALISATION.out.duplex_bams,
+        PIPELINE_INITIALISATION.out.case_bams_for_traceback,
+        PIPELINE_INITIALISATION.out.control_bams_for_traceback,
+        PIPELINE_INITIALISATION.out.samplesheets_for_traceback,
+        PIPELINE_INITIALISATION.out.aux_bams,
+        PIPELINE_INITIALISATION.out.normal_bams,
+
+    )
+
+    //
+    // SUBWORKFLOW: Run completion tasks
+    //
+    PIPELINE_COMPLETION (
+        params.email,
+        params.email_on_fail,
+        params.plaintext_email,
+        params.outdir,
+        params.monochrome_logs,
+        params.hook_url,
+        MSK_NUCLEOVAR.out.versions
+    )
 }
 
 /*
