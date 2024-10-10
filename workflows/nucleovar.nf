@@ -121,123 +121,123 @@ workflow NUCLEOVAR {
     vardict_filtered_vcf_complexvar = CALL_VARIANTS_CASECONTROL.out.complex_variants_vardict_vcf
 
 
-    target_bed_file
-        .combine(Channel.from(fasta_ref))
-        .combine(Channel.from(fasta_index))
-        .combine(Channel.from(fasta_dict))
-        .set{ input2_for_mutect }
+    // target_bed_file
+    //     .combine(Channel.from(fasta_ref))
+    //     .combine(Channel.from(fasta_index))
+    //     .combine(Channel.from(fasta_dict))
+    //     .set{ input2_for_mutect }
 
 
-    duplex_bams
-        .map{ meta,control_bam,control_bai,case_bam,case_bai ->
-            tuple(case_bam,control_bam,case_bai,control_bai)}
-        .set{ bams_for_mutect }
-    sample_id_names
-        .combine(bams_for_mutect)
-        .set{ input1_for_mutect }
+    // duplex_bams
+    //     .map{ meta,control_bam,control_bai,case_bam,case_bai ->
+    //         tuple(case_bam,control_bam,case_bai,control_bai)}
+    //     .set{ bams_for_mutect }
+    // sample_id_names
+    //     .combine(bams_for_mutect)
+    //     .set{ input1_for_mutect }
 
 
-    // run mutect1 and mutect2 variant callers
-    MUTECT1(input1_for_mutect,input2_for_mutect)
-    // MUTECT2( input1_for_mutect,input2_for_mutect )
+    // // run mutect1 and mutect2 variant callers
+    // MUTECT1(input1_for_mutect,input2_for_mutect)
+    // // MUTECT2( input1_for_mutect,input2_for_mutect )
 
-    mutect1_vcf = MUTECT1.out.mutect_vcf
-    mutect1_txt = MUTECT1.out.standard_mutect_output
-    // mutect2_vcf = MUTECT2.out.mutect2_vcf
-
-
-    mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
-    // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-    input_for_mutect1_reheader.view()
-    // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
-    MUTECT1_REHEADER( input_for_mutect1_reheader )
-    // MUTECT2_REHEADER( input_for_mutect2_reheader )
-
-    mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
-    mutect1_txt.map{ meta,txt -> txt}.set{ mutect1_txt_only }
-
-    mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
-
-    // filtering variant callers
-    MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
-    mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
+    // mutect1_vcf = MUTECT1.out.mutect_vcf
+    // mutect1_txt = MUTECT1.out.standard_mutect_output
+    // // mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
+    // mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
+    // // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
+    // input_for_mutect1_reheader.view()
+    // // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
+    // MUTECT1_REHEADER( input_for_mutect1_reheader )
+    // // MUTECT2_REHEADER( input_for_mutect2_reheader )
 
-    sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
-    sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
+    // mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf
+    // mutect1_txt.map{ meta,txt -> txt}.set{ mutect1_txt_only }
 
-    // bcftools suite subworkflow for VarDict VCFs
-    BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    // mutect1_ordered_vcf.combine(mutect1_txt_only).set{ input_for_mutect_filter }
 
-    vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
-    vardict_index = BCFTOOLS_VARDICT.out.vardict_index
-
-    // bcftools suite subworkflow for MuTect VCFs
-    BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
-    mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
-    mutect_index = BCFTOOLS_MUTECT.out.mutect_index
-
-
-    vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
-    mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
-
-    // concatenation of VarDict and MuTect VCFs
-    BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
-    sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
-
-
-    sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
-    mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
-    sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
-
-    // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
-    BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
-    annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
-
-
-    if (params.annotator == 'genomenexus') {
-        println "User has specified genomenexus for annotation software flag. Proceeding with Genome Nexus Subworkflow..."
-        GENOME_NEXUS( annotated_vcf )
-        input_maf = GENOME_NEXUS.out.maf
-    }
-    else if (params.annotator == 'vcf2maf') {
-        println "User has specified vcf2maf for annotation software flag. Proceeding with PERL vcf2maf module..."
-
-    }
-
-    input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
-
-
-    // // // // traceback subworkflow
-    input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
+    // // filtering variant callers
+    // MUTECT_FILTER(input_for_mutect_filter,Channel.from(fasta_ref))
+    // mutect_filtered_vcf = MUTECT_FILTER.out.mutect_filtered_vcf
 
 
 
-    case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+    // sample_id_names.combine(vardict_filtered_vcf_standard).set{ standard_vcf_for_bcftools }
+    // sample_id_names.combine(vardict_filtered_vcf_complexvar).set{ complexvar_vcf_for_bcftools }
 
-    TRACEBACK( bams, mafs, fasta_ref, fasta_index )
-    PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
-    genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
+    // // bcftools suite subworkflow for VarDict VCFs
+    // BCFTOOLS_VARDICT( vardict_filtered_vcf_complexvar,vardict_filtered_vcf_standard,Channel.from(fasta_ref),Channel.from(fasta_index) )
 
+    // vardict_concat_vcf = BCFTOOLS_VARDICT.out.vardict_concat_vcf
+    // vardict_index = BCFTOOLS_VARDICT.out.vardict_index
 
-    // // // maf_processing module (tag by rules)
-    MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
-    tagged_maf = MAF_PROCESSING.out.maf
-    tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
-
-
-    // // // access filters
-
-    sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
-
-    ACCESS_FILTERS( inputs_for_access_filters )
-    access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
-    access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
+    // // bcftools suite subworkflow for MuTect VCFs
+    // BCFTOOLS_MUTECT( mutect_filtered_vcf,Channel.from(fasta_ref),Channel.from(fasta_index) )
+    // mutect_vcf = BCFTOOLS_MUTECT.out.standard_norm_sorted_vcf
+    // mutect_index = BCFTOOLS_MUTECT.out.mutect_index
 
 
-    // // // // mpath loading script module
-    TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
+    // vardict_concat_vcf.map{ id,vcf -> vcf}.set{ vardict_concat_vcf_isolated }
+    // mutect_vcf.map{ id,vcf -> vcf}.set{ mutect_vcf_isolated }
+
+    // // concatenation of VarDict and MuTect VCFs
+    // BCFTOOLS_CONCAT_WITH_MUTECT( sample_id_names,vardict_concat_vcf_isolated,mutect_vcf_isolated,vardict_index,mutect_index )
+    // sample_plus_final_concat_vcf = BCFTOOLS_CONCAT_WITH_MUTECT.out.sample_plus_final_concat_vcf
+
+
+    // sample_plus_final_concat_vcf.map{ meta,vcf -> vcf}.set{ mutect_vardict_concat_vcf }
+    // mutect_vcf.map{ meta,vcf -> vcf}.set{ mutect_norm_sorted_vcf_isolated }
+    // sample_id_names.combine(mutect_vardict_concat_vcf).combine(mutect_norm_sorted_vcf_isolated).set{ input_for_bcftools_annotate }
+
+    // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
+    // BCFTOOLS_ANNOTATE( input_for_bcftools_annotate,header_file )
+    // annotated_vcf = BCFTOOLS_ANNOTATE.out.vcf
+
+
+    // if (params.annotator == 'genomenexus') {
+    //     println "User has specified genomenexus for annotation software flag. Proceeding with Genome Nexus Subworkflow..."
+    //     GENOME_NEXUS( annotated_vcf )
+    //     input_maf = GENOME_NEXUS.out.maf
+    // }
+    // else if (params.annotator == 'vcf2maf') {
+    //     println "User has specified vcf2maf for annotation software flag. Proceeding with PERL vcf2maf module..."
+
+    // }
+
+    // input_maf.map{ meta,maf -> maf}.set{ test_maf_only }
+
+
+    // // // // // traceback subworkflow
+    // input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
+
+
+
+    // case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
+
+    // TRACEBACK( bams, mafs, fasta_ref, fasta_index )
+    // PVMAF_TAGTRACEBACK(TRACEBACK.out.genotyped_maf, [params.input, params.aux_bams])
+    // genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
+
+
+    // // // // maf_processing module (tag by rules)
+    // MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
+    // tagged_maf = MAF_PROCESSING.out.maf
+    // tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
+
+
+    // // // // access filters
+
+    // sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
+
+    // ACCESS_FILTERS( inputs_for_access_filters )
+    // access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
+    // access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
+
+
+    // // // // // mpath loading script module
+    // TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
 
     // // //Collate and save software versions
     softwareVersionsToYAML(ch_versions)
