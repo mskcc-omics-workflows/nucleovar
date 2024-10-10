@@ -115,7 +115,7 @@ workflow NUCLEOVAR {
 
 
 
-    // // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
+    // // // // annotate the concatenated VarDict/MuTect VCF against MuTect original VCF
     ANNOTATE_WITH_MUTECT1( input_for_bcftools_annotate,mutect1_header_file )
     annotated_with_mutect1_vcf = ANNOTATE_WITH_MUTECT1.out.vcf
     annotated_with_mutect1_vcf.combine(vardict_concat_vcf_isolated).set{ input_for_bcftools_annotate2 }
@@ -138,7 +138,7 @@ workflow NUCLEOVAR {
 
 
 
-    // // // // // traceback subworkflow
+    // // // // // // traceback subworkflow
     input_maf.map{ meta,maf -> tuple([patient: 'test',id:"${meta.case_id}.${meta.control_id}.combined-variants"],maf)}.set{ mafs }
     case_bams_for_traceback.mix(control_bams_for_traceback).mix(aux_bams).mix(normal_bams).set{ bams }
     TRACEBACK( bams, mafs, fasta_ref, fasta_index )
@@ -146,20 +146,20 @@ workflow NUCLEOVAR {
     genotyped_maf = PVMAF_TAGTRACEBACK.out.maf
 
 
-    // // // // maf_processing module (tag by rules)
+    // // // // // maf_processing module (tag by rules)
     MAF_PROCESSING( genotyped_maf, rules_file, hotspots)
     tagged_maf = MAF_PROCESSING.out.maf
     tagged_maf.map{ meta,maf -> maf}.set{tagged_maf_only}
 
 
-    // // // // access filters
+    // // // // // access filters
     sample_id_names.combine(tagged_maf_only).combine(test_maf_only).combine(blocklist).set{ inputs_for_access_filters }
     ACCESS_FILTERS( inputs_for_access_filters )
     access_filtered_maf = ACCESS_FILTERS.out.filtered_maf
     access_filtered_condensed_maf = ACCESS_FILTERS.out.condensed_filtered_maf
 
 
-    // // // // // mpath loading script module
+    // // // // // // mpath loading script module
     TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
 
     annotated_exonic_maf_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_exonic
