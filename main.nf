@@ -31,7 +31,8 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_nucl
 workflow MSK_NUCLEOVAR {
 
     take:
-    samplesheet
+    input_ss
+    aux_bams_ss
     sample_id_names
     sample_order_file
     standard_bams
@@ -49,7 +50,8 @@ workflow MSK_NUCLEOVAR {
     // WORKFLOW: Run pipeline
     //
     NUCLEOVAR (
-        samplesheet,
+        input_ss,
+        aux_bams_ss,
         sample_id_names,
         sample_order_file,
         standard_bams,
@@ -95,7 +97,8 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     MSK_NUCLEOVAR (
-        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.input_ss,
+        PIPELINE_INITIALISATION.out.aux_bams_ss,
         PIPELINE_INITIALISATION.out.sample_id_names,
         PIPELINE_INITIALISATION.out.sample_order_file,
         PIPELINE_INITIALISATION.out.standard_bams,

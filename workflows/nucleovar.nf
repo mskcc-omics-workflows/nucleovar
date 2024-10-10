@@ -54,7 +54,8 @@ include { TAG_BY_VARIANT_ANNOTATION } from '../modules/local/tag_by_variant_anno
 workflow NUCLEOVAR {
 
     take:
-    samplesheet
+    input_ss 
+    aux_bams_ss
     sample_id_names
     sample_order_file
     standard_bams
@@ -83,6 +84,9 @@ workflow NUCLEOVAR {
     blocklist = Channel.fromPath(params.blocklist)
     canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
     hotspots = Channel.fromPath(params.hotspots)
+
+    
+    
 
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     PREPARE_INPUTS( case_bams,sample_id_names,Channel.from(params.target_bed) )
@@ -172,6 +176,8 @@ workflow NUCLEOVAR {
 
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    input_ss 
+    aux_bams_ss
     access_filtered_maf
     access_filtered_condensed_maf
     annotated_exonic_maf_file
