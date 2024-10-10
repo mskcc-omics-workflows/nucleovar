@@ -102,7 +102,7 @@ workflow NUCLEOVAR {
     mutect1_vcf_isolated = MUTECT1_PROCESSING.out.mutect1_vcf_isolated
     mutect1_index = MUTECT1_PROCESSING.out.mutect1_index
 
-    MUTECT2_PROCESSING( target_bed_file,fasta_ref,fasta_index,fasta_dict,duplex_bams,sample_id_names,sample_order_file )
+    //MUTECT2_PROCESSING( target_bed_file,fasta_ref,fasta_index,fasta_dict,duplex_bams,sample_id_names,sample_order_file )
 
 
     // // concatenation of VarDict and MuTect VCFs
