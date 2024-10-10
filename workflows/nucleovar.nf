@@ -72,19 +72,17 @@ workflow NUCLEOVAR {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
-    // def target = (params.target_bed != "") ? "--target_bed $params.target_bed" : ""
-
     canonical_bed = Channel.from(params.canonical_bed)
     fasta_ref = params.fasta
     fasta_index = params.fai
     fasta_dict = params.dict
     rules_file = Channel.fromPath(params.rules_json)
-    mutect1_header_file = Channel.fromPath(params.mutect1_header_file)
-    vardict_header_file = Channel.fromPath(params.vardict_header_file)
+    mutect1_header_file = Channel.fromPath("${projectDir}/tests/resources/v1.0/mutect_annotate_concat_header.txt")
+    mutect2_header_file = Channel.fromPath("${projectDir}/tests/resources/v1.0/mutect2_annotate_concat_header.txt")
+    vardict_header_file = Channel.fromPath("${projectDir}/tests/resources/v1.0/vardict_annotate_concat_header.txt")
     blocklist = Channel.fromPath(params.blocklist)
     canonical_tx_ref = Channel.fromPath(params.canonical_tx_ref)
     hotspots = Channel.fromPath(params.hotspots)
-
 
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     PREPARE_INPUTS( case_bams,sample_id_names,Channel.from(params.target_bed) )

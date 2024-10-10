@@ -57,8 +57,6 @@ workflow MUTECT2_PROCESSING {
 
     mutect_vcf.map{ id,vcf -> vcf}.set{ mutect1_vcf_isolated }
 
-    mutect1_vcf_isolated.view()
-
     emit:
     mutect1_vcf_isolated
     mutect1_index
