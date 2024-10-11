@@ -146,11 +146,11 @@ workflow NUCLEOVAR {
     // mutect2_vcf = MUTECT2.out.mutect2_vcf
 
 
-    mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
+    //mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
     // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-    input_for_mutect1_reheader.view()
+    
     // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
-    MUTECT1_REHEADER( input_for_mutect1_reheader )
+    MUTECT1_REHEADER( mutect1_vcf )
     // MUTECT2_REHEADER( input_for_mutect2_reheader )
 
     mutect1_ordered_vcf = MUTECT1_REHEADER.out.sample_reordered_vcf

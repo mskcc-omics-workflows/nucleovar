@@ -8,7 +8,8 @@ process BCFTOOLS_REHEADER {
         'biocontainers/bcftools:1.20--h8b25389_0' }"
 
     input:
-    tuple val(meta), path(vcf), path(samples)
+    tuple val(meta), path(vcf)
+    //, path(samples)
 
     output:
     tuple val(meta), path("*.vcf"), emit: sample_reordered_vcf
@@ -20,8 +21,10 @@ process BCFTOOLS_REHEADER {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+
     """
-    bcftools reheader -s ${samples} -o ${vcf.BaseName}_reordered.vcf ${vcf}
+    echo -e "${meta.case_id}\n${meta.control_id}" > sampleorder.txt
+    bcftools reheader -s sampleorder.txt -o ${vcf.BaseName}_reordered.vcf ${vcf}
 
 
     cat <<-END_VERSIONS > versions.yml
