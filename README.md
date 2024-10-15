@@ -6,15 +6,11 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 
-
 ## Introduction
 
 **msk/nucleovar** is a bioinformatics pipeline that ...
 
-
-   Processes a variety of sample BAM files through three variant callers (Mutect (v.1.1.5), VarDict, and GATK Mutect2). Output VCF Files are normalized, sorted, and concatenated, proceeding to be annotated and converted into a MAF format file. The following MAF file is tagged with the presence/absence of specific variant criteria, resulting in a final output MAF file containing variants filtered by criteria set forth by the ACCESS pipeline. 
-
-
+Processes a variety of sample BAM files through three variant callers (Mutect (v.1.1.5), VarDict, and GATK Mutect2). Output VCF Files are normalized, sorted, and concatenated, proceeding to be annotated and converted into a MAF format file. The following MAF file is tagged with the presence/absence of specific variant criteria, resulting in a final output MAF file containing variants filtered by criteria set forth by the ACCESS pipeline.
 
 1. Read in core samplesheet (containing case and control samples) and auxillary bams samplesheet
 2. Run case and control samples through variant callers (Mutect v.1.1.5, VarDict, and GATK Mutect2)
@@ -22,8 +18,7 @@
 4. Convert output VCF File into MAF file format and annotate using Genome Nexus (option provided to invoke PERL VCF2MAF script as well)
 5. Tag output MAF file using MSK ACCESS pipeline criteria (presence of hotspots and removal of specific variant annotations)
 6. Run tagged MAF file through a traceback subworkflow which tags the file with presence of genotypes and performs specific tagging and concatentation.
-7. Tag output file is run through filtering based on criteria set forth by ACCESS_filters script. 
-
+7. Tag output file is run through filtering based on criteria set forth by ACCESS_filters script.
 
 ## Usage
 
@@ -33,7 +28,6 @@ to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/i
 with `-profile test` before running the workflow on actual data.
 :::
 
-
 First, prepare a samplesheet with your input data that looks as follows:
 
 `core_samplesheet.csv`:
@@ -42,6 +36,7 @@ First, prepare a samplesheet with your input data that looks as follows:
 patient_id,sample_id,type,maf,duplex_bam,duplex_bai,simplex_bam,simplex_bai
 PATIENT1,SAMPLE1,case,null,path/to/duplex.bam,path/to/duplex.bai,path/to/simplex.bam,path/to/simplex.bai
 ```
+
 Each row represents an individual case and control sample.
 
 `aux_bams_samplesheet.csv`:
@@ -52,8 +47,6 @@ SAMPLE1,/path/to/normal.bam,path/to/duplex.bam,path/to/simplex.bam,curated
 ```
 
 Each row represents an individual sample which may contain a standard bam (if an unmatched or matched normal sample), or an individual sample which contains a simplex and duplex bam (if a curated or plasma sample)
-
-
 
 Now, you can run the pipeline using:
 
@@ -72,19 +65,17 @@ provided by the `-c` Nextflow option can be used to provide any configuration _*
 see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 :::
 
-## Credits
+## Creditss
 
 msk/nucleovar was originally written by @rnaidu and @buehlere.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
-
 
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citations
-
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
