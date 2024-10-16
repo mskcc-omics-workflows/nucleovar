@@ -148,7 +148,7 @@ workflow NUCLEOVAR {
 
     //mutect1_vcf.combine(sample_order_file).set{ input_for_mutect1_reheader }
     // mutect2_vcf.combine(sample_order_file).set{ input_for_mutect2_reheader }
-    
+
     // standardizes the order of samples printed to output VCF in all variant callers (matches what is there for VarDict)
     MUTECT1_REHEADER( mutect1_vcf )
     // MUTECT2_REHEADER( input_for_mutect2_reheader )
@@ -238,6 +238,11 @@ workflow NUCLEOVAR {
 
     // // // // mpath loading script module
     TAG_BY_VARIANT_ANNOTATION( access_filtered_maf,canonical_tx_ref )
+    annotated_exonic_maf_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_exonic
+    annotated_silent_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_silent
+    annotated_nonpanel_exonic_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_nonpanel_exonic
+    annotated_nonpanel_silent_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_nonpanel_silent
+    annotated_dropped_file = TAG_BY_VARIANT_ANNOTATION.out.annotated_dropped
 
     // // //Collate and save software versions
     softwareVersionsToYAML(ch_versions)
@@ -246,7 +251,13 @@ workflow NUCLEOVAR {
 
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
-
+    access_filtered_maf
+    access_filtered_condensed_maf
+    annotated_exonic_maf_file
+    annotated_silent_file
+    annotated_nonpanel_exonic_file
+    annotated_nonpanel_silent_file
+    annotated_dropped_file
 
 }
 
