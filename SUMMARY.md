@@ -1,5 +1,5 @@
 # Table of contents
 
 - [Page](README.md)
-- [Existing Section](section/existing-section.md)
-  - [New Subpage](section/new-subpage.md) # Add your new subpage here
+- [Workflow Components](docs/workflow-components/workflow.md)
+  - [Modules](docs/workflow-components/MODULES.md) # Add your new subpage here
