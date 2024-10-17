@@ -1,0 +1,3 @@
+patient_id,sample_id,type,maf,standard_bam,duplex_bam,simplex_bam
+null,X-XXXXXX-XXXX-XXX_XX_XXX_XXX_XX_XX_XX_XX__XXX_XXX_XX_XX-duplex,CASE,dummy1,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/standard_case.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/duplex_case.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/simplex_case.bam
+null,XXXXXXX-XX_X_XXX_XXX_XX_XX_XX_XX__XXX_XXX_XX_XX-duplex,CONTROL,dummy2,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/standard_control.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/duplex_control.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/simplex_control.bam

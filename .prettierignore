@@ -10,3 +10,4 @@ testing/
 testing*
 *.pyc
 bin/
+modules/msk/genotypevariants/all/meta.yml
