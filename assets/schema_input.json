@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/msk/nucleovar/master/assets/schema_input.json",
     "title": "msk/nucleovar pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
@@ -7,30 +7,68 @@
     "items": {
         "type": "object",
         "properties": {
-            "sample": {
+            "patient_id": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces"
+                "errorMessage": "A value for patient ID must be provided and cannot contain spaces",
+                "meta": ["patient_id"]
             },
-            "fastq_1": {
+            "sample_id": {
                 "type": "string",
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+$",
+                "errorMessage": "A value for sample ID must be provided and cannot contain spaces",
+                "meta": ["sample_id"]
             },
-            "fastq_2": {
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'",
-                "anyOf": [
-                    {
-                        "type": "string",
-                        "pattern": "^\\S+\\.f(ast)?q\\.gz$"
-                    },
-                    {
-                        "type": "string",
-                        "maxLength": 0
-                    }
-                ]
+            "type": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "A value for sample type must be provided and cannot contain spaces",
+                "meta": ["type"]
+            },
+            "maf": {
+                "type": "string",
+                "format": "file-path",
+                "errorMessage": "MAF file for sample cannot contain spaces and must have extension '.maf' "
+            },
+            "standard_bam": {
+                "type": "string",
+                "format": "file-path",
+                "errorMessage": "BAM file for standard sample cannot contain spaces and must have extension '.bam' "
+            },
+            "standard_bai": {
+                "type": "string",
+                "format": "file-path",
+                "errorMessage": "BAM index file for standard sample cannot contain spaces and must have extension '.bai' "
+            },
+            "duplex_bam": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bam$",
+                "errorMessage": "Duplex BAM file for sample cannot contain spaces and must have extension '.bam' "
+            },
+            "duplex_bai": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bai$",
+                "errorMessage": "Duplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
+            },
+            "simplex_bam": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bam$",
+                "errorMessage": "Simplex BAM file for sample cannot contain spaces and must have extension '.bam' "
+            },
+            "simplex_bai": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bai$",
+                "errorMessage": "Simplex BAM index file for sample cannot contain spaces and must have extension '.bai' "
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": []
     }
 }

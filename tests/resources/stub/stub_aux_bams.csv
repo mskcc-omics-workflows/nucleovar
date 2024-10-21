@@ -1,0 +1,6 @@
+sample_id,normal_path,duplex_path,simplex_path,type
+sample1,null,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample1_duplex.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample1_simplex.bam,MATCHED_NORMAL
+sample2,null,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample2_duplex.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample2_simplex.bam,CURATED
+sample3,null,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample3_duplex.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample3_simplex.bam,PLASMA
+sample4,null,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample4_duplex.bam,/home/naidur/snvs_indels/voyager_testing/nucleovar/tests/resources/stub/sample4_simplex.bam,UNMATCHED_NORMAL
+
